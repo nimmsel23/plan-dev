@@ -1,15 +1,37 @@
 import { Check, Trash2 } from "lucide-react";
+import { formatSet } from "../lib/history.js";
 
 // Eine einzelne Satz-Zeile innerhalb eines ExerciseBlock. Inputs je nach
 // trackingType (weight_reps/bodyweight_reps/duration/distance_time).
 // toggleCompleted() übernimmt beim ersten Abhaken automatisch den besten
 // verfügbaren Wert (echte Eingabe > Ghost/letzte Performance) statt leer
 // zu bleiben — Fallback-Kette identisch zu lib/quickComplete.js.
-export default function SetRow({ set, index, trackingType, onPatch, onDelete, onCompleted }) {
+//
+// `previous` (optional, Strong-"Vorher"-Spalte): der indexgleiche Satz aus
+// der letzten abgeschlossenen Ausführung dieser Übung (eventLog-Eintrag,
+// siehe lib/history.js). Hat Vorrang vor den Ghost-Werten, weil er echte
+// Leistung statt Template-Ziel ist; Tippen übernimmt ihn in die Inputs.
+// Ohne `showPrevious` bleibt das alte Layout ohne Zusatzspalte.
+export default function SetRow({ set: rawSet, index, trackingType, previous, showPrevious = false, onPatch, onDelete, onCompleted }) {
   const isWeight = trackingType === "weight_reps";
   const isBodyweight = trackingType === "bodyweight_reps";
   const isDuration = trackingType === "duration";
   const isDistanceTime = trackingType === "distance_time";
+  const set = {
+    ...rawSet,
+    ghostWeight: previous?.weight ?? rawSet.ghostWeight,
+    ghostReps: previous?.reps ?? rawSet.ghostReps,
+    ghostDistance: previous?.distance ?? rawSet.ghostDistance,
+    ghostDuration: previous?.seconds ?? rawSet.ghostDuration,
+  };
+
+  function applyPrevious() {
+    if (!previous || set.completed) return;
+    if (isWeight) onPatch({ weight: previous.weight ?? null, reps: previous.reps ?? null });
+    else if (isBodyweight) onPatch({ reps: previous.reps ?? null });
+    else if (isDistanceTime) onPatch({ distance: previous.distance ?? null, duration: previous.seconds ?? null });
+    else if (isDuration) onPatch({ duration: previous.seconds ?? null });
+  }
 
   function toggleCompleted() {
     if (set.completed) {
@@ -50,12 +72,21 @@ export default function SetRow({ set, index, trackingType, onPatch, onDelete, on
   }
 
   return (
-    <div className={`grid items-center gap-2 px-1 py-1.5 ${
-      isDuration
-        ? "grid-cols-[1.5rem_1fr_2.25rem_2.25rem]"
-        : "grid-cols-[1.5rem_1fr_1fr_2.25rem_2.25rem]"
-    }`}>
-      <span className="text-xs font-mono text-fit-muted text-center">{index + 1}</span>
+    <div className={`grid items-center gap-2 px-1 py-1.5 rounded-lg transition-colors ${set.completed ? "bg-green-500/10" : ""} ${setRowGrid(trackingType, showPrevious)}`}>
+      <span className={`text-xs font-mono text-center ${set.setType && set.setType !== "normal" ? "text-fit-accent font-bold" : "text-fit-muted"}`}>
+        {set.setType === "warmup" ? "W" : set.setType === "drop" ? "D" : set.setType === "failure" ? "F" : index + 1}
+      </span>
+      {showPrevious && (
+        <button
+          type="button"
+          onClick={applyPrevious}
+          disabled={!previous || set.completed}
+          title={previous ? "Werte vom letzten Mal übernehmen" : undefined}
+          className="min-w-0 truncate text-[11px] font-mono text-fit-muted text-center enabled:hover:text-fit-ink"
+        >
+          {previous ? formatSet(previous) : "–"}
+        </button>
+      )}
       {(isWeight || isDistanceTime) && (
         <input
           type="number"
@@ -123,4 +154,18 @@ export default function SetRow({ set, index, trackingType, onPatch, onDelete, on
       </button>
     </div>
   );
+}
+
+// Spaltenraster — von ExerciseBlock für die Kopfzeile mitbenutzt, damit
+// Kopf und Zeilen nie auseinanderlaufen.
+export function setRowGrid(trackingType, showPrevious) {
+  // Literale Klassen-Strings, damit Tailwinds Content-Scan sie findet.
+  if (trackingType === "duration") {
+    return showPrevious
+      ? "grid-cols-[1.5rem_minmax(0,1.3fr)_1fr_2.25rem_2.25rem]"
+      : "grid-cols-[1.5rem_1fr_2.25rem_2.25rem]";
+  }
+  return showPrevious
+    ? "grid-cols-[1.5rem_minmax(0,1.3fr)_1fr_1fr_2.25rem_2.25rem]"
+    : "grid-cols-[1.5rem_1fr_1fr_2.25rem_2.25rem]";
 }

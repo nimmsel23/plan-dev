@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { LogOut, RefreshCw, ClipboardList } from 'lucide-react'
-import PlanView from './views/Plan/index.jsx'
+import StrongApp from './views/Plan/StrongApp.jsx'
 import AuthGateModal from './components/AuthGateModal.jsx'
 import ErrorBoundary from './components/common/ErrorBoundary.jsx'
 import '@src/styles.css'
@@ -86,8 +86,8 @@ function PlanShell() {
         </header>
 
         {allowed ? (
-          <main className="mx-auto max-w-[1600px] px-4 py-6 md:px-6">
-            <PlanView />
+          <main className="mx-auto max-w-[1600px]">
+            <StrongApp user={user} />
           </main>
         ) : (
           <main className="mx-auto flex min-h-[calc(100vh-65px)] max-w-lg flex-col items-center justify-center px-4 py-12 text-center">

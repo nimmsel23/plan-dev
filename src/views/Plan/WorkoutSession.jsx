@@ -1,9 +1,17 @@
-import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Flag } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowLeft, Flag, Timer, Trash2 } from "lucide-react";
 import { api } from "./api.js";
 import ExerciseSearch from "./components/ExerciseSearch.jsx";
 import ExerciseBlock from "./components/ExerciseBlock.jsx";
+import ExerciseDetail from "./components/ExerciseDetail.jsx";
+import WorkoutSummary from "./components/WorkoutSummary.jsx";
 import { REST_TIMER_TAG, readStoredRestTimer, writeStoredRestTimer, sendRestTimerNotification } from "./lib/restTimer.js";
+import { buildExerciseHistory, previousSetsFor, workoutPRs, formatClock } from "./lib/history.js";
+import { readActiveWorkout, writeActiveWorkout } from "./lib/activeWorkout.js";
+
+// Satz-Änderungen werden lokal sofort angezeigt und gebündelt nachgespeichert
+// (Strong verliert nie einen Satz, auch wenn die App zwischendurch zugeht).
+const AUTOSAVE_DELAY_MS = 1200;
 
 export default function WorkoutSession({ workoutId, onBack, onFinished }) {
   const [workout, setWorkout] = useState(null);
@@ -11,14 +19,64 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
   const [saving, setSaving] = useState(false);
   const [restTimer, setRestTimer] = useState(null);
   const [nowMs, setNowMs] = useState(Date.now());
+  const [allWorkouts, setAllWorkouts] = useState([]);
+  const [detailKey, setDetailKey] = useState(null);
+  const [summary, setSummary] = useState(null);
+  const exercisesRef = useRef([]);
+  const saveTimerRef = useRef(null);
 
   async function load() {
     const d = await api.get(`/workouts/${workoutId}`);
     setWorkout(d.workout);
     setExercises(d.workout.exercises);
+    exercisesRef.current = d.workout.exercises;
+    if (!d.workout.finished_at) {
+      writeActiveWorkout({ id: workoutId, name: d.workout.name, started_at: d.workout.started_at });
+    }
   }
 
   useEffect(() => { load(); }, [workoutId]);
+
+  // Historie für "Vorher"-Spalte + Übungsdetail. Ein Listen-Call reicht,
+  // weil der eventLog auf dem Workout-Meta-Dokument liegt.
+  useEffect(() => {
+    api.get("/workouts").then((d) => setAllWorkouts(d.workouts || [])).catch(() => {});
+  }, [workoutId]);
+
+  const history = useMemo(() => buildExerciseHistory(allWorkouts), [allWorkouts]);
+
+  useEffect(() => () => {
+    // Beim Verlassen ausstehende Satz-Änderungen nicht verlieren.
+    if (saveTimerRef.current) {
+      window.clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+      api.patch(`/workouts/${workoutId}`, { exercises: exercisesRef.current }).catch(() => {});
+    }
+  }, [workoutId]);
+
+  function scheduleSave() {
+    if (saveTimerRef.current) window.clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = window.setTimeout(() => {
+      saveTimerRef.current = null;
+      api.patch(`/workouts/${workoutId}`, { exercises: exercisesRef.current }).catch(() => {});
+    }, AUTOSAVE_DELAY_MS);
+  }
+
+  // Vor strukturellen Server-Änderungen (Satz/Übung hinzufügen/löschen)
+  // erst die lokalen Eingaben sichern, sonst überschreibt load() sie.
+  async function flushSave() {
+    if (!saveTimerRef.current) return;
+    window.clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = null;
+    await api.patch(`/workouts/${workoutId}`, { exercises: exercisesRef.current });
+  }
+
+  // Workout-Uhr (Strong zeigt die laufende Dauer im Kopf).
+  useEffect(() => {
+    if (!workout || workout.finished_at) return undefined;
+    const tick = window.setInterval(() => setNowMs(Date.now()), 1000);
+    return () => window.clearInterval(tick);
+  }, [workout]);
 
   useEffect(() => {
     setRestTimer(readStoredRestTimer(workoutId));
@@ -96,6 +154,7 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
   }
 
   async function addExercise(ex) {
+    await flushSave();
     await api.post(`/workouts/${workoutId}/exercises`, {
       exercise_id: ex.id,
       name: ex.name,
@@ -108,33 +167,51 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
   }
 
   async function removeExercise(rowId) {
+    await flushSave();
     await api.delete(`/workouts/${workoutId}/exercises/${rowId}`);
     load();
   }
 
   async function addSet(exerciseId) {
+    await flushSave();
     await api.post(`/workouts/${workoutId}/exercises/${exerciseId}/sets`, {});
     load();
   }
 
   function patchSetLocal(exerciseId, setId, patch) {
-    setExercises((prev) => prev.map((e) => e.id !== exerciseId ? e : {
+    const next = exercisesRef.current.map((e) => e.id !== exerciseId ? e : {
       ...e,
       sets: e.sets.map((s) => s.id === setId ? { ...s, ...patch } : s),
-    }));
+    });
+    exercisesRef.current = next;
+    setExercises(next);
+    scheduleSave();
   }
 
   async function deleteSet(exerciseId, setId) {
+    await flushSave();
     await api.delete(`/workouts/${workoutId}/exercises/${exerciseId}/sets/${setId}`);
     load();
   }
 
   async function finishWorkout() {
+    const completedCount = exercises.reduce((n, e) => n + (e.sets || []).filter((s) => s.completed).length, 0);
+    const openCount = exercises.reduce((n, e) => n + (e.sets || []).filter((s) => !s.completed).length, 0);
+    if (completedCount === 0) {
+      alert("Noch kein Satz abgehakt. Hake erledigte Sätze mit ✓ ab, oder verwirf das Workout.");
+      return;
+    }
+    if (openCount > 0 && !confirm(`${openCount} Satz/Sätze nicht abgehakt — werden nicht gewertet. Workout beenden?`)) return;
+    let finished = null;
     setSaving(true);
     try {
       setRestTimer(null);
+      if (saveTimerRef.current) {
+        window.clearTimeout(saveTimerRef.current);
+        saveTimerRef.current = null;
+      }
       const finishedAt = new Date().toISOString();
-      await api.patch(`/workouts/${workoutId}`, {
+      const patch = {
         exercises,
         finished_at: finishedAt,
         sessionState: "completed",
@@ -143,6 +220,7 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
             .filter((set) => set.completed)
             .map((set) => ({
               exercise_id: exercise.exercise_id,
+              name: exercise.name,
               setId: set.id,
               metricType:
                 exercise.trackingType === "weight_reps" ? "weight_reps"
@@ -157,10 +235,26 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
               completedAt: finishedAt,
             }))
         ),
-      });
+      };
+      await api.patch(`/workouts/${workoutId}`, patch);
+      const { exercises: _ignored, ...meta } = patch;
+      finished = { ...workout, ...meta, id: workoutId };
     } finally {
       setSaving(false);
     }
+    if (readActiveWorkout()?.id === workoutId) writeActiveWorkout(null);
+    setSummary({ workout: finished, prs: workoutPRs(finished, allWorkouts) });
+  }
+
+  async function discardWorkout() {
+    if (!confirm("Workout verwerfen? Alle Sätze dieses Workouts werden gelöscht.")) return;
+    if (saveTimerRef.current) {
+      window.clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+    }
+    setRestTimer(null);
+    await api.delete(`/workouts/${workoutId}`);
+    if (readActiveWorkout()?.id === workoutId) writeActiveWorkout(null);
     onFinished();
   }
 
@@ -198,7 +292,16 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
 
   const excludeIds = exercises.map((e) => e.exercise_id);
 
+  if (summary) {
+    return <WorkoutSummary workout={summary.workout} prs={summary.prs} onDone={onFinished} />;
+  }
+
   if (!workout) return <div className="flex items-center justify-center h-screen text-fit-muted text-sm">Lädt…</div>;
+
+  const startedMs = Date.parse(workout.started_at);
+  const elapsedLabel = workout.finished_at || !Number.isFinite(startedMs) ? null : formatClock(nowMs - startedMs);
+  const detailEntries = detailKey ? history.get(detailKey) || [] : [];
+  const detailName = detailKey ? (exercises.find((e) => (e.exercise_id || e.name) === detailKey)?.name || detailKey) : "";
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
@@ -208,6 +311,11 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
         </button>
         <div className="flex-1 min-w-0">
           <h1 className="text-xl font-bold tracking-tight truncate">{workout.name}</h1>
+          {elapsedLabel && (
+            <div className="flex items-center gap-1 text-xs font-mono text-fit-muted">
+              <Timer size={12} /> {elapsedLabel}
+            </div>
+          )}
         </div>
         <button
           disabled={saving || exercises.length === 0}
@@ -259,6 +367,8 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
             <ExerciseBlock
               key={ex.id}
               ex={ex}
+              previousSets={previousSetsFor(history, ex.exercise_id || ex.name, workoutId)}
+              onShowHistory={() => setDetailKey(ex.exercise_id || ex.name)}
               onAddSet={() => addSet(ex.id)}
               onPatchSet={(setId, patch) => patchSetLocal(ex.id, setId, patch)}
               onDeleteSet={(setId) => deleteSet(ex.id, setId)}
@@ -270,6 +380,20 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
             />
           ))}
         </div>
+      )}
+
+      {!workout.finished_at && (
+        <button
+          onClick={discardWorkout}
+          disabled={saving}
+          className="mt-8 w-full flex items-center justify-center gap-2 py-3 rounded-xl text-fit-red bg-red-500/10 hover:bg-red-500/20 text-sm font-semibold transition-colors disabled:opacity-50"
+        >
+          <Trash2 size={14} /> Workout verwerfen
+        </button>
+      )}
+
+      {detailKey && (
+        <ExerciseDetail name={detailName} entries={detailEntries} onClose={() => setDetailKey(null)} />
       )}
     </div>
   );

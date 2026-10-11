@@ -143,3 +143,43 @@ Sektion) aufgeklappt ist, und welches Plan-Template innerhalb davon
 WorkoutSession-Ebene (`view`/`id`) ist verlinkbar.
 - Quick-Complete für Coach im Firestore-Modus (siehe oben) — bewusst
   deaktiviert statt unsicher gebaut.
+
+---
+
+## Strong-App-Modus (`plan.html` → `StrongApp.jsx`, 2026-10-11)
+
+Der standalone Plan-Build (`npm run build:firebase:plan`, vos-plan.web.app)
+läuft jetzt als Strong-artige App mit Tab-Leiste unten:
+
+| Tab | Datei | Inhalt |
+|-----|-------|--------|
+| Profil | `ProfileView.jsx` | Gesamt-Workouts/-Volumen/-Zeit, "Workouts pro Woche" (8 Wochen) |
+| Verlauf | `HistoryView.jsx` | abgeschlossene Workouts nach Monat, Dauer/Volumen/Rekorde/bester Satz, Detail + Löschen |
+| Workout | `index.jsx` (PlanView) | Vorlagen, Trainingspläne, leeres Workout — unverändert, nur "controlled" geroutet |
+| Übungen | `ExercisesView.jsx` | alle trainierten Übungen A–Z → `components/ExerciseDetail.jsx` (Verlauf/Diagramme/Rekorde) |
+
+Neu im laufenden Workout (`WorkoutSession.jsx`, gilt auch im Haupt-App-Plan-Tab):
+- **"Vorher"-Spalte** (`SetRow`/`ExerciseBlock`, `previousSets`): indexgleicher
+  Satz der letzten abgeschlossenen Ausführung, antippen übernimmt die Werte;
+  hat Vorrang vor Template-Ghost-Werten beim Abhaken leerer Sätze.
+- **Workout-Uhr** im Kopf, **minimierte Leiste** über der Tab-Bar, solange ein
+  Workout läuft (`lib/activeWorkout.js`, localStorage-Zeiger, wird beim
+  Start der App gegen den Server geprüft).
+- **Auto-Save** der Satz-Eingaben (1,2 s gebündelt, vor Satz/Übung
+  hinzufügen/löschen sofort) — vorher gingen Eingaben bis "Fertig" nur im
+  React-State verloren, wenn die App zuging.
+- **Abschluss-Screen** (`components/WorkoutSummary.jsx`): Dauer, Volumen,
+  Sätze, neue Rekorde, bester Satz pro Übung. Nicht abgehakte Sätze werden
+  vor dem Beenden abgefragt; "Workout verwerfen" löscht das Workout.
+- Übungsname antippen → Verlauf/Diagramme/Rekorde dieser Übung.
+
+Datenquelle für alles: `eventLog` auf dem Workout-Meta-Dokument
+(`lib/history.js`, reine Funktionen), d.h. ein `GET /workouts` reicht — kein
+neues Firestore-Schema. `eventLog`-Einträge tragen seit diesem Stand
+zusätzlich `name` (additiv); ältere Einträge zeigen einen aus `exercise_id`
+abgeleiteten Namen. Rekorde (geschätztes 1RM nach Epley, Gewicht,
+Satzvolumen) zählen erst ab der zweiten Ausführung einer Übung.
+
+Bewusst nicht übernommen: Strongs "Measure"-Tab (Körperwerte leben im
+Fitness-Hauptprojekt), Supersets, Plate-Calculator. Der Coach-Login-Gate in
+`plan-main.jsx` bleibt unverändert.
