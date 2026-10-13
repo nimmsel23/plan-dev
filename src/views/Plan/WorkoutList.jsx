@@ -7,6 +7,7 @@ import TrainingPlans from "./TrainingPlans.jsx";
 import RoutineFolder from "./components/RoutineFolder.jsx";
 import CalisthenicsSkillsSection from "./components/CalisthenicsSkillsSection.jsx";
 import NextUpCard from "./components/NextUpCard.jsx";
+import { groupRoutinesIntoFolders } from "./lib/splitFolders.js";
 
 // Reine Orchestrierung: lädt Templates+Workouts, hält die Aktionen
 // (quickComplete/rename/setCategory/delete), rendert die Struktur-Bausteine
@@ -40,16 +41,10 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout, onSettings }
   const nextRoutine = !loading ? pickNextRoutine(routines, workouts) : null;
 
   const plainRoutines = routines.filter((r) => r.category !== "calisthenics-skill");
-  const folders = {};
-  const uncategorized = [];
-  for (const r of plainRoutines) {
-    if (r.category) {
-      (folders[r.category] ||= []).push(r);
-    } else {
-      uncategorized.push(r);
-    }
-  }
-  const folderNames = Object.keys(folders).sort();
+  // Ordner = gesetzte Kategorie, sonst automatisch erkannter Split aus dem
+  // Namen (lib/splitFolders.js) — "Push A"/"Brust & Trizeps" landen von
+  // selbst im Push-Ordner.
+  const { folders, folderNames, uncategorized } = groupRoutinesIntoFolders(plainRoutines);
 
   async function quickStart() {
     const d = await api.post("/workouts", {});
