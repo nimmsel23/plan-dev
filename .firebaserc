@@ -5,10 +5,14 @@
   "targets": {
     "fitness-aos": {
       "hosting": {
+        "plan": [
+          "vos-plan"
+        ],
         "client": [
           "fitness-aos"
         ]
       }
     }
-  }
+  },
+  "etags": {}
 }

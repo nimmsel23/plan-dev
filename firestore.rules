@@ -1,86 +1,62 @@
 rules_version = '2';
+
+// Plan-App Rules (plan-dev / vos-plan).
+// This file is the app-owned rule contract, for documentation only — it is
+// never deployed from here (firebase.json has no firestore block on purpose).
+// The deployable ruleset is registered in ~/vitalos/firestore.rules and
+// deployed only from ~/vitalos.
+//
+// Plan reuses the same fitness/{uid}/... paths as fitness-dev/coach-dev
+// (routines, wf_workouts, macrocycles, workouts, sessions, journal,
+// habitJournals, settings, plan) — no new collections, already fully
+// covered by the consolidated SSOT ruleset.
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ── Coach UID ────────────────────────────────────────────────────────────
-    // Hardcoded alpha/coach account — can read all user data via collectionGroup.
+    function authed() {
+      return request.auth != null;
+    }
+    function owner(uid) {
+      return authed() && request.auth.uid == uid;
+    }
     function isCoach() {
-      return request.auth != null && request.auth.uid == '59ole36uNpNwml5H6VDYCXyCME92';
+      return authed() && (
+        request.auth.token.coach == true
+        || request.auth.uid == '59ole36uNpNwml5H6VDYCXyCME92'
+        || (exists(/databases/$(database)/documents/roles/$(request.auth.uid))
+            && get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.role == 'coach')
+      );
     }
 
-    // ── Own data ─────────────────────────────────────────────────────────────
-    function isOwner(uid) {
-      return request.auth != null && request.auth.uid == uid;
+    match /roles/{uid} {
+      allow read: if owner(uid);
+      allow write: if false;
     }
 
-    // ── Global KB (read-only for all authenticated users) ────────────────────
-    match /fitness/kb/{document=**} {
-      allow read:  if request.auth != null;
-      allow write: if isCoach();
-    }
-
-    // ── Per-user data ─────────────────────────────────────────────────────────
+    // Coach needs full direct access to client fitness records to build and
+    // assign routines/macrocycles/workouts.
     match /fitness/{uid}/{document=**} {
-      // User reads/writes their own data; coach reads all
-      allow read:  if isOwner(uid) || isCoach();
-      allow write: if isOwner(uid) || isCoach();
+      allow read, write: if owner(uid) || isCoach();
     }
 
-    // ── collectionGroup queries (Coach-only: global feed + inbox sweep) ───────
-    // Firestore requires explicit collectionGroup rules for cross-user queries.
-    match /{path=**}/sessions/{sessionId} {
-      allow read: if isCoach() || (request.auth != null && resource.data.userId == request.auth.uid);
-    }
-    match /{path=**}/inbox/{itemId} {
-      allow read:  if isCoach() || (request.auth != null && resource.data.userId == request.auth.uid);
-      // Users always write inbox via direct path /fitness/{uid}/inbox (covered by per-user rule).
-      // CollectionGroup writes are coach-only (approve/reject).
+    // Curated KB: clients can read, only Coach can edit.
+    match /fitness/kb/{document=**} {
+      allow read: if authed();
       allow write: if isCoach();
     }
-    match /{path=**}/profile/{doc} {
-      // User reads own profile via /fitness/{uid}/... (per-user rule above).
-      // CollectionGroup access is coach-only — no leaking profiles across users.
-      allow read: if isCoach();
-    }
-    match /{path=**}/habitJournals/{doc} {
-      allow read:  if isCoach() || (request.auth != null && resource.data.userId == request.auth.uid);
-      // request.resource.data = incoming document (works on create + update).
-      // resource.data = existing document (fails on create — document doesn't exist yet).
-      allow write: if isCoach() || (request.auth != null && request.resource.data.userId == request.auth.uid);
-    }
 
-    // ── Fuel: Nutrition & Supplements ────────────────────────────────────────
-    match /nutrition/{uid}/meta/catalog {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+    match /{path=**}/routines/{doc} {
+      allow read, write: if isCoach();
     }
-    match /supplements/{uid}/meta/catalog {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+    match /{path=**}/workouts/{doc} {
+      allow read, write: if isCoach();
     }
-    match /nutrition/public/meta/micros {
-      allow read: if request.auth != null;
-      allow write: if false; // Admin only via SDK
+    match /{path=**}/wf_workouts/{doc} {
+      allow read, write: if isCoach();
     }
-    match /nutrition/{uid}/logs/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
-    }
-    match /supplements/{uid}/logs/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
-    }
-
-    // ── Relax ─────────────────────────────────────────────────────────────────
-    match /relax/{uid}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
-    }
-
-    // ── Shared Knowledge ─────────────────────────────────────────────────────
-    match /knowledge/{document=**} {
-      allow read: if request.auth != null;
-      allow write: if false; // Admin SDK only
-    }
-    match /knowledge_tasks/{taskId} {
-      allow read:   if request.auth != null;
-      allow create: if request.auth != null;
-      allow update: if false; // Admin SDK only
+    match /{path=**}/macrocycles/{doc} {
+      allow read, write: if isCoach();
     }
   }
 }

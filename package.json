@@ -27,6 +27,8 @@
     "build:coaching-notes": "node scripts/build-coaching-notes.mjs",
     "build:firebase": "npm run build:firebase:client",
     "build:firebase:client": "vite build --mode firebase --outDir dist-firebase && node scripts/stamp-sw.mjs dist-firebase && node scripts/snapshot.mjs dist-firebase",
+    "build:firebase:plan": "vite build --mode plan --outDir dist-plan && node scripts/prepare-plan-dist.mjs",
+    "deploy:firebase:plan": "firebase deploy --only hosting:plan",
     "stamp:sw": "node scripts/stamp-sw.mjs dist-firebase",
     "preview:firebase": "firebase hosting:channel:deploy preview --expires 1h",
     "deploy:firebase": "firebase deploy --only hosting:client",
