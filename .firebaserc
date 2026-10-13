@@ -7,9 +7,6 @@
       "hosting": {
         "plan": [
           "vos-plan"
-        ],
-        "client": [
-          "fitness-aos"
         ]
       }
     }

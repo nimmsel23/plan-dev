@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Dumbbell, Plus, Settings2 } from "lucide-react";
+import { Dumbbell, Plus, Settings2, FolderPlus } from "lucide-react";
 import { api } from "./api.js";
 import { pickNextRoutine } from "../../lib/habitProgress.js";
 import { quickCompleteRoutine } from "../../lib/quickComplete.js";
@@ -13,12 +13,26 @@ import { groupRoutinesIntoFolders } from "./lib/splitFolders.js";
 // (quickComplete/rename/setCategory/delete), rendert die Struktur-Bausteine
 // aus components/. Kein UI-Markup mehr direkt hier außer Header/Schnellstart
 // (zu klein, um eine eigene Datei zu rechtfertigen).
+const EMPTY_FOLDERS_KEY = "wf-empty-folders";
+
+function loadEmptyFolders() {
+  try {
+    return JSON.parse(localStorage.getItem(EMPTY_FOLDERS_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+
 export default function WorkoutList({ onEditRoutine, onOpenWorkout, onSettings }) {
   const [routines, setRoutines] = useState([]);
   const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [completingId, setCompletingId] = useState(null);
   const [toast, setToast] = useState('');
+  // Ordner bestehen implizit über `routine.category` — ein frisch angelegter,
+  // noch leerer Ordner hätte sonst keine Repräsentation. Namen leerer Ordner
+  // werden deshalb zusätzlich lokal gemerkt, bis die erste Routine hineinzieht.
+  const [emptyFolders, setEmptyFolders] = useState(loadEmptyFolders);
 
   const showToast = (msg) => {
     setToast(msg);
@@ -43,8 +57,13 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout, onSettings }
   const plainRoutines = routines.filter((r) => r.category !== "calisthenics-skill");
   // Ordner = gesetzte Kategorie, sonst automatisch erkannter Split aus dem
   // Namen (lib/splitFolders.js) — "Push A"/"Brust & Trizeps" landen von
-  // selbst im Push-Ordner.
-  const { folders, folderNames, uncategorized } = groupRoutinesIntoFolders(plainRoutines);
+  // selbst im Push-Ordner. Zusätzlich manuell angelegte, noch leere Ordner
+  // (emptyFolders) einmischen, die sonst keine Repräsentation hätten.
+  const { folders, folderNames: detectedFolderNames, uncategorized } = groupRoutinesIntoFolders(plainRoutines);
+  for (const name of emptyFolders) {
+    if (!folders[name]) folders[name] = [];
+  }
+  const folderNames = Array.from(new Set([...detectedFolderNames, ...emptyFolders]));
 
   async function quickStart() {
     const d = await api.post("/workouts", {});
@@ -90,6 +109,22 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout, onSettings }
     if (!confirm("Routine löschen?")) return;
     await api.delete(`/routines/${id}`);
     load();
+  }
+
+  function createFolder() {
+    const name = prompt("Name des neuen Ordners (z.B. Push, Pull, Legs):");
+    if (!name || !name.trim()) return;
+    const trimmed = name.trim();
+    if (folders[trimmed]) { showToast("Ordner existiert bereits"); return; }
+    const next = [...emptyFolders, trimmed];
+    setEmptyFolders(next);
+    localStorage.setItem(EMPTY_FOLDERS_KEY, JSON.stringify(next));
+  }
+
+  function deleteEmptyFolder(name) {
+    const next = emptyFolders.filter((n) => n !== name);
+    setEmptyFolders(next);
+    localStorage.setItem(EMPTY_FOLDERS_KEY, JSON.stringify(next));
   }
 
   async function newRoutine() {
@@ -154,17 +189,25 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout, onSettings }
           <h2 className="text-sm font-bold text-fit-muted uppercase tracking-wide">
             Meine Routinen {!loading && `(${plainRoutines.length})`}
           </h2>
-          <button
-            onClick={newRoutine}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-fit-accent hover:bg-fit-accent/10 text-sm font-medium transition-colors"
-          >
-            <Plus size={15} strokeWidth={2.7} /> Neue Routine
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={createFolder}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-fit-muted hover:text-fit-ink hover:bg-fit-bg2 text-sm font-medium transition-colors"
+            >
+              <FolderPlus size={15} strokeWidth={2.4} /> Ordner
+            </button>
+            <button
+              onClick={newRoutine}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-fit-accent hover:bg-fit-accent/10 text-sm font-medium transition-colors"
+            >
+              <Plus size={15} strokeWidth={2.7} /> Neue Routine
+            </button>
+          </div>
         </div>
 
         {loading ? (
           <div className="text-center py-16 text-fit-muted text-sm">Lädt…</div>
-        ) : plainRoutines.length === 0 ? (
+        ) : plainRoutines.length === 0 && folderNames.length === 0 ? (
           <div className="text-center py-16 text-fit-muted">
             <Dumbbell size={36} className="mx-auto mb-3 opacity-30" />
             <p className="text-sm">Noch keine Routinen. Erstelle deine erste Vorlage.</p>
@@ -177,6 +220,7 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout, onSettings }
                 label={name}
                 routines={folders[name]}
                 defaultOpen
+                onDeleteFolder={deleteEmptyFolder}
                 onEdit={onEditRoutine} onStart={startFromRoutine} onRename={renameRoutine}
                 onDelete={deleteRoutine} onQuickComplete={quickComplete} onSetCategory={setCategory}
                 completingId={completingId}
