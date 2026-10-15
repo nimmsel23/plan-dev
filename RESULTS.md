@@ -1344,3 +1344,13 @@ Validiert: kompletter ESLint-Lauf, `npm run build:firebase:plan`, Shell-Render-S
 und `git diff --check`. Build meldet große Chunks. Kein angemeldeter Browser-Test,
 kein Push, Merge oder Deployment. pnpm war durch einen schreibgeschützten
 Engine-Store blockiert; vorhandene lokale Tools und npm wurden verwendet.
+
+## 2026-10-16: Plan VitalOS-Shell veröffentlicht
+
+Auf ausdrücklichen Auftrag Feature-Branch `agent/plan-vitalos-shell` nach `dev`
+fast-forward gemergt und beide Branches zu origin gepusht (Release `1bfa834`).
+Plan-Produktionsbuild erneut erfolgreich; Firebase `hosting:plan` im Projekt
+`fitness-aos` nach https://vos-plan.web.app deployed. Live index.html und alle
+fünf direkt referenzierten JS/CSS-Assets bytegenau mit dist-plan verglichen.
+Kein authentifizierter Browser-Durchlauf. GitHub-Workflow für denselben Commit
+wurde durch den Push gestartet und war beim ersten Check noch in Arbeit.
