@@ -7,7 +7,6 @@
 // erzwungen bekommen.
 
 export * from "./index.firestore.js";
-export { getRelaxSessionHistory } from "@relax/lib/db/firestore/sessions.js";
 
 export async function getNutritionNotesHistory(_limit) { return []; }
 export async function getSupplementsHistory(_limit) { return []; }
