@@ -165,7 +165,7 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout, onSettings }
         <h2 className="text-sm font-bold text-fit-muted uppercase tracking-wide mb-3">Schnellstart</h2>
         <button
           onClick={quickStart}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-fit-accent text-white font-semibold text-sm hover:bg-blue-600 transition-colors"
+          className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-fit-accent text-fit-bg font-semibold text-sm hover:opacity-90 transition-colors"
         >
           <Plus size={18} strokeWidth={3} />
           Leeres Workout starten (ohne Vorlage)

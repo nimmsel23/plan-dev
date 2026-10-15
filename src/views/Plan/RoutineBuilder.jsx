@@ -115,7 +115,7 @@ export default function RoutineBuilder({ routineId, onBack }) {
         </div>
         {hasDirty && (
           <button onClick={savePatches} disabled={saving}
-            className="px-4 py-2 rounded-xl bg-fit-accent text-white text-sm font-semibold hover:bg-blue-600 disabled:opacity-50 transition-colors">
+            className="px-4 py-2 rounded-xl bg-fit-accent text-fit-bg text-sm font-semibold hover:opacity-90 disabled:opacity-50 transition-colors">
             {saving ? "…" : "Speichern"}
           </button>
         )}

@@ -331,7 +331,7 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
             await primeNotificationPermission();
             await finishWorkout();
           }}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-fit-accent text-white text-sm font-semibold hover:bg-blue-600 disabled:opacity-50 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-fit-accent text-fit-bg text-sm font-semibold hover:opacity-90 disabled:opacity-50 transition-colors"
         >
           <Flag size={14} strokeWidth={2.7} /> Fertig
         </button>

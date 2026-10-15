@@ -135,7 +135,7 @@ export default function RoutineCard({ r, onEdit, onStart, onRename, onDelete, on
       <div className="flex items-center gap-2">
         <button
           onClick={() => onStart(r.id)}
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-fit-accent text-white text-sm font-semibold hover:bg-blue-600 transition-colors"
+          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-fit-accent text-fit-bg text-sm font-semibold hover:opacity-90 transition-colors"
         >
           <Play size={14} strokeWidth={2.7} /> Start
         </button>

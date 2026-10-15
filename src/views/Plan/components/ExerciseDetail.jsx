@@ -46,7 +46,7 @@ export default function ExerciseDetail({ name, entries = [], onClose }) {
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`flex-1 rounded-lg py-2 text-xs font-semibold transition-colors ${tab === t.id ? "bg-fit-accent text-white" : "text-fit-muted hover:bg-fit-bg2"}`}
+            className={`flex-1 rounded-lg py-2 text-xs font-semibold transition-colors ${tab === t.id ? "bg-fit-accent text-fit-bg" : "text-fit-muted hover:bg-fit-bg2"}`}
           >
             {t.label}
           </button>

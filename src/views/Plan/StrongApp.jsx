@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { User, History, Plus, Dumbbell, Timer, ChevronUp } from "lucide-react";
+import { Timer, ChevronUp } from "lucide-react";
 import PlanView from "./index.jsx";
 import HistoryView from "./HistoryView.jsx";
 import ExercisesView from "./ExercisesView.jsx";
@@ -8,20 +8,18 @@ import { api } from "./api.js";
 import { formatClock } from "./lib/history.js";
 import { ACTIVE_WORKOUT_EVENT, readActiveWorkout, writeActiveWorkout } from "./lib/activeWorkout.js";
 
-const TABS = [
-  { id: "profile", label: "Profil", icon: User },
-  { id: "history", label: "Verlauf", icon: History },
-  { id: "workout", label: "Workout", icon: Plus },
-  { id: "exercises", label: "Übungen", icon: Dumbbell },
-];
+import PlanSidebar from '../../shell/PlanSidebar.jsx';
+import PlanHeader from '../../shell/PlanHeader.jsx';
+import PlanTabBar from '../../shell/PlanTabBar.jsx';
+import ThemeSheet from '../../shell/ThemeSheet.jsx';
+import { NAV_ITEMS } from '../../shell/NavigationItems.js';
+import { useSettingsStore } from '../../store/index.js';
 
-// Strong-artige App-Hülle für den standalone Plan-Build (plan.html):
-// Tab-Leiste unten (Profil · Verlauf · Workout · Übungen) und — solange ein
-// Workout läuft und man woanders ist — eine Leiste darüber, die zurück ins
-// laufende Workout führt. Der Workout-Tab ist der bestehende PlanView
-// (Vorlagen, Trainingspläne, WorkoutSession), "controlled" geroutet, damit
-// die Leiste direkt ins Workout springen kann.
-export default function StrongApp({ user }) {
+// VitalOS shell; workout routing and active-session state stay owned here.
+export default function StrongApp({ user, onSignOut }) {
+  const { sidebarPinned: pinned, setSidebarPinned } = useSettingsStore();
+  const [themeOpen, setThemeOpen] = useState(false);
+  const [navExpanded, setNavExpanded] = useState(true);
   const [tab, setTab] = useState("workout");
   const [planRoute, setPlanRoute] = useState({ view: null, id: null });
   const [active, setActive] = useState(readActiveWorkout);
@@ -65,25 +63,30 @@ export default function StrongApp({ user }) {
   const startedMs = Date.parse(active?.started_at);
 
   return (
-    <div className={showActiveBar ? "pb-36" : "pb-20"}>
-      {tab === "profile" && <ProfileView user={user} />}
-      {tab === "history" && (
-        <HistoryView onOpenExercise={(key) => { setExerciseKey(key); setTab("exercises"); }} />
-      )}
-      {tab === "workout" && (
-        <PlanView
-          routeView={planRoute.view}
-          routeId={planRoute.id}
-          onRouteChange={(view, id) => setPlanRoute({ view, id })}
-        />
-      )}
-      {tab === "exercises" && <ExercisesView openKey={exerciseKey} onOpenKeyChange={setExerciseKey} />}
-
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-fit-line bg-fit-bg/95 backdrop-blur-xl" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+    <div style={{ '--mobile-nav-height': `calc(var(--nav-grip-h) + var(--safe-bottom)${navExpanded ? ' + var(--tabbar-h)' : ''})` }}>
+      <PlanSidebar active={tab} onNavigate={selectTab} pinned={pinned} setPinned={setSidebarPinned} user={user} onTheme={() => setThemeOpen(true)} onRefresh={() => window.location.reload()} onSignOut={onSignOut} />
+      <div className={`min-w-0 transition-all duration-500 ${pinned ? 'lg:ml-[304px]' : 'lg:ml-[108px]'}`}>
+        <PlanHeader title={NAV_ITEMS.find((item) => item.id === tab)?.label} subtitle="Plan · VitalOS" />
+        <div className="mx-auto max-w-[1600px] px-[var(--safe-left)]" style={{ paddingRight: 'var(--safe-right)', paddingBottom: 'calc(var(--mobile-nav-height) + 88px)' }}>
+          {tab === "profile" && <ProfileView user={user} />}
+          {tab === "history" && (
+            <HistoryView onOpenExercise={(key) => { setExerciseKey(key); setTab("exercises"); }} />
+          )}
+          {tab === "workout" && (
+            <PlanView
+              routeView={planRoute.view}
+              routeId={planRoute.id}
+              onRouteChange={(view, id) => setPlanRoute({ view, id })}
+            />
+          )}
+          {tab === "exercises" && <ExercisesView openKey={exerciseKey} onOpenKeyChange={setExerciseKey} />}
+        </div>
+      </div>
+      <div className={`fixed inset-x-0 z-50 ${pinned ? 'lg:left-[304px]' : 'lg:left-[108px]'}`} style={{ bottom: 'var(--plan-active-bottom, var(--mobile-nav-height))' }}>
         {showActiveBar && (
           <button
             onClick={openActiveWorkout}
-            className="flex w-full items-center gap-3 border-b border-fit-line bg-fit-accent/10 px-4 py-2.5 text-left"
+            className="vos-bar vos-hairline-t flex w-full items-center gap-3 px-4 py-2.5 text-left"
           >
             <ChevronUp size={16} className="text-fit-accent" />
             <div className="min-w-0 flex-1">
@@ -97,19 +100,9 @@ export default function StrongApp({ user }) {
             )}
           </button>
         )}
-        <nav className="mx-auto grid max-w-2xl grid-cols-4">
-          {TABS.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              onClick={() => selectTab(id)}
-              className={`flex flex-col items-center gap-0.5 py-2.5 text-[10px] font-semibold transition-colors ${tab === id ? "text-fit-accent" : "text-fit-muted hover:text-fit-ink"}`}
-            >
-              <Icon size={20} strokeWidth={tab === id ? 2.6 : 2} />
-              {label}
-            </button>
-          ))}
-        </nav>
       </div>
+      <PlanTabBar active={tab} onNavigate={selectTab} expanded={navExpanded} onExpandedChange={setNavExpanded} user={user} onTheme={() => setThemeOpen(true)} onRefresh={() => window.location.reload()} onSignOut={onSignOut} />
+      <ThemeSheet open={themeOpen} onClose={() => setThemeOpen(false)} />
     </div>
   );
 }

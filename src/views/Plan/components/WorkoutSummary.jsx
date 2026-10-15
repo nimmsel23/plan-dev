@@ -53,7 +53,7 @@ export default function WorkoutSummary({ workout, prs = [], onDone }) {
 
       <button
         onClick={onDone}
-        className="w-full rounded-2xl bg-fit-accent py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+        className="w-full rounded-2xl bg-fit-accent py-3.5 text-sm font-semibold text-fit-bg transition-opacity hover:opacity-90"
       >
         Fertig
       </button>

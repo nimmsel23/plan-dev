@@ -183,3 +183,14 @@ Satzvolumen) zählen erst ab der zweiten Ausführung einer Übung.
 Bewusst nicht übernommen: Strongs "Measure"-Tab (Körperwerte leben im
 Fitness-Hauptprojekt), Supersets, Plate-Calculator. Der Coach-Login-Gate in
 `plan-main.jsx` bleibt unverändert.
+
+## VitalOS shell (2026-10-16)
+
+`StrongApp.jsx` owns the four navigation tabs and the active-workout return action.
+It composes `src/shell/PlanSidebar`, `PlanHeader`, `PlanTabBar`, and `ThemeSheet`,
+ported from coach-dev's VitalOS shell. Desktop uses the collapsible glass rail;
+mobile uses five slots (four tabs plus More), with safe-area padding and a
+collapsible navigation bar. The active-workout strip stays above navigation.
+Settings remain in the existing Zustand store, with vital/vital-light defaults;
+existing saved themes are preserved. `plan-main.jsx` owns authentication only
+and no longer loads the legacy coach-console stylesheet.

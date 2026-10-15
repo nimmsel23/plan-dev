@@ -54,3 +54,5 @@ Impuls hierzu: Klient:Matthias fehlende Ambition zum kontinuierlichen Loggen von
 
 ## [x] 2026-10-16: nimmdaniel@gmail.com als Coach freischalten
 Coach-Zugang anhand der verifizierten Firebase-UID ergänzen und zentrale Rolle setzen.
+
+- [x] 2026-10-16: Plan-Frontend auf VitalOS-Shell wie coach-dev umstellen.

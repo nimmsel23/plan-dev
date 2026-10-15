@@ -1329,3 +1329,18 @@ der lokale Server fehlt. `sendToInbox()` queued neue Items zuerst lokal ueber
 
 ## 2026-10-16: Zusätzlicher Coach-Account
 `nimmdaniel@gmail.com` (Firebase-UID `pJay0LeAwDN93Q4NT6i5FNxrQHH2`) in den Coach-Zugangsprüfungen ergänzt. Zentrale Firebase-Rolle `roles/pJay0LeAwDN93Q4NT6i5FNxrQHH2` auf `coach` gesetzt und zurückgelesen; gilt für alle Apps mit dem zentralen Ruleset. Bestehender Coach bleibt freigeschaltet. Kein Push oder Deployment.
+
+## 2026-10-16: Plan übernimmt die VitalOS-Shell
+
+Shell-Bausteine aus coach-dev portiert: einklappbare Desktop-Glas-Sidebar,
+Safe-Area-Header, einklappbare mobile Navigation mit vier Plan-Tabs plus Mehr,
+Theme-Sheet und VitalOS-CSS-Primitives. vital/vital-light sind die Defaults;
+gespeicherte Theme-Einstellungen bleiben erhalten. Legacy coach-console-CSS
+wird im Plan-Einstieg nicht mehr geladen. Workout-Fortsetzen bleibt erreichbar;
+Akzent-Buttons verwenden Theme-Kontrast statt festem Weiß/Blau.
+
+Validiert: kompletter ESLint-Lauf, `npm run build:firebase:plan`, Shell-Render-Smoke
+(Sidebar auf/zu, fünf mobile Slots, inert bei geschlossener Navigation, Theme-Sheet)
+und `git diff --check`. Build meldet große Chunks. Kein angemeldeter Browser-Test,
+kein Push, Merge oder Deployment. pnpm war durch einen schreibgeschützten
+Engine-Store blockiert; vorhandene lokale Tools und npm wurden verwendet.

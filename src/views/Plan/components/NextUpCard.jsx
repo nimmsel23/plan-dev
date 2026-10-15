@@ -41,7 +41,7 @@ export default function NextUpCard({ routine, onQuickComplete, onStart, completi
           <button
             onClick={() => onQuickComplete(routine)}
             disabled={completing}
-            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-fit-accent text-white text-sm font-semibold hover:bg-blue-600 transition-colors disabled:opacity-50"
+            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-fit-accent text-fit-bg text-sm font-semibold hover:opacity-90 transition-colors disabled:opacity-50"
           >
             <Check size={16} strokeWidth={2.7} /> {completing ? 'Speichert…' : `${routine.name} erledigt`}
           </button>
