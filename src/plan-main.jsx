@@ -9,7 +9,10 @@ import '@src/styles/coach-console.css'
 import { UserProvider, useUser } from './contexts/UserContext.jsx'
 import { SettingsProvider } from './contexts/SettingsContext.jsx'
 
-const COACH_UIDS = new Set(['59ole36uNpNwml5H6VDYCXyCME92'])
+const COACH_UIDS = new Set([
+  '59ole36uNpNwml5H6VDYCXyCME92',
+  'pJay0LeAwDN93Q4NT6i5FNxrQHH2', // nimmdaniel@gmail.com (Firebase Auth)
+])
 
 function isCoachUser(user) {
   if (!user) return false
