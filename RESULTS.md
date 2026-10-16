@@ -1,3 +1,12 @@
+# Plan: Splash, plan-sw.js und SW-Register aus @vos/mini-app-shell (2026-10-16)
+
+- Splash, Service Worker und SW-Register kommen aus `@vos/mini-app-shell` (SSOT `~/vitalos/packages/mini-app-shell`, hier vendored unter `scripts/mini-app-shell/` — nicht editieren, Aktualisieren/Drift: `node ~/vitalos/packages/mini-app-shell/cli.mjs vendor scripts/mini-app-shell [--check]`; Konfig `mini-app.json`).
+- `plan.html` ohne Inline-Splash/-Register; `npm run build:firebase:plan` stempelt `dist-plan` (Splash, Register mit `window.__swRegistration`, generierter `plan-sw.js`).
+- Cache jetzt pro Build versioniert (`vos-plan-v<build>`; vorher statisch `vos-plan-v1` → Updates nicht erkennbar). Dateiname `plan-sw.js` bleibt.
+  Workout-Notifications (`SHOW_/CLEAR_WORKOUT_TIMER_NOTIFICATION`) im SW — die App sendet sie bereits (restTimer, SessionGateCard).
+- Alter SW: `docs/archive/plan-sw.static-v1.js`. Commit `67e3c8f` auf `dev`, Build geprüft, nicht gepusht, nicht auf Gerät getestet.
+- Release wie fitness-dev: `vos-release plan` (dev → vitalos). Erwarteter Konflikt `.githooks/pre-push` → dev gewinnt (Preflight in vos-release); der Fitness-KB-Push-Block im dev-Hook ist für Plan unpassend, ggf. bereinigen.
+
 # Session Gate als "Mission-Konsole" neu gestaltet, Release nach vitalos (2026-09-24)
 
 Redesign des Session-Gate-Einstiegs (`/frontend-design`-Skill) plus
