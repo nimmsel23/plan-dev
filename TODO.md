@@ -56,3 +56,8 @@ Impuls hierzu: Klient:Matthias fehlende Ambition zum kontinuierlichen Loggen von
 Coach-Zugang anhand der verifizierten Firebase-UID ergänzen und zentrale Rolle setzen.
 
 - [x] 2026-10-16: Plan-Frontend auf VitalOS-Shell wie coach-dev umstellen.
+# [ ] Plan konsequent in Strong-Richtung ausbauen
+
+Produktgrundlage: `INSPIRATION.md` (2026-10-16). Yuhonas/VOS-Atlas-Vertrag
+verifizieren, vollständigen Vorlagen-/Workout-/Verlauf-Ablauf herstellen und
+Coach-Trainingspläne im selben Logger für Klienten nutzbar machen.

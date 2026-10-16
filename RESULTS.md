@@ -1363,3 +1363,9 @@ Plan-Produktionsbuild erneut erfolgreich; Firebase `hosting:plan` im Projekt
 fünf direkt referenzierten JS/CSS-Assets bytegenau mit dist-plan verglichen.
 Kein authentifizierter Browser-Durchlauf. GitHub-Workflow für denselben Commit
 wurde durch den Push gestartet und war beim ersten Check noch in Arbeit.
+## 2026-10-16: Strong-Inspiration für Plan dokumentiert
+
+`INSPIRATION.md` angelegt: Produktablauf, Begriffe, Workout-Interaktion,
+Yuhonas-/VOS-Atlas-Grenzen, Coach-zu-Klient-Zuweisung, beobachtete Brüche,
+Umsetzungsreihenfolge und Abnahmeszenarien. Implementierung als offene Aufgabe
+in TODO.md erfasst; dieses Ergebnis umfasst die Dokumentation.
