@@ -1,0 +1,48 @@
+import { registerHooks } from 'node:module';
+import test from 'node:test';
+import assert from 'node:assert/strict';
+const fakeUrl = new URL('./firestore-double.mjs', import.meta.url).href;
+registerHooks({ resolve(specifier, context, next) {
+  if (specifier === 'firebase/firestore') return { url: fakeUrl, shortCircuit: true };
+  if (specifier.endsWith('/firebase.js')) return { url: 'data:text/javascript,export const db = {};', shortCircuit: true };
+  if (specifier === './core.js') return { url: 'data:text/javascript,export const getUid = () => "coach";', shortCircuit: true };
+  return next(specifier, context);
+} });
+const routines = await import('../../src/lib/db/firestore/routines.js');
+const workouts = await import('../../src/lib/db/firestore/workouts.js');
+const macros = await import('../../src/lib/db/firestore/macrocycles.js');
+const fake = await import(fakeUrl);
+
+test('coach edits the chosen client; plan snapshot becomes independent normal workout', async () => {
+  const { id } = await routines.createRoutine({ name: 'Push A' }, 'client');
+  const ex = { exercise_id: 'yuhonas_bench', name: 'Bench', yuhonas_id: 'Barbell_Bench_Press_-_Medium_Grip', notes: 'Coach cue', instructions: ['Control the bar.'], rest_seconds: 0, templateSets: [{ targetReps: '8-12', targetWeight: 60 }] };
+  await routines.addRoutineExercise(id, ex, 'client');
+  await routines.updateRoutine(id, { name: 'Push B' }, 'client');
+  assert.equal((await routines.listRoutines()).routines.length, 0);
+  assert.equal((await routines.listRoutines('client')).routines.length, 1);
+  const { routine } = await routines.getRoutine(id, 'client');
+  assert.equal(routine.name, 'Push B');
+  const plan = await macros.createMacrocycle('client', { name: 'PPL', coachUid: 'coach', status: 'draft' });
+  await assert.rejects(macros.publishMacrocycle('client', plan.id));
+  const updated = await macros.addRoutine('client', plan.id, { label: routine.name, sourceTemplateId: id, targetCount: 1, targetPeriodDays: 7, exercises: routine.exercises });
+  const published = await macros.publishMacrocycle('client', plan.id);
+  assert.equal(published.status, 'published');
+  const created = await workouts.createWorkout({ routine_id: id, sourcePlanId: plan.id, routine_snapshot: { name: routine.name, exercises: updated.routines[0].exercises } }, 'client');
+  await routines.updateRoutineExercise(id, routine.exercises[0].id, { name: 'Changed afterwards' }, 'client');
+  const { workout } = await workouts.getWorkout(created.id, 'client');
+  assert.equal(workout.exercises[0].name, 'Bench');
+  assert.equal(workout.exercises[0].notes, 'Coach cue');
+  assert.equal(workout.exercises[0].rest_seconds, 0);
+  assert.deepEqual(workout.exercises[0].instructions, ['Control the bar.']);
+  assert.equal(workout.sourcePlanId, plan.id);
+  assert.equal(workout.exercises[0].sets[0].completed, false);
+  assert.equal(workout.exercises[0].sets[0].reps, null);
+  fake.failCommit();
+  await assert.rejects(workouts.updateWorkout(created.id, { finished_at: '2026-10-16', exercises: workout.exercises, eventLog: [{ reps: 8 }] }, 'client'), /denied/);
+  assert.equal((await workouts.getWorkout(created.id, 'client')).workout.finished_at, null);
+  await workouts.updateWorkout(created.id, { finished_at: '2026-10-16', exercises: workout.exercises, eventLog: [{ reps: 8 }] }, 'client');
+  assert.equal((await workouts.listWorkouts('client')).workouts[0].eventLog[0].reps, 8);
+  await routines.updateRoutine(id, { exercises: [{ ...ex, name: 'Replacement' }] }, 'client');
+  assert.equal((await routines.getRoutine(id, 'client')).routine.exercises.length, 1);
+  assert.equal((await routines.getRoutine(id, 'client')).routine.exercises[0].name, 'Replacement');
+});

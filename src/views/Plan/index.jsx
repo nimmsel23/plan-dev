@@ -30,11 +30,9 @@ export default function PlanView({ routeView, routeId, onRouteChange }) {
     <div className="max-w-2xl mx-auto">
       {route.view === 'list' && (
         <>
-          <AssignedPlans />
           <WorkoutList
             onEditRoutine={(id) => setRoute({ view: 'routine', routineId: id })}
             onOpenWorkout={(id) => setRoute({ view: 'workout', workoutId: id })}
-            onSettings={() => {}}
           />
         </>
       )}

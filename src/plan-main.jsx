@@ -8,16 +8,6 @@ import '@src/styles.css'
 import { UserProvider, useUser } from './contexts/UserContext.jsx'
 import { SettingsProvider } from './contexts/SettingsContext.jsx'
 
-const COACH_UIDS = new Set([
-  '59ole36uNpNwml5H6VDYCXyCME92',
-  'pJay0LeAwDN93Q4NT6i5FNxrQHH2', // nimmdaniel@gmail.com (Firebase Auth)
-])
-
-function isCoachUser(user) {
-  if (!user) return false
-  return COACH_UIDS.has(user.uid) || String(user.email || '').includes('alpha')
-}
-
 function PlanShell() {
   const { user, authLoading, signIn, signInEmail, signUpEmail, signOut } = useUser()
   const [authEmail, setAuthEmail] = useState('')
@@ -46,7 +36,7 @@ function PlanShell() {
     )
   }
 
-  const allowed = isCoachUser(user)
+  const allowed = Boolean(user)
 
   return (
     <ErrorBoundary>
@@ -54,7 +44,7 @@ function PlanShell() {
 
         {allowed ? (
           <main className="min-w-0">
-            <StrongApp user={user} onSignOut={signOut} />
+            <StrongApp key={user.uid || "local"} user={user} onSignOut={signOut} />
           </main>
         ) : (
           <main className="mx-auto flex min-h-[calc(100vh-65px)] max-w-lg flex-col items-center justify-center px-4 py-12 text-center">
@@ -62,7 +52,7 @@ function PlanShell() {
               <ClipboardList size={34} className="mx-auto mb-4 text-fit-accent" />
               <h1 className="text-2xl font-semibold tracking-tight">Plan-Zugang</h1>
               <p className="mt-3 text-sm text-fit-dim">
-                Melde dich mit einem Coach-Account an, um Trainingspläne für Klienten zu erstellen.
+                Melde dich an, um Workouts zu protokollieren und deine Trainingspläne zu öffnen.
               </p>
               <button
                 type="button"
