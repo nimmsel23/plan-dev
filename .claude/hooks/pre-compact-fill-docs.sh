@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# PreCompact hook — plan-dev, repo-lokal (registriert in
+# PreCompact hook — repo-lokal (identische Kopie in fitness-dev, coach-dev, plan-dev, 6pack-dev; REPO wird aus dem Skriptpfad abgeleitet) (registriert in
 # .claude/settings.json, NICHT in ~/.claude/settings.json). Zweck: ein
 # Handoff-Mechanismus, damit ein ANDERER Agent (neue Session, nach einem
 # Compact) nahtlos weiterarbeiten kann, ohne den wegkomprimierten Kontext
@@ -33,7 +33,7 @@
 # Auto-Mode-Classifier zwei Schreibversuche zuvor blockiert hatte.
 set -uo pipefail
 
-REPO="/home/alpha/plan-dev"
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"   # repo-agnostisch: Skript liegt in <repo>/.claude/hooks/
 LOCK="$REPO/.claude/hooks/.fill-docs.lock"
 LOG="$REPO/.claude/hooks/pre-compact-fill-docs.log"
 GEMINI_ENV="$HOME/.env/gemini.env"
