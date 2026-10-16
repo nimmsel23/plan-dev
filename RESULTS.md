@@ -1404,3 +1404,10 @@ werden weiterhin gemeldet. Details und bekannte Grenzen stehen in
 Keine echten Klientendaten geschrieben, kein authentifizierter Firebase-Durchlauf,
 kein Service-Neustart, Push, Merge oder Deployment. Lokale Backend-Dienste benötigen
 den aktualisierten Python-Stand beim nächsten regulären Neustart/Release.
+
+Abschlussprüfung: Auch der verpflichtende Pre-Commit-Hook hat den vollständigen
+Standard-Build erfolgreich ausgeführt. Der Engine-Store-Fehler wurde durch
+`npm_config_manage_package_manager_versions=false` für die vorhandene pnpm-Version
+umgangen; kein Hook wurde deaktiviert. Companion-Backend-Commit in fitness-dev:
+`77d6963`. Plan-Funktionscommit: `0643b99`. Die temporären Browser-Testprozesse
+wurden nach dem erfolgreichen Durchlauf beendet.
