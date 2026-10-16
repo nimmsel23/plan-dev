@@ -1,0 +1,20 @@
+{
+  "apps": {
+    "plan": {
+      "name": "VitalOS Plan",
+      "short": "Plan",
+      "description": "Trainingspläne bauen und verwalten",
+      "accent": "#5b8cff",
+      "html": "index.html",
+      "manifest": "plan-manifest.webmanifest",
+      "splash": { "icon": "./plan-icon-192.png" },
+      "register": { "expose": true },
+      "sw": {
+        "file": "plan-sw.js",
+        "prefix": "vos-plan-",
+        "shell": ["./", "./index.html", "./plan-manifest.webmanifest", "./plan-icon-192.png"],
+        "extras": ["workout-notifications"]
+      }
+    }
+  }
+}

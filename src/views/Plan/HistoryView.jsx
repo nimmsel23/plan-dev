@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Clock, Dumbbell, Trophy, Trash2, X, History } from "lucide-react";
+import { Clock, Dumbbell, Trophy, Trash2, X, History, Play } from "lucide-react";
 import { api } from "./api.js";
 import {
   finishedWorkouts, workoutTotals, groupWorkoutSets, bestSet, formatSet,
@@ -16,9 +16,11 @@ function dayLabel(iso) {
 
 // Strong-"Verlauf": abgeschlossene Workouts nach Monat, je Karte Dauer,
 // Volumen, Rekorde und bester Satz pro Übung. Tippen öffnet alle Sätze.
-export default function HistoryView({ onOpenExercise }) {
+export default function HistoryView({ onOpenExercise, onRepeat }) {
   const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
   const [openId, setOpenId] = useState(null);
 
   async function load() {
@@ -26,7 +28,7 @@ export default function HistoryView({ onOpenExercise }) {
     try {
       const d = await api.get("/workouts");
       setWorkouts(d.workouts || []);
-    } finally {
+    } catch (err) { setError(err.message); } finally {
       setLoading(false);
     }
   }
@@ -60,6 +62,7 @@ export default function HistoryView({ onOpenExercise }) {
     <div className="max-w-2xl mx-auto px-4 py-8">
       <h1 className="mb-6 text-2xl font-bold tracking-tight">Verlauf</h1>
 
+      {error && <p role="alert" className="mb-4 text-sm text-fit-red">{error}</p>}
       {loading ? (
         <div className="py-16 text-center text-sm text-fit-muted">Lädt…</div>
       ) : finished.length === 0 ? (
@@ -132,6 +135,8 @@ export default function HistoryView({ onOpenExercise }) {
                   <span className="font-mono font-semibold">{pr.value}</span>
                 </div>
               ))}
+              {onRepeat && <button disabled={busy} onClick={async () => { setBusy(true); setError(''); try { const d = await api.get(`/workouts/${open.id}`); await onRepeat(d.workout); } catch (err) { setError(err.message); } finally { setBusy(false); } }} className="mb-4 flex w-full items-center justify-center gap-2 rounded-xl bg-fit-accent p-3 text-sm font-semibold text-fit-bg"><Play size={15} /> Workout wiederholen</button>}
+              {error && <p role="alert" className="text-sm text-fit-red">{error}</p>}
               {groupWorkoutSets(open).map((g) => (
                 <div key={g.exercise_id || g.name} className="mt-3 rounded-xl border border-fit-line bg-fit-card p-3">
                   <button

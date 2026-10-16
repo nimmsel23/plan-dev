@@ -183,3 +183,33 @@ Satzvolumen) zählen erst ab der zweiten Ausführung einer Übung.
 Bewusst nicht übernommen: Strongs "Measure"-Tab (Körperwerte leben im
 Fitness-Hauptprojekt), Supersets, Plate-Calculator. Der Coach-Login-Gate in
 `plan-main.jsx` bleibt unverändert.
+
+## VitalOS shell (2026-10-16)
+
+`StrongApp.jsx` owns the four navigation tabs and the active-workout return action.
+It composes `src/shell/PlanSidebar`, `PlanHeader`, `PlanTabBar`, and `ThemeSheet`,
+ported from coach-dev's VitalOS shell. Desktop uses the collapsible glass rail;
+mobile uses five slots (four tabs plus More), with safe-area padding and a
+collapsible navigation bar. The active-workout strip stays above navigation.
+Settings remain in the existing Zustand store, with vital/vital-light defaults;
+existing saved themes are preserved. `plan-main.jsx` owns authentication only
+and no longer loads the legacy coach-console stylesheet.
+
+## 2026-10-16: Strong-Ablauf und Coach-Workspace
+
+Aktuelle Struktur und Grenzen: `ARCHITECTURE.md`. Der historische Audit oben
+beschreibt teilweise abgelöste UI (Quick-Complete, Checklisten-Einstieg).
+
+Behoben: Coach-only-Zugang im Plan-Einstieg, tote Einstellungen-Aktion,
+Quick-Complete als dominanter Einstieg, nur aus Historie bestehender Übungen-Tab,
+unbemerkter Verlust von Satzänderungen bei Remote-Fehlern und fehlende Startaktion
+auf Plan-Einheiten. Ein gemeinsamer Vorlageneditor unterstützt jetzt Klienten-UIDs.
+Neue Coach-Pläne können als Entwurf zusammengestellt und bereitgestellt werden.
+
+Bekannte Grenzen: kein Mehrgeräte-Konfliktprotokoll, kein atomarer Start-Lock
+zwischen Browser-Tabs, noch kein persistenter Entwurf für ungespeicherte
+Vorlageneditor-Änderungen. Der lokale Satzentwurf ersetzt keinen vollständigen
+Offline-Backendbetrieb. Authentifizierte Cloud-Abnahme steht separat aus.
+Atlas bleibt eine eigene App; gemeinsam sind Quelle und Referenzen, kein
+originübergreifender Gerätespeicher. Legacy-Checklisten werden als neue Workouts
+startbar, ihr bisheriger Hakenfortschritt wird nicht als Leistung umgeschrieben.

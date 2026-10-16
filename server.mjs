@@ -1,4 +1,4 @@
-import { createPythonProxy } from "./server/lib/python-proxy.mjs";
+import { createPythonProxy, registerPythonApi } from "./server/lib/python-proxy.mjs";
 import { jsRoutineRoutes } from "./server/routes/js-routines.mjs";
 import { defineJsonRoute, looseObjectSchema } from "./server/lib/routes.mjs";
 import { registerExercises } from "./server/routes/exercises.mjs";
@@ -307,6 +307,8 @@ app.openapi(defineJsonRoute({
 // zum späteren Python-Äquivalent möglich → zwei unabhängige Writer auf
 // dieselbe Datei). Alles Neue kommt nur noch in fitness/api/routers/*.py.
 const proxyToPython = createPythonProxy(PYTHON_BASE);
+// Blind API forwarding: Python owns the complete path and all domain routing.
+registerPythonApi(app, PYTHON_BASE);
 
 // Route groups register on the root OpenAPIHono instance so Zod schemas remain in /openapi.json.
 const routeContext = { PYTHON_BASE, readJson, fetchWger, fitnessData, searchExercises, FITNESS_UID, writeJson, localToday, DATA_DIR, defaultBlocks, buildPlan, exportSessionMarkdown, exportWithPython, getWeeklySummary, obsidianTargetPath, proxyToPython, notifyPythonSync, mirrorSession, mirrorSessionDelete, log, mirrorJournal, readJournalFull, listJournals, journalEntriesPath, journalFreetextBody, journalUpsertEntry, BODY_DIR, lastDates, escapeCsvValue, postWger, computeCoverage, computeCoverageAnatomy, STATIC_DIR, getFirestoreStatus, pullAllSessions, pullJournalTree };

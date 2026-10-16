@@ -131,6 +131,7 @@ async def create_macrocycle(client_uid: str, request: Request):
         # Wochentage gebunden zu sein, aber der Zyklus selbst hat Anfang+Ende.
         "totalWeeks": int(body.get("totalWeeks") or 10),
         "routines": [],
+        "status": body.get("status", "published"),
     }
     _write_json(_path(client_uid, cycle_id), record)
     logger.info(f"macrocycles: {coach_uid} → {client_uid} '{name}' angelegt")
@@ -174,7 +175,7 @@ async def add_routine(client_uid: str, cycle_id: str, request: Request):
         # gegen einen separaten /complete-Aufruf. Optional: von Hand
         # angelegte Plan-Routinen ohne Template-Bezug bleiben None.
         "sourceTemplateId": body.get("sourceTemplateId"),
-        "exercises": [],
+        "exercises": body.get("exercises") or [],
     })
     _save(client_uid, m)
     return {"ok": True, "macrocycle": m}
@@ -243,3 +244,17 @@ def last_performance(client_uid: str, cycle_id: str, routine_id: str):
     """Letzte Completion dieser Routine — Referenz für Progression im Client-UI."""
     completions = [c for c in _completions(client_uid, cycle_id) if c.get("routineId") == routine_id]
     return {"ok": True, "last": completions[-1] if completions else None}
+
+
+@router.patch("/{client_uid}/{cycle_id}")
+async def publish_macrocycle(client_uid: str, cycle_id: str, request: Request):
+    body = await request.json()
+    m = _load(client_uid, cycle_id)
+    if body.get("status") != "published":
+        raise HTTPException(422, detail="unsupported_status")
+    if not m.get("routines") or any(not r.get("exercises") for r in m["routines"]):
+        raise HTTPException(422, detail="Jede Einheit braucht Übungen.")
+    m["status"] = "published"
+    m["publishedAt"] = datetime.now().isoformat()
+    _save(client_uid, m)
+    return {"ok": True, "macrocycle": m}

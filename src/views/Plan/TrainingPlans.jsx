@@ -3,39 +3,17 @@ import { Layers, Plus, ChevronDown } from "lucide-react";
 import { listMacrocycles, createMacrocycle, getUid } from "@db";
 import PlanCard from "./components/PlanCard.jsx";
 
-// Trainingsplan (Makro) = mehrere Templates (Mikro, aus "Meine Routinen"
-// weiter unten) zu einem Plan gebündelt, jedes mit eigenem Zeitraum-Ziel
-// (x-mal in y Tagen). Self-service (Plan-Tab, kein clientUid-Prop) UND
-// Coach-Nutzung (views/Coach/ClientsPanel.jsx, clientUid gesetzt) — ein
-// Komponent, zwei Aufrufer, kein separater Coach-Nachbau mehr (siehe
-// ClientPlan.jsx-Bereinigung: die frühere Ziel-Setzen-Duplikat-UI wurde
-// entfernt).
-//
-// Fortschritt zählt NICHT über den separaten Makrozyklus-/complete-Call,
-// sondern über dieselben echten Workout-Completions wie die Templates
-// selbst (workouts.routine_id === sourceTemplateId) — deshalb speichert
-// jede Plan-Routine ihre Herkunfts-Template-ID. Ein Template als "erledigt"
-// markieren (egal ob unten in "Meine Routinen" oder hier im Plan) zählt für
-// beide gleichermaßen, kein zweiter Fortschrittszähler.
-//
-// Quick-Complete ("Erledigt"-Haken) bleibt bewusst nur im Self-Service-Fall
-// aktiv: views/Plan/api.js kennt kein clientUid-Override (Firestore-Modus
-// schreibt dort immer auf den eigenen getUid()), im Coach-Fall gibt's dafür
-// noch keinen dual-mode-sicheren Pfad. Lieber sichtbar deaktiviert als
-// leise falsch für einen Klienten schreiben. Ziel-SETZEN funktioniert für
-// den Coach trotzdem (pickTemplate in components/PlanCard.jsx nutzt
-// addRoutine/updateRoutine, beide clientUid-parametrisiert) — Coach kann
-// vorgeben, nur nicht stellvertretend abhaken.
-export default function TrainingPlans({ templates, workouts, onChanged, clientUid }) {
+// Shared plan composition for personal training and the client workspace.
+export default function TrainingPlans({ templates, workouts, onChanged, clientUid, onStart }) {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(true);
+  const [error, setError] = useState('');
   const uid = clientUid || getUid();
 
   async function load() {
     setLoading(true);
-    setPlans(await listMacrocycles(uid));
-    setLoading(false);
+    try { setPlans((await listMacrocycles(uid)).filter((p) => clientUid || p.status !== "draft" || p.coachUid === uid)); } catch (err) { setError(err.message); } finally { setLoading(false); }
   }
   useEffect(() => { load(); }, [uid]);
 
@@ -47,8 +25,11 @@ export default function TrainingPlans({ templates, workouts, onChanged, clientUi
   async function newPlan() {
     const name = prompt("Name des Trainingsplans:", "Mein Plan");
     if (!name || !name.trim()) return;
-    await createMacrocycle(uid, { name: name.trim(), coachUid: getUid(), totalWeeks: 52 });
-    load();
+    try {
+      const created = await createMacrocycle(uid, { name: name.trim(), coachUid: getUid(), totalWeeks: 52, status: clientUid ? "draft" : "published" });
+      if (!created) throw new Error("Trainingsplan konnte nicht erstellt werden.");
+      await load();
+    } catch (err) { setError(err.message); }
   }
 
   if (!loading && plans.length === 0 && !open) return null;
@@ -63,10 +44,11 @@ export default function TrainingPlans({ templates, workouts, onChanged, clientUi
         <ChevronDown size={16} className={`text-fit-muted transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
 
+      {error && <p role="alert" className="mb-3 text-sm text-fit-red">{error}</p>}
       {open && (
         <div className="space-y-3">
           {plans.map((p) => (
-            <PlanCard key={p.id} plan={p} templates={templates} workouts={workouts} clientUid={clientUid} onReload={reload} />
+            <PlanCard key={p.id} plan={p} templates={templates} workouts={workouts} clientUid={clientUid} onReload={reload} onStart={onStart} />
           ))}
           <button
             onClick={newPlan}

@@ -1,9 +1,16 @@
+import { useState } from 'react';
 import { Trophy, Clock, Dumbbell, Layers } from "lucide-react";
 import { formatDuration, formatKg, formatSet, groupWorkoutSets, bestSet, workoutTotals } from "../lib/history.js";
 
 // Strong-Abschluss-Screen nach "Fertig": Dauer, Volumen, Sätze, neue
 // persönliche Rekorde und bester Satz pro Übung.
-export default function WorkoutSummary({ workout, prs = [], onDone }) {
+export default function WorkoutSummary({ workout, prs = [], onDone, onSaveTemplate, onUpdateTemplate }) {
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState('');
+  async function save(action, done) {
+    setBusy(true); setMessage('');
+    try { await action(); setMessage(done); } catch (err) { setMessage(err.message || 'Vorlage konnte nicht gespeichert werden.'); } finally { setBusy(false); }
+  }
   const totals = workoutTotals(workout);
   const groups = groupWorkoutSets(workout);
 
@@ -51,11 +58,21 @@ export default function WorkoutSummary({ workout, prs = [], onDone }) {
         ))}
       </section>
 
+      {(onSaveTemplate || onUpdateTemplate) && <section className="mb-5 rounded-xl border border-fit-line p-4">
+        <h2 className="text-sm font-semibold">Beim nächsten Mal wiederverwenden</h2>
+        <p className="my-2 text-xs text-fit-muted">Dein Workout ist gespeichert. Vorlagen ändern sich nur, wenn du es hier auswählst.</p>
+        <div className="flex flex-wrap gap-2">
+          {onUpdateTemplate && <button disabled={busy} onClick={() => save(onUpdateTemplate, 'Vorlage mit diesen Werten aktualisiert.')} className="rounded-xl bg-fit-card px-3 py-2 text-sm text-fit-accent">Vorlage aktualisieren</button>}
+          {onSaveTemplate && <button disabled={busy} onClick={() => save(onSaveTemplate, '')} className="rounded-xl bg-fit-card px-3 py-2 text-sm text-fit-accent">Als neue Vorlage speichern</button>}
+        </div>{message && <p role="status" className="mt-2 text-sm">{message}</p>}
+      </section>}
+      <p className="mb-4 text-center text-xs text-fit-muted">Deine Sätze sind im Verlauf gespeichert. Beim nächsten Training stehen sie als „Vorher“-Werte bereit.</p>
       <button
+        disabled={busy}
         onClick={onDone}
-        className="w-full rounded-2xl bg-fit-accent py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+        className="w-full rounded-2xl bg-fit-accent py-3.5 text-sm font-semibold text-fit-bg transition-opacity hover:opacity-90"
       >
-        Fertig
+        Zurück zum Training
       </button>
     </div>
   );

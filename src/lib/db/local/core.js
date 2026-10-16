@@ -26,6 +26,15 @@ export const api = {
     if (!res.ok && res.status !== 202) throw new Error(`POST ${path} → ${res.status}`)
     return res.json()
   },
+  async patch(path, data) {
+    const res = await apiFetch(BASE + path, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    })
+    if (!res.ok && res.status !== 202) throw new Error(`PATCH ${path} → ${res.status}`)
+    return res.json()
+  },
   async put(path, data) {
     const res = await apiFetch(BASE + path, {
       method: 'PUT',

@@ -146,7 +146,7 @@ if $BUILD_BEFORE_DEPLOY; then
   msg "🔨 Building UI in $SOURCE"
   (
     cd "$SOURCE"
-    npm run build > /dev/null
+    pnpm run build > /dev/null
   )
 elif [[ "$TARGET" == "prod" && "$SOURCE" == "$STAGING_SOURCE" && -d "$SOURCE/dist" ]]; then
   msg "⏭️  Build übersprungen — nutze bereits vorhandenes $SOURCE/dist (aus dem staging-Deploy)"

@@ -48,3 +48,11 @@ relevante Dateien enthält (`src/`, `public/`, `index.html`, `vite.config.*`,
   unverändert) gefolgt von `deploy:firebase` (`firebase deploy --only hosting`)
 - Schlägt der Build/Deploy fehl, wird der Push abgebrochen (kein halb-deployter
   Stand) — Override mit `git push --no-verify`
+
+## CI-Deploy (GitHub Actions)
+`.github/workflows/deploy-plan.yml` baut (`build:kb-data` + `build:firebase:plan`) und
+deployt `hosting:plan` (https://vos-plan.web.app) bei jedem Push auf `dev`, der
+Frontend-Code berührt. Ohne Repo-Secret `FIREBASE_SERVICE_ACCOUNT_FITNESS_AOS` wird nur
+gebaut. Die geerbten Fitness-Workflows liegen in `.github/workflows.disabled/`.
+Der `pre-push`-Hook deployt weiterhin nur bei Push auf `vitalos`.
+

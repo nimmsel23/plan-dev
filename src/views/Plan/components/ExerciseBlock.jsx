@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import ExercisePhotoStrip from '../../../components/ExercisePhotoStrip.jsx';
 import { Plus, Trash2 } from "lucide-react";
 import { muskelDe, muskelColor, dedupeMuskeln } from "../../../lib/kb/muscles.js";
 import SetRow, { setRowGrid } from "./SetRow.jsx";
@@ -8,6 +10,7 @@ import SetRow, { setRowGrid } from "./SetRow.jsx";
 // schaltet die Strong-"Vorher"-Spalte ein. `onShowHistory` (optional) macht
 // den Übungsnamen antippbar (Verlauf/Rekorde der Übung).
 export default function ExerciseBlock({ ex, previousSets, onShowHistory, onAddSet, onPatchSet, onDeleteSet, onDeleteExercise, onCompletedSet }) {
+  const [showInstructions, setShowInstructions] = useState(false);
   const showPrevious = Array.isArray(previousSets);
   const trackingType = ex.trackingType || "weight_reps";
   return (
@@ -40,15 +43,17 @@ export default function ExerciseBlock({ ex, previousSets, onShowHistory, onAddSe
         </button>
       </div>
 
+      {ex.notes && <p className="px-3 pb-3 text-sm text-fit-dim">{ex.notes}</p>}
+      {ex.yuhonas_id && <div className="px-3 pb-3"><button onClick={() => setShowInstructions(!showInstructions)} aria-expanded={showInstructions} className="text-xs text-fit-accent">{showInstructions ? 'Anleitung ausblenden' : 'Ausführung ansehen'}</button>{showInstructions && <div className="mt-3"><ExercisePhotoStrip ex={ex} className="h-40" /><ol className="mt-3 list-decimal space-y-2 pl-5 text-xs text-fit-muted">{(ex.instructions || []).map((step,i) => <li key={i}>{step}</li>)}</ol></div>}</div>}
       <div className="px-3 pb-2">
         <div className={`grid gap-2 px-1 pb-1 text-[10px] font-bold uppercase tracking-wide text-fit-muted ${setRowGrid(trackingType, showPrevious)}`}>
           <span className="text-center">#</span>
           {showPrevious && <span className="text-center">Vorher</span>}
           <span className="text-center">
-            {ex.trackingType === "weight_reps" ? "kg" : ex.trackingType === "distance_time" ? "km" : ex.trackingType === "duration" ? "Zeit" : "Wdh"}
+            {ex.trackingType === "weight_reps" ? "kg" : ex.trackingType === "distance_time" ? "km" : ex.trackingType === "duration" ? "Sek" : "Wdh"}
           </span>
           {ex.trackingType !== "duration" && (
-            <span className="text-center">{ex.trackingType === "bodyweight_reps" ? "Stage" : ex.trackingType === "distance_time" ? "Zeit" : "Wdh"}</span>
+            <span className="text-center">{ex.trackingType === "bodyweight_reps" ? "Stage" : ex.trackingType === "distance_time" ? "Sek" : "Wdh"}</span>
           )}
           <span />
           <span />
