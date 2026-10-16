@@ -23,7 +23,7 @@
     "build:coaching-notes": "node scripts/build-coaching-notes.mjs",
     "build:firebase": "pnpm run build:firebase:plan",
     "build:firebase:client": "vite build --mode firebase --outDir dist-firebase && node scripts/stamp-sw.mjs dist-firebase && node scripts/snapshot.mjs dist-firebase",
-    "build:firebase:plan": "vite build --mode plan --outDir dist-plan && node scripts/prepare-plan-dist.mjs",
+    "build:firebase:plan": "vite build --mode plan --outDir dist-plan && node scripts/prepare-plan-dist.mjs && node scripts/mini-app-shell/cli.mjs stamp dist-plan --app plan",
     "deploy:firebase:plan": "firebase deploy --only hosting:plan",
     "stamp:sw": "node scripts/stamp-sw.mjs dist-firebase",
     "preview:firebase": "firebase hosting:channel:deploy preview --expires 1h",
