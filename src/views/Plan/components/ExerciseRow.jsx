@@ -45,7 +45,7 @@ export default function ExerciseRow({ ex, onPatch, onDelete }) {
           <span className="font-mono text-xs text-fit-muted">
             {templateSets.length}×{(ex.trackingType || "weight_reps") === "duration" ? (leadSet.targetDuration ?? "10s") : (leadSet.targetReps ?? "8-12")}
           </span>
-          <button onClick={() => setOpen((v) => !v)} className="p-1.5 rounded-lg text-fit-muted hover:text-fit-ink transition-colors">
+          <button aria-label={`${ex.name}: Satzvorgaben bearbeiten`} aria-expanded={open} onClick={() => setOpen((v) => !v)} className="p-1.5 rounded-lg text-fit-muted hover:text-fit-ink transition-colors">
             {open ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           </button>
           <button onClick={onDelete} className="p-1.5 rounded-lg text-fit-muted hover:text-fit-red hover:bg-red-500/10 transition-all">

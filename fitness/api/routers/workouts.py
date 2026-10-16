@@ -104,7 +104,7 @@ def _normalize_routine_exercise(exercise: dict, order: int = 0) -> dict:
         "primaryMuscles": exercise.get("primaryMuscles") if isinstance(exercise.get("primaryMuscles"), list) else [],
         "secondaryMuscles": exercise.get("secondaryMuscles") if isinstance(exercise.get("secondaryMuscles"), list) else [],
         "yuhonas_id": exercise.get("yuhonas_id"),
-        "rest_seconds": exercise.get("rest_seconds") or 90,
+        "rest_seconds": exercise.get("rest_seconds") if exercise.get("rest_seconds") is not None else 90,
         "rir": exercise.get("rir"),
         "tempo": exercise.get("tempo"),
         "notes": exercise.get("notes"),
@@ -145,7 +145,7 @@ def _normalize_workout_exercise(exercise: dict, order: int = 0) -> dict:
         "primaryMuscles": exercise.get("primaryMuscles") if isinstance(exercise.get("primaryMuscles"), list) else [],
         "secondaryMuscles": exercise.get("secondaryMuscles") if isinstance(exercise.get("secondaryMuscles"), list) else [],
         "yuhonas_id": exercise.get("yuhonas_id"),
-        "rest_seconds": exercise.get("rest_seconds") or 90,
+        "rest_seconds": exercise.get("rest_seconds") if exercise.get("rest_seconds") is not None else 90,
         "notes": exercise.get("notes"),
         "order": exercise.get("order") if isinstance(exercise.get("order"), int) else order,
         "sets": [_normalize_set_entry(s, i) for i, s in enumerate(sets)] if isinstance(sets, list) else [],
@@ -242,7 +242,9 @@ def _build_workout_exercise_from_routine(uid: str, routine_exercise: dict) -> di
         "yuhonas_id": routine_exercise.get("yuhonas_id"),
         "trackingType": routine_exercise.get("trackingType"),
         "rest_seconds": routine_exercise.get("rest_seconds"),
-        "notes": None,
+        "notes": routine_exercise.get("notes"),
+        "equipment": routine_exercise.get("equipment") or [],
+        "instructions": routine_exercise.get("instructions") or [],
         "order": routine_exercise.get("order"),
         "sets": [_mk_set(ts, i) for i, ts in enumerate(template_sets)],
         "lastPerformedAt": (history or {}).get("date"),
@@ -320,8 +322,9 @@ async def add_routine_exercise(routine_id: str, request: Request):
         "id": _new_id(), "exercise_id": body.get("exercise_id"), "name": body.get("name") or body.get("exercise_id"),
         "primaryMuscles": body.get("primaryMuscles") or [], "secondaryMuscles": body.get("secondaryMuscles") or [],
         "yuhonas_id": body.get("yuhonas_id"), "trackingType": body.get("trackingType") or "weight_reps",
-        "templateSets": body.get("templateSets"), "target_sets": 3, "target_reps": "8-12", "rest_seconds": 90,
-        "weight_type": "kg", "effort": "normal", "rir": None, "tempo": None, "drop_set": False, "notes": None,
+        "templateSets": body.get("templateSets"), "target_sets": body.get("target_sets", 3), "target_reps": body.get("target_reps", "8-12"), "rest_seconds": body.get("rest_seconds", 90),
+        "weight_type": "kg", "effort": "normal", "rir": body.get("rir"), "tempo": body.get("tempo"), "drop_set": False, "notes": body.get("notes"),
+        "equipment": body.get("equipment") or [], "instructions": body.get("instructions") or [],
         "moduleId": body.get("moduleId"), "protocolType": body.get("protocolType"),
         "progressionStage": body.get("progressionStage"), "order": order,
     }, order)
@@ -392,18 +395,25 @@ async def create_workout(request: Request):
     exercises: list[dict] = []
     name = body.get("name")
     routine_id = body.get("routine_id")
-    if routine_id:
+    routine = body.get("routine_snapshot")
+    if routine is None and routine_id:
         routine = next((r for r in _read_routines(uid) if r.get("id") == routine_id), None)
-        if routine:
-            name = name or routine.get("name")
-            ordered = sorted(routine.get("exercises") or [], key=lambda e: e.get("order", 0))
-            exercises = [
-                _build_workout_exercise_from_routine(uid, _normalize_routine_exercise(e, e.get("order", i)))
-                for i, e in enumerate(ordered)
-            ]
+        if routine is None:
+            raise HTTPException(404, detail="routine_not_found")
+    if routine is not None:
+        if not isinstance(routine, dict) or not isinstance(routine.get("exercises"), list):
+            raise HTTPException(422, detail="invalid_routine_snapshot")
+        name = name or routine.get("name")
+        ordered = sorted(routine["exercises"], key=lambda e: e.get("order", 0))
+        exercises = [
+            _build_workout_exercise_from_routine(uid, _normalize_routine_exercise(e, e.get("order", i)))
+            for i, e in enumerate(ordered)
+        ]
 
     workout = {
         "id": _new_id(), "routine_id": routine_id, "sourceRoutineId": routine_id,
+        "sourcePlanId": body.get("sourcePlanId"), "sourcePlanRoutineId": body.get("sourcePlanRoutineId"),
+        "sourceAssignmentId": body.get("sourceAssignmentId"),
         "name": name or f"Workout {datetime.now().strftime('%d.%m.')}",
         "started_at": datetime.now().isoformat(), "finished_at": None, "sessionState": "work",
         "protocolMeta": {"moduleId": body.get("moduleId"), "protocolType": body.get("protocolType"), "requiresReview": True},
@@ -465,7 +475,8 @@ async def add_workout_exercise(workout_id: str, request: Request):
         "id": _new_id(), "exercise_id": body.get("exercise_id"), "name": body.get("name") or body.get("exercise_id"),
         "primaryMuscles": body.get("primaryMuscles") or [], "secondaryMuscles": body.get("secondaryMuscles") or [],
         "yuhonas_id": body.get("yuhonas_id"), "trackingType": body.get("trackingType") or "weight_reps",
-        "rest_seconds": 90, "weight_type": "kg", "notes": None, "order": order,
+        "rest_seconds": body.get("rest_seconds", 90), "weight_type": "kg", "notes": body.get("notes"), "order": order,
+        "equipment": body.get("equipment") or [], "instructions": body.get("instructions") or [],
         "sets": [_normalize_set_entry({}, i) for i in range(3)],
     }, order)
     workout.setdefault("exercises", []).append(exercise)

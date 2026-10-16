@@ -194,3 +194,22 @@ collapsible navigation bar. The active-workout strip stays above navigation.
 Settings remain in the existing Zustand store, with vital/vital-light defaults;
 existing saved themes are preserved. `plan-main.jsx` owns authentication only
 and no longer loads the legacy coach-console stylesheet.
+
+## 2026-10-16: Strong-Ablauf und Coach-Workspace
+
+Aktuelle Struktur und Grenzen: `ARCHITECTURE.md`. Der historische Audit oben
+beschreibt teilweise abgelöste UI (Quick-Complete, Checklisten-Einstieg).
+
+Behoben: Coach-only-Zugang im Plan-Einstieg, tote Einstellungen-Aktion,
+Quick-Complete als dominanter Einstieg, nur aus Historie bestehender Übungen-Tab,
+unbemerkter Verlust von Satzänderungen bei Remote-Fehlern und fehlende Startaktion
+auf Plan-Einheiten. Ein gemeinsamer Vorlageneditor unterstützt jetzt Klienten-UIDs.
+Neue Coach-Pläne können als Entwurf zusammengestellt und bereitgestellt werden.
+
+Bekannte Grenzen: kein Mehrgeräte-Konfliktprotokoll, kein atomarer Start-Lock
+zwischen Browser-Tabs, noch kein persistenter Entwurf für ungespeicherte
+Vorlageneditor-Änderungen. Der lokale Satzentwurf ersetzt keinen vollständigen
+Offline-Backendbetrieb. Authentifizierte Cloud-Abnahme steht separat aus.
+Atlas bleibt eine eigene App; gemeinsam sind Quelle und Referenzen, kein
+originübergreifender Gerätespeicher. Legacy-Checklisten werden als neue Workouts
+startbar, ihr bisheriger Hakenfortschritt wird nicht als Leistung umgeschrieben.

@@ -62,11 +62,11 @@ export async function getMacrocycle(clientUid, cycleId) {
   }
 }
 
-export async function createMacrocycle(clientUid, { name, coachUid, totalWeeks }) {
+export async function createMacrocycle(clientUid, { name, coachUid, totalWeeks, status = "published" }) {
   try {
     const ref = doc(collection(db, 'fitness', clientUid, 'macrocycles'))
     const record = {
-      name, clientUid, coachUid,
+      name, clientUid, coachUid, status,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       totalWeeks: Number(totalWeeks) || 10,
@@ -90,7 +90,7 @@ export async function deleteMacrocycle(clientUid, cycleId) {
   }
 }
 
-export async function addRoutine(clientUid, cycleId, { label, isDeload, restHoursAfter, targetCount, targetPeriodDays, sourceTemplateId }) {
+export async function addRoutine(clientUid, cycleId, { label, isDeload, restHoursAfter, targetCount, targetPeriodDays, sourceTemplateId, exercises = [] }) {
   try {
     const m = await loadDoc(clientUid, cycleId)
     if (!m) return null
@@ -102,7 +102,7 @@ export async function addRoutine(clientUid, cycleId, { label, isDeload, restHour
       targetCount: Number(targetCount) || 0,
       targetPeriodDays: Number(targetPeriodDays) || 0,
       sourceTemplateId: sourceTemplateId || null,
-      exercises: [],
+      exercises,
     }]
     return await saveDoc(clientUid, m)
   } catch (error) {
@@ -156,4 +156,11 @@ export async function getLastPerformance(clientUid, cycleId, routineId) {
     console.error('Error fetching last performance:', error)
     return null
   }
+}
+
+// Explicit publication of a client plan; existing records without status stay visible.
+export async function publishMacrocycle(clientUid, cycleId) {
+  const m = await loadDoc(clientUid, cycleId);
+  if (!m?.routines?.length || m.routines.some((r) => !r.exercises?.length)) throw new Error('Jede Einheit braucht Übungen, bevor du den Plan bereitstellst.');
+  return saveDoc(clientUid, { ...m, status: 'published', publishedAt: new Date().toISOString() });
 }

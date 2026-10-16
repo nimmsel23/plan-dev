@@ -98,6 +98,7 @@ export default defineConfig(async ({ mode }) => {
         ],
       },
       proxy: {
+        '/api': BACKEND,
         '/exercises': BACKEND,
         '/session':   BACKEND,
         '/journal':   BACKEND,

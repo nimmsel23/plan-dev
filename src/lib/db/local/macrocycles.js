@@ -1,7 +1,7 @@
 import { api } from "./core";
 
 // Makrozyklen — rotierender Trainingszyklus (Push/Pull/Legs o.ä.), kein Kalender.
-const base = (clientUid) => `/fitness/coach/macrocycles/${encodeURIComponent(clientUid)}`;
+const base = (clientUid) => `api/fitness/coach/macrocycles/${encodeURIComponent(clientUid)}`;
 
 export async function listMacrocycles(clientUid) {
   try {
@@ -22,8 +22,8 @@ export async function getMacrocycle(clientUid, cycleId) {
   }
 }
 
-export async function createMacrocycle(clientUid, { name, coachUid, totalWeeks }) {
-  const data = await api.post(base(clientUid), { name, coachUid, totalWeeks });
+export async function createMacrocycle(clientUid, { name, coachUid, totalWeeks, status = "published" }) {
+  const data = await api.post(base(clientUid), { name, coachUid, totalWeeks, status });
   return data?.macrocycle || null;
 }
 
@@ -32,8 +32,8 @@ export async function deleteMacrocycle(clientUid, cycleId) {
   return true;
 }
 
-export async function addRoutine(clientUid, cycleId, { label, isDeload, restHoursAfter, targetCount, targetPeriodDays, sourceTemplateId }) {
-  const data = await api.post(`${base(clientUid)}/${encodeURIComponent(cycleId)}/routines`, { label, isDeload, restHoursAfter, targetCount, targetPeriodDays, sourceTemplateId });
+export async function addRoutine(clientUid, cycleId, { label, isDeload, restHoursAfter, targetCount, targetPeriodDays, sourceTemplateId, exercises = [] }) {
+  const data = await api.post(`${base(clientUid)}/${encodeURIComponent(cycleId)}/routines`, { label, isDeload, restHoursAfter, targetCount, targetPeriodDays, sourceTemplateId, exercises });
   return data?.macrocycle || null;
 }
 
@@ -59,4 +59,9 @@ export async function getLastPerformance(clientUid, cycleId, routineId) {
   } catch {
     return null;
   }
+}
+
+export async function publishMacrocycle(clientUid, cycleId) {
+  const data = await api.patch(`${base(clientUid)}/${encodeURIComponent(cycleId)}`, { status: 'published' });
+  return data?.macrocycle || null;
 }

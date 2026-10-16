@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
 import { Timer, ChevronUp } from "lucide-react";
+import { startWorkout } from './lib/startWorkout.js';
+import { workoutTemplateExercises } from './lib/workoutTemplate.js';
+import CoachWorkspace from './CoachWorkspace.jsx';
+import { usePlanCoach } from '../../hooks/usePlanCoach.js';
+import { Users } from 'lucide-react';
 import PlanView from "./index.jsx";
 import HistoryView from "./HistoryView.jsx";
 import ExercisesView from "./ExercisesView.jsx";
 import ProfileView from "./ProfileView.jsx";
 import { api } from "./api.js";
 import { formatClock } from "./lib/history.js";
-import { ACTIVE_WORKOUT_EVENT, readActiveWorkout, writeActiveWorkout } from "./lib/activeWorkout.js";
+import { ACTIVE_WORKOUT_EVENT, readActiveWorkout, writeActiveWorkout, setActiveWorkoutOwner } from "./lib/activeWorkout.js";
 
 import PlanSidebar from '../../shell/PlanSidebar.jsx';
 import PlanHeader from '../../shell/PlanHeader.jsx';
@@ -17,7 +22,10 @@ import { useSettingsStore } from '../../store/index.js';
 
 // VitalOS shell; workout routing and active-session state stay owned here.
 export default function StrongApp({ user, onSignOut }) {
+  setActiveWorkoutOwner(user?.uid);
   const { sidebarPinned: pinned, setSidebarPinned } = useSettingsStore();
+  const isCoach = usePlanCoach(user);
+  const [coachOpen, setCoachOpen] = useState(false);
   const [themeOpen, setThemeOpen] = useState(false);
   const [navExpanded, setNavExpanded] = useState(true);
   const [tab, setTab] = useState("workout");
@@ -37,8 +45,8 @@ export default function StrongApp({ user, onSignOut }) {
     const stored = readActiveWorkout();
     if (!stored?.id) return;
     api.get(`/workouts/${stored.id}`)
-      .then((d) => { if (!d?.workout || d.workout.finished_at) writeActiveWorkout(null); })
-      .catch(() => writeActiveWorkout(null));
+      .then((d) => { if (!d?.workout || d.workout.finished_at) writeActiveWorkout(null, user?.uid || "local"); })
+      .catch((err) => { if (err.status === 404 || err.code === "not-found") writeActiveWorkout(null, user?.uid || "local"); });
   }, []);
 
   useEffect(() => {
@@ -50,15 +58,17 @@ export default function StrongApp({ user, onSignOut }) {
   function openActiveWorkout() {
     if (!active) return;
     setPlanRoute({ view: "workout", id: active.id });
+    setCoachOpen(false);
     setTab("workout");
   }
 
   function selectTab(id) {
     if (id === tab && id === "workout") setPlanRoute({ view: null, id: null });
+    setCoachOpen(false);
     setTab(id);
   }
 
-  const inActiveWorkout = tab === "workout" && planRoute.view === "workout" && planRoute.id === active?.id;
+  const inActiveWorkout = !coachOpen && tab === "workout" && planRoute.view === "workout" && planRoute.id === active?.id;
   const showActiveBar = active && !inActiveWorkout;
   const startedMs = Date.parse(active?.started_at);
 
@@ -68,11 +78,16 @@ export default function StrongApp({ user, onSignOut }) {
       <div className={`min-w-0 transition-all duration-500 ${pinned ? 'lg:ml-[304px]' : 'lg:ml-[108px]'}`}>
         <PlanHeader title={NAV_ITEMS.find((item) => item.id === tab)?.label} subtitle="Plan · VitalOS" />
         <div className="mx-auto max-w-[1600px] px-[var(--safe-left)]" style={{ paddingRight: 'var(--safe-right)', paddingBottom: 'calc(var(--mobile-nav-height) + 88px)' }}>
+          {tab === 'workout' && isCoach && !coachOpen && <div className="mx-auto max-w-2xl px-4 pt-4"><button onClick={() => setCoachOpen(true)} className="flex items-center gap-2 rounded-xl border border-fit-line px-4 py-2 text-sm text-fit-accent"><Users size={16} /> Trainingspläne für Klienten</button></div>}
+          {tab === 'workout' && coachOpen && isCoach && <CoachWorkspace onBack={() => setCoachOpen(false)} />}
           {tab === "profile" && <ProfileView user={user} />}
           {tab === "history" && (
-            <HistoryView onOpenExercise={(key) => { setExerciseKey(key); setTab("exercises"); }} />
+            <HistoryView onRepeat={async (workout) => {
+              const id = await startWorkout({ name: workout.name, routine_id: workout.routine_id, routine_snapshot: { name: workout.name, exercises: workoutTemplateExercises(workout) }, sourcePlanId: workout.sourcePlanId, sourcePlanRoutineId: workout.sourcePlanRoutineId, sourceAssignmentId: workout.sourceAssignmentId });
+              setPlanRoute({ view: 'workout', id }); setCoachOpen(false); setTab('workout');
+            }} onOpenExercise={(key) => { setExerciseKey(key); setTab("exercises"); }} />
           )}
-          {tab === "workout" && (
+          {tab === "workout" && !coachOpen && (
             <PlanView
               routeView={planRoute.view}
               routeId={planRoute.id}

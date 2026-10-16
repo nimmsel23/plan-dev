@@ -23,11 +23,13 @@ function normalizeRoutineExercise(exercise = {}, order = 0) {
     primaryMuscles: Array.isArray(exercise.primaryMuscles) ? exercise.primaryMuscles : [],
     secondaryMuscles: Array.isArray(exercise.secondaryMuscles) ? exercise.secondaryMuscles : [],
     yuhonas_id: exercise.yuhonas_id || null,
+    equipment: exercise.equipment || [],
+    instructions: exercise.instructions || [],
     trackingType: exercise.trackingType || "weight_reps",
     templateSets: Array.isArray(exercise.templateSets) ? exercise.templateSets : [],
     target_sets: Number.isFinite(exercise.target_sets) ? exercise.target_sets : 3,
     target_reps: exercise.target_reps ?? "8-12",
-    rest_seconds: Number(exercise.rest_seconds) || 90,
+    rest_seconds: Number.isFinite(Number(exercise.rest_seconds)) && exercise.rest_seconds != null ? Math.max(0, Number(exercise.rest_seconds)) : 90,
     weight_type: exercise.weight_type || "kg",
     effort: exercise.effort || "normal",
     rir: exercise.rir ?? null,
@@ -46,8 +48,8 @@ function routineDoc(uid, id) { return doc(db, "fitness", uid, "routines", id); }
 function exercisesCol(uid, routineId) { return collection(db, "fitness", uid, "routines", routineId, "exercises"); }
 function exerciseDoc(uid, routineId, eid) { return doc(db, "fitness", uid, "routines", routineId, "exercises", eid); }
 
-export async function listRoutines() {
-  const uid = getUid();
+export async function listRoutines(uidOverride) {
+  const uid = uidOverride || getUid();
   const snap = await getDocs(routinesCol(uid));
   const routines = snap.docs
     .map((d) => ({ id: d.id, ...d.data() }))
@@ -55,8 +57,8 @@ export async function listRoutines() {
   return { routines };
 }
 
-export async function createRoutine(body) {
-  const uid = getUid();
+export async function createRoutine(body, uidOverride) {
+  const uid = uidOverride || getUid();
   const ref = doc(routinesCol(uid));
   await setDoc(ref, {
     name: body.name,
@@ -79,14 +81,25 @@ export async function getRoutine(routineId, uidOverride) {
   return { routine: { id: metaSnap.id, ...metaSnap.data(), exercises } };
 }
 
-export async function updateRoutine(routineId, patch) {
-  const uid = getUid();
-  await updateDoc(routineDoc(uid, routineId), patch);
+export async function updateRoutine(routineId, patch, uidOverride) {
+  const uid = uidOverride || getUid();
+  const { exercises, ...meta } = patch;
+  if (Array.isArray(exercises)) {
+    const current = await getDocs(exercisesCol(uid, routineId));
+    const batch = writeBatch(db);
+    current.docs.forEach((d) => batch.delete(d.ref));
+    exercises.forEach((ex, i) => {
+      const ref = doc(exercisesCol(uid, routineId));
+      batch.set(ref, normalizeRoutineExercise({ ...ex, id: ref.id, order: i }, i));
+    });
+    batch.update(routineDoc(uid, routineId), { ...meta, exerciseCount: exercises.length });
+    await batch.commit();
+  } else await updateDoc(routineDoc(uid, routineId), meta);
   return { ok: true };
 }
 
-export async function deleteRoutine(routineId) {
-  const uid = getUid();
+export async function deleteRoutine(routineId, uidOverride) {
+  const uid = uidOverride || getUid();
   const exSnap = await getDocs(exercisesCol(uid, routineId));
   const batch = writeBatch(db);
   exSnap.docs.forEach((d) => batch.delete(d.ref));
@@ -95,8 +108,8 @@ export async function deleteRoutine(routineId) {
   return { ok: true };
 }
 
-export async function addRoutineExercise(routineId, body) {
-  const uid = getUid();
+export async function addRoutineExercise(routineId, body, uidOverride) {
+  const uid = uidOverride || getUid();
   const exSnap = await getDocs(exercisesCol(uid, routineId));
   const order = exSnap.size;
   const ref = doc(exercisesCol(uid, routineId));
@@ -108,14 +121,14 @@ export async function addRoutineExercise(routineId, body) {
   return { id: ref.id };
 }
 
-export async function updateRoutineExercise(routineId, eid, patch) {
-  const uid = getUid();
+export async function updateRoutineExercise(routineId, eid, patch, uidOverride) {
+  const uid = uidOverride || getUid();
   await updateDoc(exerciseDoc(uid, routineId, eid), patch);
   return { ok: true };
 }
 
-export async function deleteRoutineExercise(routineId, eid) {
-  const uid = getUid();
+export async function deleteRoutineExercise(routineId, eid, uidOverride) {
+  const uid = uidOverride || getUid();
   const exSnap = await getDocs(exercisesCol(uid, routineId));
   const batch = writeBatch(db);
   batch.delete(exerciseDoc(uid, routineId, eid));
@@ -124,8 +137,8 @@ export async function deleteRoutineExercise(routineId, eid) {
   return { ok: true };
 }
 
-export async function reorderRoutineExercises(routineId, order) {
-  const uid = getUid();
+export async function reorderRoutineExercises(routineId, order, uidOverride) {
+  const uid = uidOverride || getUid();
   const batch = writeBatch(db);
   for (const { id, order: pos } of order || []) {
     batch.update(exerciseDoc(uid, routineId, id), { order: pos });

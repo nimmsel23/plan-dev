@@ -10,6 +10,8 @@
     "start": "node server.mjs",
     "fitness:routines": "node scripts/fitness-routines.mjs",
     "ui:dev": "vite",
+    "test:plan": "node scripts/tests/plan.test.mjs && node scripts/tests/plan-firestore.test.mjs && node scripts/tests/plan-proxy.test.mjs && python3 scripts/tests/test_plan_backend.py",
+    "test:plan:browser": "bash scripts/tests/run-plan-browser.sh",
     "lint": "eslint src/ 6pack/ Skills/ --ext .js,.jsx",
     "prebuild": "pnpm run build:kb-data",
     "build": "pnpm run lint && vite build && node scripts/snapshot.mjs dist",

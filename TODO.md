@@ -61,3 +61,19 @@ Coach-Zugang anhand der verifizierten Firebase-UID ergänzen und zentrale Rolle 
 Produktgrundlage: `INSPIRATION.md` (2026-10-16). Yuhonas/VOS-Atlas-Vertrag
 verifizieren, vollständigen Vorlagen-/Workout-/Verlauf-Ablauf herstellen und
 Coach-Trainingspläne im selben Logger für Klienten nutzbar machen.
+
+## 2026-10-16: Strong-Ausbau — Implementierungsstand
+
+- [x] Persönlicher Zugang für angemeldete Klienten; Coach-Verwaltung rollenbasiert.
+- [x] Yuhonas-Katalog, gemeinsame Suchdaten, Bildpaar/Anleitung und Atlas-Link.
+- [x] Vorlagen → Satzlogger → Abschluss → Verlauf → Wiederholen.
+- [x] Gemeinsamer Vorlageneditor für Coach und Klient; Trainingsplan-Entwurf und Bereitstellen.
+- [x] Startbare Plan-/Legacy-Zuweisungs-Snapshots und tatsächliche Klienten-Ergebnisse.
+- [x] Lokaler Satzentwurf, serielle Remote-Writes, Retry und atomarer Firestore-Abschluss.
+- [x] Isolierte Daten-/Adapter-/Router-/Proxytests und Browserdurchlauf.
+- [ ] Authentifizierter Coach-/Klienten-Durchlauf auf Firebase mit isolierten Testkonten.
+- [ ] Mehrgeräte-Konfliktauflösung und serverseitiger Schutz vor parallelen Starts.
+- [ ] Persistenter Entwurf für noch ungespeicherte Vorlageneditor-Änderungen.
+- [ ] Versionierung und Aktualisieren bereits veröffentlichter Plan-Snapshots.
+
+Produktziel: `INSPIRATION.md`. Bedienung: `docs/PLAN-WORKFLOW.md`.

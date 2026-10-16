@@ -151,3 +151,16 @@ Zugriff immer anhand der bestehenden Coach-Klient-Berechtigungen prüfen.
 - [Strong: Workout-Vorlagen](https://help.strongapp.io/article/105-about-templates)
 - [Strong: Vorlage nach dem Workout aktualisieren](https://help.strongapp.io/article/177-update-template)
 - [Yuhonas Free Exercise DB](https://github.com/yuhonas/free-exercise-db)
+
+## Entwicklungsstand 2026-10-16
+
+Die Umsetzung läuft entlang dieser Richtung. Technische Beschreibung und
+bewusste Grenzen stehen in `src/views/Plan/ARCHITECTURE.md`, Prüfungen und
+verbleibende Lücken im zugehörigen `AUDIT.md` und `RESULTS.md`.
+
+Konkrete Entscheidung: Die vorhandene KB-Importpipeline liefert Plan den
+Yuhonas-Katalog. VOS Atlas ist im Fitness-Repo verortet und hat einen eigenen
+Geräte-Mirror; Plan baut keinen parallelen Downloader. Coach-Vorlagen liegen
+direkt beim Klienten und sind dort verfügbar. Neue gebündelte Coach-Pläne haben
+einen expliziten Entwurf-/Bereitstellen-Schritt. Laufende Einheiten sind eigene
+Snapshots. Das spätere Versionieren veröffentlichter Pläne bleibt offen.

@@ -19,3 +19,9 @@ export function createPythonProxy(pythonBase) {
     }
   };
 }
+
+// No domain routes or prefix rewriting here: Python receives /api unchanged.
+export function registerPythonApi(app, pythonBase) {
+  const proxy = createPythonProxy(pythonBase);
+  app.all("/api/*", (c) => proxy(c, c.req.path));
+}

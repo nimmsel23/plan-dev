@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, Flag, Timer, Trash2 } from "lucide-react";
-import { api } from "./api.js";
+import { getUid } from '@db';
+import { workoutTemplateExercises } from './lib/workoutTemplate.js';
+import { createWorkoutDraft } from './lib/workoutDraft.js';
+import { createPlanApi } from "./api.js";
 import ExerciseSearch from "./components/ExerciseSearch.jsx";
 import ExerciseBlock from "./components/ExerciseBlock.jsx";
 import ExerciseDetail from "./components/ExerciseDetail.jsx";
@@ -22,20 +25,33 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
   const [allWorkouts, setAllWorkouts] = useState([]);
   const [detailKey, setDetailKey] = useState(null);
   const [summary, setSummary] = useState(null);
+  const [saveState, setSaveState] = useState('saved');
+  const [error, setError] = useState('');
+  const ownerUid = useMemo(() => getUid(), []);
+  const api = useMemo(() => createPlanApi(ownerUid), [ownerUid]);
+  const writer = useMemo(() => createWorkoutDraft({
+    key: `plan-workout-draft:${ownerUid}:${workoutId}`,
+    storage: localStorage,
+    write: (snapshot) => api.patch(`/workouts/${workoutId}`, { exercises: snapshot }),
+    onState: setSaveState,
+  }), [workoutId]);
   const exercisesRef = useRef([]);
   const saveTimerRef = useRef(null);
 
   async function load() {
     const d = await api.get(`/workouts/${workoutId}`);
     setWorkout(d.workout);
-    setExercises(d.workout.exercises);
-    exercisesRef.current = d.workout.exercises;
+    const restored = !d.workout.finished_at && writer.read();
+    const next = restored || d.workout.exercises;
+    setExercises(next);
+    exercisesRef.current = next;
+    if (restored) writer.stage(restored);
     if (!d.workout.finished_at) {
-      writeActiveWorkout({ id: workoutId, name: d.workout.name, started_at: d.workout.started_at });
+      writeActiveWorkout({ id: workoutId, name: d.workout.name, started_at: d.workout.started_at }, ownerUid);
     }
   }
 
-  useEffect(() => { load(); }, [workoutId]);
+  useEffect(() => { load().catch((err) => setError(err.message)); }, [workoutId]);
 
   // Historie für "Vorher"-Spalte + Übungsdetail. Ein Listen-Call reicht,
   // weil der eventLog auf dem Workout-Meta-Dokument liegt.
@@ -50,26 +66,32 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
     if (saveTimerRef.current) {
       window.clearTimeout(saveTimerRef.current);
       saveTimerRef.current = null;
-      api.patch(`/workouts/${workoutId}`, { exercises: exercisesRef.current }).catch(() => {});
+      writer.save().catch(() => {});
     }
   }, [workoutId]);
 
   function scheduleSave() {
+    writer.stage(exercisesRef.current);
     if (saveTimerRef.current) window.clearTimeout(saveTimerRef.current);
     saveTimerRef.current = window.setTimeout(() => {
       saveTimerRef.current = null;
-      api.patch(`/workouts/${workoutId}`, { exercises: exercisesRef.current }).catch(() => {});
+      writer.save().catch(() => {});
     }, AUTOSAVE_DELAY_MS);
   }
 
   // Vor strukturellen Server-Änderungen (Satz/Übung hinzufügen/löschen)
   // erst die lokalen Eingaben sichern, sonst überschreibt load() sie.
   async function flushSave() {
-    if (!saveTimerRef.current) return;
-    window.clearTimeout(saveTimerRef.current);
+    if (saveTimerRef.current) window.clearTimeout(saveTimerRef.current);
     saveTimerRef.current = null;
-    await api.patch(`/workouts/${workoutId}`, { exercises: exercisesRef.current });
+    await writer.flush();
   }
+
+  useEffect(() => {
+    const onHide = () => { if (document.visibilityState === 'hidden') writer.save().catch(() => {}); };
+    document.addEventListener('visibilitychange', onHide);
+    return () => document.removeEventListener('visibilitychange', onHide);
+  }, [writer]);
 
   // Workout-Uhr (Strong zeigt die laufende Dauer im Kopf).
   useEffect(() => {
@@ -161,21 +183,23 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
       primaryMuscles: ex.primaryMuscles,
       secondaryMuscles: ex.secondaryMuscles,
       yuhonas_id: ex.yuhonas_id,
+      equipment: ex.equipment || [],
+      instructions: ex.instructions || [],
       trackingType: ex.trackingType || "weight_reps",
     });
-    load();
+    await load();
   }
 
   async function removeExercise(rowId) {
     await flushSave();
     await api.delete(`/workouts/${workoutId}/exercises/${rowId}`);
-    load();
+    await load();
   }
 
   async function addSet(exerciseId) {
     await flushSave();
     await api.post(`/workouts/${workoutId}/exercises/${exerciseId}/sets`, {});
-    load();
+    await load();
   }
 
   function patchSetLocal(exerciseId, setId, patch) {
@@ -191,7 +215,7 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
   async function deleteSet(exerciseId, setId) {
     await flushSave();
     await api.delete(`/workouts/${workoutId}/exercises/${exerciseId}/sets/${setId}`);
-    load();
+    await load();
   }
 
   async function finishWorkout() {
@@ -236,13 +260,15 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
             }))
         ),
       };
+      await flushSave();
       await api.patch(`/workouts/${workoutId}`, patch);
+      writer.clear();
       const { exercises: _ignored, ...meta } = patch;
       finished = { ...workout, ...meta, id: workoutId };
     } finally {
       setSaving(false);
     }
-    if (readActiveWorkout()?.id === workoutId) writeActiveWorkout(null);
+    if (readActiveWorkout(ownerUid)?.id === workoutId) writeActiveWorkout(null, ownerUid);
     setSummary({ workout: finished, prs: workoutPRs(finished, allWorkouts) });
   }
 
@@ -253,8 +279,10 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
       saveTimerRef.current = null;
     }
     setRestTimer(null);
+    await writer.flush();
     await api.delete(`/workouts/${workoutId}`);
-    if (readActiveWorkout()?.id === workoutId) writeActiveWorkout(null);
+    writer.clear();
+    if (readActiveWorkout(ownerUid)?.id === workoutId) writeActiveWorkout(null, ownerUid);
     onFinished();
   }
 
@@ -270,20 +298,7 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
     setSaving(true);
     try {
       const routine = await api.post("/routines", { name: name.trim(), goal: null });
-      for (const ex of exercises) {
-        await api.post(`/routines/${routine.id}/exercises`, {
-          exercise_id: ex.exercise_id, name: ex.name,
-          primaryMuscles: ex.primaryMuscles, secondaryMuscles: ex.secondaryMuscles,
-          yuhonas_id: ex.yuhonas_id, trackingType: ex.trackingType,
-          templateSets: (ex.sets || []).map((s) => ({
-            setType: s.setType || "normal",
-            targetReps: s.reps ?? s.targetReps ?? null,
-            targetWeight: s.weight ?? s.targetWeight ?? null,
-            targetDistance: s.distance ?? s.targetDistance ?? null,
-            targetDuration: s.duration ?? s.targetDuration ?? null,
-          })),
-        });
-      }
+      await api.patch(`/routines/${routine.id}`, { exercises: workoutTemplateExercises({ exercises }) });
       alert(`"${name.trim()}" als Vorlage gespeichert.`);
     } finally {
       setSaving(false);
@@ -293,8 +308,14 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
   const excludeIds = exercises.map((e) => e.exercise_id);
 
   if (summary) {
-    return <WorkoutSummary workout={summary.workout} prs={summary.prs} onDone={onFinished} />;
+    return <WorkoutSummary workout={summary.workout} prs={summary.prs} onDone={onFinished}
+      onSaveTemplate={saveAsTemplate}
+      onUpdateTemplate={workout.routine_id && !workout.sourcePlanId ? async () => {
+        await api.patch(`/routines/${workout.routine_id}`, { exercises: workoutTemplateExercises({ exercises }) });
+      } : undefined} />;
   }
+
+  if (!workout && error) return <div role="alert" className="p-6 text-fit-red">{error}<button onClick={() => { setError(''); load().catch((err) => setError(err.message)); }} className="ml-3 underline">Erneut versuchen</button></div>;
 
   if (!workout) return <div className="flex items-center justify-center h-screen text-fit-muted text-sm">Lädt…</div>;
 
@@ -304,9 +325,9 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
   const detailName = detailKey ? (exercises.find((e) => (e.exercise_id || e.name) === detailKey)?.name || detailKey) : "";
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6">
+    <fieldset disabled={saving} className="min-w-0 max-w-2xl mx-auto border-0 px-4 py-6">
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={onBack} className="p-2 rounded-xl text-fit-muted hover:text-fit-ink hover:bg-fit-bg2 transition-all">
+        <button onClick={async () => { try { await flushSave(); onBack(); } catch (err) { setError(err.message); } }} className="p-2 rounded-xl text-fit-muted hover:text-fit-ink hover:bg-fit-bg2 transition-all">
           <ArrowLeft size={20} />
         </button>
         <div className="flex-1 min-w-0">
@@ -319,7 +340,7 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
         </div>
         <button
           disabled={saving || exercises.length === 0}
-          onClick={saveAsTemplate}
+          onClick={() => saveAsTemplate().catch((err) => setError(err.message))}
           title="Dieses Workout als wiederverwendbare Vorlage speichern"
           className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-fit-card hover:bg-fit-accent/10 text-fit-ink text-sm font-medium disabled:opacity-50 transition-colors"
         >
@@ -328,8 +349,7 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
         <button
           disabled={saving}
           onClick={async () => {
-            await primeNotificationPermission();
-            await finishWorkout();
+            try { await finishWorkout(); } catch (err) { setError(err.message || "Abschluss fehlgeschlagen. Bitte erneut versuchen."); }
           }}
           className="flex items-center gap-2 px-4 py-2 rounded-xl bg-fit-accent text-fit-bg text-sm font-semibold hover:opacity-90 disabled:opacity-50 transition-colors"
         >
@@ -337,6 +357,11 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
         </button>
       </div>
 
+      {error && <p role="alert" className="mb-3 text-sm text-fit-red">{error}</p>}
+      <div aria-live="polite" className="mb-4 flex items-center justify-between text-xs text-fit-muted">
+        <span>{saveState === 'saved' ? 'Alle Änderungen gespeichert' : saveState === 'saving' ? 'Speichert…' : saveState === 'error' ? 'Cloud-Speicherung fehlgeschlagen · Entwurf auf diesem Gerät' : saveState === 'storage-error' ? 'Lokaler Speicher voll · App bis zum Speichern offen halten' : 'Änderungen auf diesem Gerät gesichert'}</span>
+        {saveState !== 'saved' && <button onClick={() => flushSave().catch((err) => setError(err.message))} className="text-fit-accent">Jetzt speichern</button>}
+      </div>
       {restTimer && (
         <div className="mb-4 rounded-2xl border border-fit-line bg-fit-card px-4 py-3 flex items-center justify-between gap-3">
           <div>
@@ -369,10 +394,10 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
               ex={ex}
               previousSets={previousSetsFor(history, ex.exercise_id || ex.name, workoutId)}
               onShowHistory={() => setDetailKey(ex.exercise_id || ex.name)}
-              onAddSet={() => addSet(ex.id)}
+              onAddSet={() => addSet(ex.id).catch((err) => setError(err.message))}
               onPatchSet={(setId, patch) => patchSetLocal(ex.id, setId, patch)}
-              onDeleteSet={(setId) => deleteSet(ex.id, setId)}
-              onDeleteExercise={() => removeExercise(ex.id)}
+              onDeleteSet={(setId) => deleteSet(ex.id, setId).catch((err) => setError(err.message))}
+              onDeleteExercise={() => removeExercise(ex.id).catch((err) => setError(err.message))}
               onCompletedSet={(set) => {
                 primeNotificationPermission().catch(() => {});
                 startRestTimer(ex, set);
@@ -384,7 +409,7 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
 
       {!workout.finished_at && (
         <button
-          onClick={discardWorkout}
+          onClick={() => discardWorkout().catch((err) => setError(err.message))}
           disabled={saving}
           className="mt-8 w-full flex items-center justify-center gap-2 py-3 rounded-xl text-fit-red bg-red-500/10 hover:bg-red-500/20 text-sm font-semibold transition-colors disabled:opacity-50"
         >
@@ -395,6 +420,6 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
       {detailKey && (
         <ExerciseDetail name={detailName} entries={detailEntries} onClose={() => setDetailKey(null)} />
       )}
-    </div>
+    </fieldset>
   );
 }
