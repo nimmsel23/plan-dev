@@ -77,3 +77,5 @@ Coach-Trainingspläne im selben Logger für Klienten nutzbar machen.
 - [ ] Versionierung und Aktualisieren bereits veröffentlichter Plan-Snapshots.
 
 Produktziel: `INSPIRATION.md`. Bedienung: `docs/PLAN-WORKFLOW.md`.
+
+- [x] Offline-Cache über App-Updates erhalten: gemeinsame SW-Strategie, API-Migration, vollständiges Asset-Precache und sichere Installation.

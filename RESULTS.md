@@ -1411,3 +1411,6 @@ Standard-Build erfolgreich ausgeführt. Der Engine-Store-Fehler wurde durch
 umgangen; kein Hook wurde deaktiviert. Companion-Backend-Commit in fitness-dev:
 `77d6963`. Plan-Funktionscommit: `0643b99`. Die temporären Browser-Testprozesse
 wurden nach dem erfolgreichen Durchlauf beendet.
+
+## 2026-10-17 — Offline-Cache bei Updates
+Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öffentlicher API-Cache mit Migration, Asset-Precache standardmäßig aktiv, fehlgeschlagene Installation ersetzt bestehenden Worker nicht. IndexedDB/localStorage bleiben unverändert. Geprüft: 13 Shell-/Update-Tests, Private-Request-Test, Vendor-Parität. Kein Push/Release; kein physischer Geräte-Test.
