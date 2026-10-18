@@ -100,7 +100,7 @@ export default function RoutineBuilder({ routineId, onBack }) {
   const hasDirty = Object.keys(dirty).length > 0;
   const excludeIds = exercises.map((e) => e.exercise_id);
 
-  if (!routine) return <div className="flex items-center justify-center h-screen text-fit-muted text-sm">Lädt…</div>;
+  if (!routine) return <div className="flex items-center justify-center min-h-[100dvh] text-fit-muted text-sm">Lädt…</div>;
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">

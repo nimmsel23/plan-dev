@@ -38,7 +38,7 @@ function PlanShell() {
 
   if (authLoading) {
     return (
-      <div className="coach-console min-h-screen flex items-center justify-center bg-fit-bg text-fit-ink">
+      <div className="coach-console min-h-[100dvh] flex items-center justify-center bg-fit-bg text-fit-ink">
         <div className="text-fit-dim text-xs font-black uppercase tracking-widest">...</div>
       </div>
     )
@@ -48,9 +48,9 @@ function PlanShell() {
 
   return (
     <ErrorBoundary>
-      <div className="coach-console min-h-screen bg-fit-bg text-fit-ink">
-        <header className="sticky top-0 z-40 border-b border-fit-line/40 bg-fit-bg/85 backdrop-blur-xl">
-          <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-4 px-4 py-3 md:px-6">
+      <div className="coach-console min-h-[100dvh] bg-fit-bg text-fit-ink">
+        <header className="sticky top-0 z-40 border-b border-fit-line/40 bg-fit-bg/85 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
+          <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-4 px-3 py-2 sm:px-4 md:px-6">
             <div className="flex min-w-0 items-center gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-fit-accent text-black shadow-lg shadow-fit-accent/20">
                 <ClipboardList size={20} />
@@ -90,7 +90,7 @@ function PlanShell() {
             <StrongApp user={user} />
           </main>
         ) : (
-          <main className="mx-auto flex min-h-[calc(100vh-65px)] max-w-lg flex-col items-center justify-center px-4 py-12 text-center">
+          <main className="mx-auto flex min-h-[calc(100dvh-65px)] max-w-lg flex-col items-center justify-center px-4 py-12 text-center">
             <div className="card w-full p-8">
               <ClipboardList size={34} className="mx-auto mb-4 text-fit-accent" />
               <h1 className="text-2xl font-black tracking-tight">Plan-Zugang</h1>

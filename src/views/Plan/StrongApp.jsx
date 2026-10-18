@@ -65,7 +65,7 @@ export default function StrongApp({ user }) {
   const startedMs = Date.parse(active?.started_at);
 
   return (
-    <div className={showActiveBar ? "pb-36" : "pb-20"}>
+    <div className={showActiveBar ? "pb-[calc(9.5rem+env(safe-area-inset-bottom))]" : "pb-[calc(5.5rem+env(safe-area-inset-bottom))]"}>
       {tab === "profile" && <ProfileView user={user} />}
       {tab === "history" && (
         <HistoryView onOpenExercise={(key) => { setExerciseKey(key); setTab("exercises"); }} />
@@ -83,7 +83,7 @@ export default function StrongApp({ user }) {
         {showActiveBar && (
           <button
             onClick={openActiveWorkout}
-            className="flex w-full items-center gap-3 border-b border-fit-line bg-fit-accent/10 px-4 py-2.5 text-left"
+            className="flex min-h-12 w-full items-center gap-3 border-b border-fit-line bg-fit-accent/10 px-4 py-2.5 text-left touch-manipulation"
           >
             <ChevronUp size={16} className="text-fit-accent" />
             <div className="min-w-0 flex-1">
@@ -102,7 +102,7 @@ export default function StrongApp({ user }) {
             <button
               key={id}
               onClick={() => selectTab(id)}
-              className={`flex flex-col items-center gap-0.5 py-2.5 text-[10px] font-semibold transition-colors ${tab === id ? "text-fit-accent" : "text-fit-muted hover:text-fit-ink"}`}
+              className={`flex flex-col items-center gap-0.5 min-h-[3.25rem] justify-center py-1.5 text-[11px] font-semibold transition-colors touch-manipulation ${tab === id ? "text-fit-accent" : "text-fit-muted hover:text-fit-ink"}`}
             >
               <Icon size={20} strokeWidth={tab === id ? 2.6 : 2} />
               {label}

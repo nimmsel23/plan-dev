@@ -72,7 +72,7 @@ export default function SetRow({ set: rawSet, index, trackingType, previous, sho
   }
 
   return (
-    <div className={`grid items-center gap-2 px-1 py-1.5 rounded-lg transition-colors ${set.completed ? "bg-green-500/10" : ""} ${setRowGrid(trackingType, showPrevious)}`}>
+    <div className={`grid items-center gap-1.5 px-1 py-1 rounded-lg transition-colors ${set.completed ? "bg-green-500/10" : ""} ${setRowGrid(trackingType, showPrevious)}`}>
       <span className={`text-xs font-mono text-center ${set.setType && set.setType !== "normal" ? "text-fit-accent font-bold" : "text-fit-muted"}`}>
         {set.setType === "warmup" ? "W" : set.setType === "drop" ? "D" : set.setType === "failure" ? "F" : index + 1}
       </span>
@@ -94,7 +94,7 @@ export default function SetRow({ set: rawSet, index, trackingType, previous, sho
           placeholder={isWeight ? String(set.ghostWeight ?? set.targetWeight ?? "kg") : String(set.ghostDistance ?? set.targetDistance ?? "km")}
           value={isWeight ? (set.weight ?? "") : (set.distance ?? "")}
           onChange={(e) => onPatch({ [isWeight ? "weight" : "distance"]: e.target.value === "" ? null : Number(e.target.value) })}
-          className="px-2 py-1.5 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm font-mono text-center focus:outline-none focus:border-fit-accent placeholder:text-fit-muted"
+          className="min-w-0 h-11 px-1 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-base font-mono text-center focus:outline-none focus:border-fit-accent placeholder:text-fit-muted"
         />
       )}
       {isBodyweight && (
@@ -104,11 +104,11 @@ export default function SetRow({ set: rawSet, index, trackingType, previous, sho
           placeholder={String(set.ghostReps ?? set.targetReps ?? "Wdh")}
           value={set.reps ?? ""}
           onChange={(e) => onPatch({ reps: e.target.value === "" ? null : Number(e.target.value) })}
-          className="px-2 py-1.5 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm font-mono text-center focus:outline-none focus:border-fit-accent placeholder:text-fit-muted"
+          className="min-w-0 h-11 px-1 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-base font-mono text-center focus:outline-none focus:border-fit-accent placeholder:text-fit-muted"
         />
       )}
       {isBodyweight && (
-        <div className="px-2 py-1.5 rounded-lg bg-fit-bg2/50 border border-fit-line text-fit-muted text-[11px] text-center">
+        <div className="px-1 h-11 flex items-center justify-center rounded-lg bg-fit-bg2/50 border border-fit-line text-fit-muted text-[11px] text-center">
           {set.progressionStage || "stage offen"}
         </div>
       )}
@@ -119,7 +119,7 @@ export default function SetRow({ set: rawSet, index, trackingType, previous, sho
           placeholder={String(set.ghostReps ?? set.targetReps ?? "Wdh")}
           value={set.reps ?? ""}
           onChange={(e) => onPatch({ reps: e.target.value === "" ? null : Number(e.target.value) })}
-          className="px-2 py-1.5 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm font-mono text-center focus:outline-none focus:border-fit-accent placeholder:text-fit-muted"
+          className="min-w-0 h-11 px-1 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-base font-mono text-center focus:outline-none focus:border-fit-accent placeholder:text-fit-muted"
         />
       )}
       {isDistanceTime && (
@@ -129,7 +129,7 @@ export default function SetRow({ set: rawSet, index, trackingType, previous, sho
           placeholder={String(set.ghostDuration ?? set.targetDuration ?? "min")}
           value={set.duration ?? ""}
           onChange={(e) => onPatch({ duration: e.target.value === "" ? null : Number(e.target.value) })}
-          className="px-2 py-1.5 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm font-mono text-center focus:outline-none focus:border-fit-accent placeholder:text-fit-muted"
+          className="min-w-0 h-11 px-1 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-base font-mono text-center focus:outline-none focus:border-fit-accent placeholder:text-fit-muted"
         />
       )}
       {isDuration && (
@@ -139,17 +139,19 @@ export default function SetRow({ set: rawSet, index, trackingType, previous, sho
           placeholder={String(set.ghostDuration ?? set.targetDuration ?? "sek")}
           value={set.duration ?? ""}
           onChange={(e) => onPatch({ duration: e.target.value === "" ? null : Number(e.target.value) })}
-          className="px-2 py-1.5 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm font-mono text-center focus:outline-none focus:border-fit-accent placeholder:text-fit-muted"
+          className="min-w-0 h-11 px-1 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-base font-mono text-center focus:outline-none focus:border-fit-accent placeholder:text-fit-muted"
         />
       )}
       <button
         onClick={toggleCompleted}
-        className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors"
+        className="w-11 h-11 rounded-lg flex items-center justify-center transition-colors touch-manipulation"
+        aria-label={set.completed ? "Satz zurücksetzen" : "Satz abhaken"}
         style={{ background: set.completed ? "#22c55e33" : "var(--bg2)", color: set.completed ? "#22c55e" : "var(--dim)" }}
       >
         <Check size={16} strokeWidth={3} />
       </button>
-      <button onClick={onDelete} className="w-9 h-9 rounded-lg flex items-center justify-center text-fit-muted hover:text-fit-red hover:bg-red-500/10 transition-colors">
+      <button onClick={onDelete} aria-label="Satz löschen"
+        className="w-9 h-11 rounded-lg flex items-center justify-center text-fit-muted hover:text-fit-red hover:bg-red-500/10 transition-colors touch-manipulation">
         <Trash2 size={14} />
       </button>
     </div>
@@ -162,10 +164,10 @@ export function setRowGrid(trackingType, showPrevious) {
   // Literale Klassen-Strings, damit Tailwinds Content-Scan sie findet.
   if (trackingType === "duration") {
     return showPrevious
-      ? "grid-cols-[1.5rem_minmax(0,1.3fr)_1fr_2.25rem_2.25rem]"
-      : "grid-cols-[1.5rem_1fr_2.25rem_2.25rem]";
+      ? "grid-cols-[1.5rem_minmax(0,1.3fr)_1fr_2.75rem_2.25rem]"
+      : "grid-cols-[1.5rem_1fr_2.75rem_2.25rem]";
   }
   return showPrevious
-    ? "grid-cols-[1.5rem_minmax(0,1.3fr)_1fr_1fr_2.25rem_2.25rem]"
-    : "grid-cols-[1.5rem_1fr_1fr_2.25rem_2.25rem]";
+    ? "grid-cols-[1.5rem_minmax(0,1.3fr)_1fr_1fr_2.75rem_2.25rem]"
+    : "grid-cols-[1.5rem_1fr_1fr_2.75rem_2.25rem]";
 }

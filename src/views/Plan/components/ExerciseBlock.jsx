@@ -15,7 +15,7 @@ export default function ExerciseBlock({ ex, previousSets, onShowHistory, onAddSe
       <div className="flex items-center gap-2 px-3 py-3">
         <div className="flex-1 min-w-0">
           {onShowHistory ? (
-            <button type="button" onClick={onShowHistory} className="block max-w-full text-left text-sm font-semibold text-fit-accent truncate hover:underline">
+            <button type="button" onClick={onShowHistory} className="block max-w-full py-1 text-left text-base font-semibold text-fit-accent truncate hover:underline">
               {ex.name}
             </button>
           ) : (
@@ -35,13 +35,13 @@ export default function ExerciseBlock({ ex, previousSets, onShowHistory, onAddSe
             </div>
           )}
         </div>
-        <button onClick={onDeleteExercise} className="p-1.5 rounded-lg text-fit-muted hover:text-fit-red hover:bg-red-500/10 transition-all">
+        <button onClick={onDeleteExercise} aria-label="Übung entfernen" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-fit-muted hover:text-fit-red hover:bg-red-500/10 transition-all touch-manipulation">
           <Trash2 size={14} />
         </button>
       </div>
 
       <div className="px-3 pb-2">
-        <div className={`grid gap-2 px-1 pb-1 text-[10px] font-bold uppercase tracking-wide text-fit-muted ${setRowGrid(trackingType, showPrevious)}`}>
+        <div className={`grid gap-1.5 px-1 pb-1 text-[10px] font-bold uppercase tracking-wide text-fit-muted ${setRowGrid(trackingType, showPrevious)}`}>
           <span className="text-center">#</span>
           {showPrevious && <span className="text-center">Vorher</span>}
           <span className="text-center">
@@ -68,7 +68,7 @@ export default function ExerciseBlock({ ex, previousSets, onShowHistory, onAddSe
         ))}
         <button
           onClick={onAddSet}
-          className="w-full mt-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-fit-accent hover:bg-fit-accent/10 text-xs font-semibold transition-colors"
+          className="w-full mt-1 flex min-h-11 items-center justify-center gap-1.5 py-2 rounded-lg text-fit-accent hover:bg-fit-accent/10 text-sm touch-manipulation font-semibold transition-colors"
         >
           <Plus size={13} strokeWidth={2.7} /> Satz hinzufügen
         </button>

@@ -296,7 +296,7 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
     return <WorkoutSummary workout={summary.workout} prs={summary.prs} onDone={onFinished} />;
   }
 
-  if (!workout) return <div className="flex items-center justify-center h-screen text-fit-muted text-sm">Lädt…</div>;
+  if (!workout) return <div className="flex items-center justify-center min-h-[100dvh] text-fit-muted text-sm">Lädt…</div>;
 
   const startedMs = Date.parse(workout.started_at);
   const elapsedLabel = workout.finished_at || !Number.isFinite(startedMs) ? null : formatClock(nowMs - startedMs);
@@ -304,13 +304,13 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
   const detailName = detailKey ? (exercises.find((e) => (e.exercise_id || e.name) === detailKey)?.name || detailKey) : "";
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6">
-      <div className="flex items-center gap-3 mb-6">
-        <button onClick={onBack} className="p-2 rounded-xl text-fit-muted hover:text-fit-ink hover:bg-fit-bg2 transition-all">
+    <div className="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+      <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+        <button onClick={onBack} aria-label="Zurück" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-fit-muted hover:text-fit-ink hover:bg-fit-bg2 transition-all">
           <ArrowLeft size={20} />
         </button>
         <div className="flex-1 min-w-0">
-          <h1 className="text-xl font-bold tracking-tight truncate">{workout.name}</h1>
+          <h1 className="text-lg sm:text-xl font-bold tracking-tight truncate">{workout.name}</h1>
           {elapsedLabel && (
             <div className="flex items-center gap-1 text-xs font-mono text-fit-muted">
               <Timer size={12} /> {elapsedLabel}
@@ -321,9 +321,9 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
           disabled={saving || exercises.length === 0}
           onClick={saveAsTemplate}
           title="Dieses Workout als wiederverwendbare Vorlage speichern"
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-fit-card hover:bg-fit-accent/10 text-fit-ink text-sm font-medium disabled:opacity-50 transition-colors"
+          className="flex h-11 shrink-0 items-center gap-1.5 px-3 rounded-xl bg-fit-card hover:bg-fit-accent/10 text-fit-ink text-sm font-medium disabled:opacity-50 transition-colors"
         >
-          Als Vorlage
+          <span className="hidden min-[380px]:inline">Als </span>Vorlage
         </button>
         <button
           disabled={saving}
@@ -331,14 +331,14 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
             await primeNotificationPermission();
             await finishWorkout();
           }}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-fit-accent text-white text-sm font-semibold hover:bg-blue-600 disabled:opacity-50 transition-colors"
+          className="flex h-11 shrink-0 items-center gap-2 px-3 sm:px-4 rounded-xl bg-fit-accent text-white text-sm font-semibold hover:bg-blue-600 disabled:opacity-50 transition-colors"
         >
           <Flag size={14} strokeWidth={2.7} /> Fertig
         </button>
       </div>
 
       {restTimer && (
-        <div className="mb-4 rounded-2xl border border-fit-line bg-fit-card px-4 py-3 flex items-center justify-between gap-3">
+        <div className="sticky top-[calc(env(safe-area-inset-top)+3.5rem)] z-30 mb-4 rounded-2xl border border-fit-line bg-fit-card/95 backdrop-blur px-4 py-3 flex items-center justify-between gap-3">
           <div>
             <div className="text-[11px] uppercase tracking-wide text-fit-muted">Rest Timer</div>
             <div className="text-sm font-semibold text-fit-ink">{restTimer.exerciseName}</div>
@@ -346,7 +346,7 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
           <div className="text-lg font-mono text-fit-ink">{restRemainingLabel}</div>
           <button
             onClick={() => setRestTimer(null)}
-            className="px-3 py-1.5 rounded-lg bg-fit-bg2 text-fit-muted text-xs font-semibold hover:text-fit-ink transition-colors"
+            className="h-11 px-4 rounded-lg bg-fit-bg2 text-fit-muted text-xs font-semibold touch-manipulation hover:text-fit-ink transition-colors"
           >
             Stop
           </button>
@@ -386,7 +386,7 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
         <button
           onClick={discardWorkout}
           disabled={saving}
-          className="mt-8 w-full flex items-center justify-center gap-2 py-3 rounded-xl text-fit-red bg-red-500/10 hover:bg-red-500/20 text-sm font-semibold transition-colors disabled:opacity-50"
+          className="mt-8 w-full flex min-h-12 items-center justify-center gap-2 py-3 rounded-xl text-fit-red bg-red-500/10 hover:bg-red-500/20 text-sm font-semibold transition-colors disabled:opacity-50"
         >
           <Trash2 size={14} /> Workout verwerfen
         </button>
