@@ -110,7 +110,7 @@ export default function RoutineBuilder({ routineId, onBack, apiClient = defaultA
 
   if (error && !routine) return <p role="alert" className="p-6 text-fit-red">{error}<button aria-label="Zurück zu den Vorlagen" onClick={async () => { try { await savePatches(); onBack(); } catch (err) { setError(err.message); } }} className="ml-3 underline">Zurück</button></p>;
 
-  if (!routine) return <div className="flex items-center justify-center h-screen text-fit-muted text-sm">Lädt…</div>;
+  if (!routine) return <div className="flex items-center justify-center min-h-[100dvh] text-fit-muted text-sm">Lädt…</div>;
 
   return (
     <fieldset disabled={saving} className="min-w-0 max-w-2xl mx-auto border-0 px-4 py-6">
