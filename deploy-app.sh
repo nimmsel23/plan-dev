@@ -1,17 +1,26 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Integrate the reviewed Plan dev revision into Fitness and push the resulting
-# Fitness gitlink update. This does not deploy the standalone Plan app.
+# `fitness`: integrate Plan dev into Fitness and push the Fitness gitlink.
+# `vos`: release the standalone Plan app through the VitalOS release workflow.
 
 PLAN_REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FITNESS_REPO="${FITNESS_DEV_REPO:-$HOME/fitness-dev}"
+MODE="${1:-fitness}"
 TMP_ROOT=""
 
 fail() {
   echo "deploy:fitness: $*" >&2
   exit 1
 }
+
+if [[ "$MODE" == "vos" ]]; then
+  VOS_RELEASE="${VOS_RELEASE_BIN:-$HOME/vitalos/bin/vos-release}"
+  [[ -x "$VOS_RELEASE" ]] || fail "vos-release not found or not executable at $VOS_RELEASE (override with VOS_RELEASE_BIN)."
+  exec "$VOS_RELEASE" plan
+elif [[ "$MODE" != "fitness" ]]; then
+  fail "Unknown target '$MODE'. Use 'fitness' or 'vos'."
+fi
 
 command -v git >/dev/null || fail "git is required."
 command -v pnpm >/dev/null || fail "pnpm is required."
