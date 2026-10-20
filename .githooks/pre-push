@@ -31,6 +31,7 @@ BACKEND_TRIGGER='^(fitness/|db/|alembic/|server\.mjs$|fitness-runtime\.mjs$|fire
 should_deploy=false
 should_deploy_staging=false
 should_build_dev=false
+fitness_source_sha=""
 kb_since=""
 kb_until=""
 
@@ -62,6 +63,10 @@ while read -r local_ref local_sha remote_ref remote_sha; do
 
   if [ "$branch" = "dev" ] && echo "$changed" | grep -Ev "$SKIP" | grep -Eq "$BACKEND_TRIGGER"; then
     should_deploy_staging=true
+  fi
+
+  if [ "$branch" = "dev" ] && echo "$changed" | grep -Eq '^src/views/Plan/.*\.(jsx|js|css|json)$'; then
+    fitness_source_sha="$local_sha"
   fi
 
   [ "$branch" = "dev" ] && should_build_dev=true
@@ -123,6 +128,17 @@ if [ "$should_deploy_staging" = true ]; then
     fi
   else
     echo "⚠️  deploy.sh nicht ausfuehrbar/gefunden — Staging-Deploy uebersprungen, manuell nachholen: ./deploy.sh staging" >&2
+  fi
+fi
+
+if [ -n "$fitness_source_sha" ]; then
+  fitness_repo="${FITNESS_DEV_REPO:-$HOME/fitness-dev}"
+  publisher="$fitness_repo/scripts/publish-mini-app-to-fitness.mjs"
+  if [ -f "$publisher" ]; then
+    echo "🔄 Plan dev → Fitness dev: synchronizing the pushed source commit…"
+    node "$publisher" plan "$fitness_source_sha" || exit $?
+  else
+    echo "⚠️ Fitness publisher not found at $publisher; source build passed, Fitness sync skipped." >&2
   fi
 fi
 
