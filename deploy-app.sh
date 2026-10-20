@@ -7,7 +7,9 @@ set -euo pipefail
 PLAN_REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FITNESS_REPO="${FITNESS_DEV_REPO:-$HOME/fitness-dev}"
 MODE="${1:-fitness}"
-TMP_ROOT=""
+OLD_PLAN_SHA=""
+PIN_UPDATED=false
+KEEP_PIN=false
 
 fail() {
   echo "deploy:fitness: $*" >&2
@@ -41,28 +43,26 @@ FITNESS_SHA="$(git -C "$FITNESS_REPO" rev-parse HEAD)"
 FITNESS_ORIGIN_SHA="$(git -C "$FITNESS_REPO" rev-parse refs/remotes/origin/dev)"
 [[ "$FITNESS_SHA" == "$FITNESS_ORIGIN_SHA" ]] || fail "Fitness dev must be synced with origin/dev before integration."
 
-# Merge Plan dev in a temporary detached worktree so the user's Plan checkout
-# stays on dev. The integration branch remains an explicit, pushed revision.
-TMP_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/plan-fitness-deploy.XXXXXX")"
-cleanup() {
-  if [[ -n "$TMP_ROOT" ]]; then
-    git -C "$PLAN_REPO" worktree remove --force "$TMP_ROOT/plan" >/dev/null 2>&1 || true
-    rm -rf "$TMP_ROOT"
+# Plan and Fitness each use their own dev branch. Fitness consumes Plan through
+# the Gitlink, which must pin the exact revision selected for this integration.
+PLAN_SUBMODULE_BRANCH="$(git -C "$FITNESS_REPO" config -f "$FITNESS_REPO/.gitmodules" submodule.plan.branch || true)"
+[[ "$PLAN_SUBMODULE_BRANCH" == "dev" ]] || fail "Fitness .gitmodules must declare plan branch=dev (found '${PLAN_SUBMODULE_BRANCH:-unset}')."
+
+git -C "$FITNESS_REPO" submodule update --init --recursive
+OLD_PLAN_SHA="$(git -C "$FITNESS_REPO" rev-parse HEAD:plan)"
+restore_plan_pin() {
+  if [[ "$PIN_UPDATED" == true && "$KEEP_PIN" != true ]]; then
+    git -C "$FITNESS_REPO" reset -- plan >/dev/null 2>&1 || true
+    git -C "$FITNESS_REPO/plan" checkout --detach "$OLD_PLAN_SHA" >/dev/null 2>&1 || true
   fi
 }
-trap cleanup EXIT
+trap restore_plan_pin EXIT
 
-git -C "$PLAN_REPO" worktree add --detach "$TMP_ROOT/plan" refs/remotes/origin/fitness
-git -C "$TMP_ROOT/plan" merge --no-edit "$PLAN_SHA"
-INTEGRATION_SHA="$(git -C "$TMP_ROOT/plan" rev-parse HEAD)"
-git -C "$PLAN_REPO" push origin "$INTEGRATION_SHA:refs/heads/fitness"
-
-# Pin Fitness to the exact commit just published on Plan's fitness branch.
-git -C "$FITNESS_REPO" submodule update --init --recursive
-git -C "$FITNESS_REPO/plan" fetch origin fitness
-git -C "$FITNESS_REPO/plan" checkout --detach "$INTEGRATION_SHA"
+git -C "$FITNESS_REPO/plan" fetch origin dev
+git -C "$FITNESS_REPO/plan" checkout --detach "$PLAN_SHA"
 PINNED_SHA="$(git -C "$FITNESS_REPO/plan" rev-parse HEAD)"
-[[ "$PINNED_SHA" == "$INTEGRATION_SHA" ]] || fail "Fitness Plan submodule did not check out the requested revision."
+[[ "$PINNED_SHA" == "$PLAN_SHA" ]] || fail "Fitness Plan submodule did not check out the requested revision."
+PIN_UPDATED=true
 
 echo "Building Fitness with Plan $PINNED_SHA …"
 (cd "$FITNESS_REPO" && pnpm run build:firebase)
@@ -74,6 +74,7 @@ if git -C "$FITNESS_REPO" diff --cached --quiet -- plan; then
 fi
 
 git -C "$FITNESS_REPO" commit -m "chore(fitness): update Plan integration"
+KEEP_PIN=true
 git -C "$FITNESS_REPO" push origin dev
 
 echo "Fitness dev now pins Plan $PINNED_SHA. The Fitness push/CI flow has been started."

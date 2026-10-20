@@ -28,8 +28,9 @@ Fehler bricht den Push ab; `git push --no-verify` überspringt den Hook.
 
 ## Explizite Release-Befehle
 
-- `npm run deploy:fitness`: übernimmt Plan in die Fitness-Integrationslinie,
-  baut Fitness und pusht dessen `dev`-Branch.
+- `npm run deploy:fitness`: pins den aktuellen, bereits gepushten Plan-`dev`-
+  Commit als Fitness-Submodul-Gitlink, baut Fitness und pusht dessen `dev`-
+  Branch.
 - `npm run deploy:vos`: ruft `vos-release plan` auf. Der Release-Workflow
   übernimmt Plan in `vitalos/plan-app`; der Push auf Plan-`vitalos` löst den
   Standalone Firebase-Deploy aus.
