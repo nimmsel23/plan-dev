@@ -1,6 +1,7 @@
 # Plan development and Fitness integration
 
-- `plan-dev` is the independent development repository for the Plan mini-app. Its `dev` branch may contain work that is not ready for the Fitness app or the standalone Plan release.
-- Fitness builds must use a specific, committed Plan source revision. Pin that revision in Fitness integration/build configuration; do not resolve the latest `plan-dev/dev` implicitly during a build. This keeps Fitness builds reproducible and lets Fitness remain on a stable Plan revision while standalone Plan work continues.
-- Updating the Plan revision used by Fitness is an intentional integration change: update the pin in `fitness-dev`, build and verify Fitness, then commit and push that integration change through the Fitness staging flow.
-- Standalone Plan releases are independent of the Plan revision pinned by Fitness. Releasing a standalone Plan build must not silently advance Fitness.
+- `~/plan-dev` on `dev` is the canonical working checkout and source repository for the Plan mini-app.
+- When Plan view files under `src/views/Plan/` are pushed from `plan-dev/dev`, its pre-push hook calls `fitness-dev/scripts/publish-mini-app-to-fitness.mjs`. The publisher copies those files into `fitness-dev/src/views/Plan/`, builds the Fitness bundle, commits the integrated view, and pushes `fitness-dev/dev`; Fitness CI then deploys the preview.
+- `fitness-dev/src/views/Plan/` is the integrated Fitness copy. The old `fitness-dev/plan` submodule is not part of the current integration and must not be treated as the Plan development checkout.
+- Fitness production follows `fitness-dev/dev` -> `~/vitalos/fitness-app` branch `vitalos` -> the `fitness-app` Gitlink in `~/vitalos` branch `master`. Fitness CI deploys standalone Fitness production; VitalOS CI deploys the shell with its pinned app sources.
+- The Plan app deployed from `~/vitalos/plan-app` is a separate standalone shell app. Keep that release target distinct from Plan's Fitness-view sync.
