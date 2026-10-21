@@ -32,6 +32,8 @@
     "deploy:firebase": "firebase deploy --only hosting:plan",
     "firebase": "pnpm run build:firebase && pnpm run deploy:firebase",
     "deploy": "node scripts/deploy-runner.mjs",
+    "deploy:fitness": "bash ./deploy-app.sh",
+    "deploy:vos": "bash ./deploy-app.sh vos",
     "deploy:local": "./deploy.sh staging",
     "deploy:prod": "./deploy.sh prod",
     "preview": "vite preview",

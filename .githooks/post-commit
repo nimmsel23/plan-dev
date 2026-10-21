@@ -1,7 +1,5 @@
 #!/bin/bash
-# Retired (2026-07-12): Auto-deploy moved to pre-push (see .githooks/pre-push).
-# Deploying on every commit to master was premature for multi-commit local
-# work; pre-push only ships once you actually push. Kept as a no-op stub
-# instead of deleting so a stale core.hooksPath doesn't silently resurrect
-# the old double-deploy behavior.
+# Retired: Plan releases run through `npm run deploy:vos` and the
+# pre-push hook on the standalone `vitalos` branch. Keep this no-op stub so
+# commits never deploy implicitly.
 exit 0
