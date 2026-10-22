@@ -53,8 +53,7 @@ Beim Hinzufügen einer Vorlage speichert der Plan ihre Übungen als Snapshot.
 Ein Start übergibt diesen Snapshot plus `sourcePlanId`, `sourcePlanRoutineId`
 und ursprüngliche `routine_id` an den normalen Workout-Adapter. Änderungen an
 Vorlagen beeinflussen diesen Snapshot nicht. Änderungen an einem bereits
-bereitgestellten Plan sind direkt sichtbar; Versionierung veröffentlichter
-Pläne ist noch nicht implementiert.
+bereitgestellten Plan sind direkt sichtbar; Versionierung: siehe unten.
 
 Ältere `wf_workouts`-Zuweisungen werden über `assignedWorkoutBody` in denselben
 Logger überführt (`sourceAssignmentId`). Alte Checklisten-Completions werden
@@ -80,6 +79,23 @@ bieten `updateMacrocycle`.
   Cloud Function `onPlanPublished` (`functions/`, Entscheidung in `planPublished.js`)
   sendet bei neuem `publishedAt` eines fremden Coach-Plans. Test:
   `scripts/tests/functions-plan.test.mjs`.
+
+## Versionierung veröffentlichter Pläne (2026-10-22)
+
+Git-Modell: der Plan (`macrocycles/{id}`) ist der **Arbeitsstand**, jede Veröffentlichung
+ein unveränderlicher **Commit** `macrocycles/{id}/versions/vN` (`number`, `message`, `author`,
+`createdAt`, `parent`, `snapshot` = Name/Hinweis/Wochen/Einheiten samt Übungen). Am Plan liegen
+`published` (Snapshot des Head), `headVersion`, `headMessage`, `publishedAt`.
+Klienten lesen ausschließlich `published` (`lib/planVersions.js::clientView`); Coach-Änderungen
+am Arbeitsstand sind für sie unsichtbar, bis erneut veröffentlicht wird. Veröffentlichen ohne
+inhaltliche Änderung wird abgelehnt; Zurückziehen/erneut Bereitstellen ohne Änderung legt keine
+neue Version an. `restore` setzt den Arbeitsstand auf eine Version (checkout), die Historie
+bleibt; ein Revert ist also restore + neu veröffentlichen. `diffSnapshots` liefert die lesbare
+Änderungsliste (neue/entfernte Einheiten und Übungen, Sätze, Tage, Ziele, Hinweis). Workouts tragen
+`sourcePlanVersion`. UI: `components/PlanVersions.jsx`. Beide Backends
+(`macrocycles.py`, `firestore/macrocycles.js`) bieten `publish`/`listPlanVersions`/`restorePlanVersion`.
+Bestehende, schon bereitgestellte Pläne ohne Version zeigen weiter den Arbeitsstand, bis zur ersten
+Veröffentlichung als v1. Offen: Branches/Merge gibt es bewusst nicht; Klienten sehen kein Änderungsprotokoll.
 
 ## Speicherung und Wiederaufnahme
 

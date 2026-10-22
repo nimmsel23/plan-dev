@@ -27,6 +27,17 @@ test('coach edits the chosen client; plan snapshot becomes independent normal wo
   const updated = await macros.addRoutine('client', plan.id, { label: routine.name, sourceTemplateId: id, targetCount: 1, targetPeriodDays: 7, exercises: routine.exercises });
   const published = await macros.publishMacrocycle('client', plan.id);
   assert.equal(published.status, 'published');
+  assert.equal(published.headVersion, 1);
+  assert.equal(published.published.routines[0].exercises.length, 1);
+  await assert.rejects(macros.publishMacrocycle('client', plan.id), /Keine Änderungen/);
+  await macros.updateMacrocycle('client', plan.id, { description: 'Neu' });
+  const v2 = await macros.publishMacrocycle('client', plan.id, { message: 'Hinweis ergänzt' });
+  assert.equal(v2.headVersion, 2);
+  assert.equal(v2.headMessage, 'Hinweis ergänzt');
+  assert.deepEqual((await macros.listPlanVersions('client', plan.id)).map((v) => v.id), ['v1', 'v2']);
+  const restored = await macros.restorePlanVersion('client', plan.id, 'v1');
+  assert.equal(restored.description, '');
+  assert.equal(restored.published.description, 'Neu');
   const created = await workouts.createWorkout({ routine_id: id, sourcePlanId: plan.id, routine_snapshot: { name: routine.name, exercises: updated.routines[0].exercises } }, 'client');
   await routines.updateRoutineExercise(id, routine.exercises[0].id, { name: 'Changed afterwards' }, 'client');
   const { workout } = await workouts.getWorkout(created.id, 'client');

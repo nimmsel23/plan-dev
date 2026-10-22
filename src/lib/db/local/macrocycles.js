@@ -61,8 +61,19 @@ export async function getLastPerformance(clientUid, cycleId, routineId) {
   }
 }
 
-export async function publishMacrocycle(clientUid, cycleId) {
-  const data = await api.patch(`${base(clientUid)}/${encodeURIComponent(cycleId)}`, { status: 'published' });
+// Veröffentlichen legt eine Version an (message = Commit-Nachricht).
+export async function publishMacrocycle(clientUid, cycleId, { message = '', author = null } = {}) {
+  const data = await api.patch(`${base(clientUid)}/${encodeURIComponent(cycleId)}`, { status: 'published', message, author });
+  return data?.macrocycle || null;
+}
+
+export async function listPlanVersions(clientUid, cycleId) {
+  const data = await api.get(`${base(clientUid)}/${encodeURIComponent(cycleId)}/versions`);
+  return data?.versions || [];
+}
+
+export async function restorePlanVersion(clientUid, cycleId, versionId) {
+  const data = await api.post(`${base(clientUid)}/${encodeURIComponent(cycleId)}/restore`, { version: versionId });
   return data?.macrocycle || null;
 }
 

@@ -412,7 +412,7 @@ async def create_workout(request: Request):
 
     workout = {
         "id": _new_id(), "routine_id": routine_id, "sourceRoutineId": routine_id,
-        "sourcePlanId": body.get("sourcePlanId"), "sourcePlanRoutineId": body.get("sourcePlanRoutineId"),
+        "sourcePlanId": body.get("sourcePlanId"), "sourcePlanRoutineId": body.get("sourcePlanRoutineId"), "sourcePlanVersion": body.get("sourcePlanVersion"),
         "sourceAssignmentId": body.get("sourceAssignmentId"),
         "name": name or f"Workout {datetime.now().strftime('%d.%m.')}",
         "started_at": datetime.now().isoformat(), "finished_at": None, "sessionState": "work",

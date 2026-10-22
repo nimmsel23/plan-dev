@@ -72,6 +72,19 @@ class PlanBackendTest(unittest.TestCase):
                 self.assertEqual(wd["routines"][0]["weekdays"], [0, 4])
                 noted = client.patch(url, json={"description": " Dreimal pro Woche, Technik vor Gewicht. "}).json()["macrocycle"]
                 self.assertEqual(noted["description"], "Dreimal pro Woche, Technik vor Gewicht.")
+                v2 = client.patch("/api" + url, json={"status": "published", "message": "Wochentage + Hinweis"})
+                self.assertEqual(v2.json()["macrocycle"]["headVersion"], 2)
+                self.assertEqual(client.patch("/api" + url, json={"status": "published"}).status_code, 422)  # unverändert seit v2
+                self.assertEqual(client.patch(url, json={"status": "published"}).status_code, 422)
+                self.assertEqual(client.get(url).json()["macrocycle"]["headVersion"], 2)
+                versions = client.get(f"{url}/versions").json()["versions"]
+                self.assertEqual([v["id"] for v in versions], ["v1", "v2"])
+                self.assertEqual(versions[0]["snapshot"]["routines"][0]["weekdays"], [])
+                self.assertEqual(versions[1]["message"], "Wochentage + Hinweis")
+                self.assertEqual(client.post(f"{url}/restore", json={"version": "v1"}).json()["macrocycle"]["description"], "")
+                self.assertEqual(client.get(url).json()["macrocycle"]["published"]["description"], "Dreimal pro Woche, Technik vor Gewicht.")
+                self.assertEqual(client.post(f"{url}/restore", json={"version": "v9"}).status_code, 404)
+                client.patch(url, json={"description": " Dreimal pro Woche, Technik vor Gewicht. "})
                 self.assertEqual(client.patch(url, json={"status": "draft"}).json()["macrocycle"]["status"], "draft")
                 self.assertEqual(client.patch(url, json={"status": "archived"}).status_code, 422)
                 self.assertEqual(client.patch(url, json={"status": "published"}).json()["macrocycle"]["status"], "published")

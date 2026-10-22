@@ -12,6 +12,7 @@ import { readActiveWorkout, writeActiveWorkout } from './lib/activeWorkout.js';
 import { getUid, listMacrocycles, getMacrocycle } from '@db';
 import { pickNextPlanRoutine } from '../../lib/habitProgress.js';
 import { todaysOpenRoutines, hasSchedule } from './lib/weekSchedule.js';
+import { clientView } from './lib/planVersions.js';
 import CoachPlanToday from './components/CoachPlanToday.jsx';
 import { useUser } from '../../contexts/UserContext.jsx';
 import PushOptIn from './components/PushOptIn.jsx';
@@ -52,7 +53,7 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
       setNewPlans(unseenCoachPlans(plans, uid, readSeen(uid)));
       const mine = plans.filter((p) => p.status !== 'draft' && p.coachUid && p.coachUid !== uid && p.routineCount > 0);
       const details = await Promise.all(mine.map((p) => getMacrocycle(uid, p.id).then((d) => d?.macrocycle).catch(() => null)));
-      if (alive) setCoachPlans(details.filter(Boolean));
+      if (alive) setCoachPlans(details.filter(Boolean).map(clientView));
     }).catch(() => {});
     return () => { alive = false; };
   }, []);
