@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const yaml = require("js-yaml");
 const strava = require("./strava.js");
+const { shouldNotifyPlanPublished } = require("./planPublished.js");
 
 admin.initializeApp();
 
@@ -17,6 +18,7 @@ const REMINDER_TYPES = {
   habit: true,
   coverage: true,
   restday: true,
+  plan: true,
 };
 
 // Kanonische Muscle-Group-IDs für den Coverage-Alert. Bewusst hier
@@ -332,6 +334,29 @@ exports.onCoachFeedback = functions
 
     const text = notificationText("coachFeedback");
     return sendReminder(uid, tokens, text.title, newData.coachFeedback.substring(0, 100), text.link);
+  });
+
+// Coach stellt einem Klienten einen Trainingsplan bereit (oder erneut bereit):
+// Push an die Geräte des Klienten. Entwürfe, eigene Pläne und unveränderte
+// Updates (z.B. Hinweis-Text, Wochentage) lösen nichts aus — nur ein neuer
+// publishedAt-Stand.
+exports.onPlanPublished = functions
+  .region("europe-west1")
+  .firestore.document("fitness/{uid}/macrocycles/{cid}")
+  .onWrite(async (change, context) => {
+    const { uid } = context.params;
+    const after = change.after.data();
+    if (!shouldNotifyPlanPublished(uid, change.before.data(), after)) return null;
+
+    const pushDoc = await admin.firestore().collection("fitness").doc(uid).collection("settings").doc("push").get();
+    const pushData = pushDoc.data() || {};
+    if (!pushData.enabled || getEnabledTypes(pushData).plan === false) return null;
+
+    const tokens = normalizeTokens(pushData);
+    if (tokens.length === 0) return null;
+
+    const text = notificationText("planPublished", { plan: after.name || "Trainingsplan" });
+    return sendReminder(uid, tokens, text.title, text.body, text.link);
   });
 
 // ── Strava-Live-Import (Radtouren-Tab, Prod/Firebase-PWA) ──────────────────

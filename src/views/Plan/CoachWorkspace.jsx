@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Plus, Pencil, Users } from 'lucide-react';
-import { getAllUserProfiles } from '@db';
+import { getAllUserProfiles, listMacrocycles } from '@db';
 import { createPlanApi } from './api.js';
 import RoutineBuilder from './RoutineBuilder.jsx';
 import TrainingPlans from './TrainingPlans.jsx';
@@ -15,8 +15,29 @@ export default function CoachWorkspace({ onBack }) {
   const [name, setName] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [overview, setOverview] = useState({});
   const clientApi = useMemo(() => createPlanApi(clientUid), [clientUid]);
   useEffect(() => { getAllUserProfiles().then(setProfiles).catch((err) => setError(err.message)); }, []);
+  const clients = useMemo(() => Object.entries(profiles).map(([uid, p]) => [uid, p.displayName || p.email || uid]).sort((a, b) => a[1].localeCompare(b[1])), [profiles]);
+  // Pro Klient: bereitgestellte/Entwurfs-Pläne und letztes absolviertes Workout.
+  useEffect(() => {
+    let alive = true;
+    clients.forEach(async ([uid]) => {
+      try {
+        const [plans, w] = await Promise.all([listMacrocycles(uid), createPlanApi(uid).get('/workouts')]);
+        const finished = (w.workouts || []).filter((x) => x.finished_at).map((x) => x.finished_at).sort();
+        const weekAgo = Date.now() - 7 * 86400000;
+        const info = {
+          published: plans.filter((p) => p.status !== 'draft').length,
+          drafts: plans.filter((p) => p.status === 'draft').length,
+          last: finished.at(-1) || null,
+          week: finished.filter((d) => Date.parse(d) >= weekAgo).length,
+        };
+        if (alive) setOverview((o) => ({ ...o, [uid]: info }));
+      } catch { if (alive) setOverview((o) => ({ ...o, [uid]: { failed: true } })); }
+    });
+    return () => { alive = false; };
+  }, [clients]);
   async function load() {
     if (!clientUid) return;
     setBusy(true); setError('');
@@ -42,9 +63,17 @@ export default function CoachWorkspace({ onBack }) {
       <label className="block text-sm font-medium">Klient
         <select aria-label="Klient auswählen" value={clientUid} onChange={(e) => setClientUid(e.target.value)} className="mt-2 w-full rounded-xl border border-fit-line bg-fit-card p-3">
           <option value="">Klient auswählen…</option>
-          {Object.entries(profiles).sort((a, b) => (a[1].displayName || a[0]).localeCompare(b[1].displayName || b[0])).map(([uid, p]) => <option key={uid} value={uid}>{p.displayName || p.email || uid}</option>)}
+          {clients.map(([uid, label]) => <option key={uid} value={uid}>{label}</option>)}
         </select>
       </label>
+      {!clientUid && clients.length > 0 && <section aria-label="Klienten-Übersicht" className="space-y-2">
+        <h2 className="text-lg font-semibold">Klienten-Übersicht</h2>
+        {clients.map(([uid, label]) => { const o = overview[uid]; return <button key={uid} onClick={() => setClientUid(uid)} className="flex w-full items-center justify-between gap-3 rounded-xl border border-fit-line bg-fit-card p-3 text-left">
+          <span className="min-w-0"><span className="block truncate font-semibold">{label}</span>
+            <span className="text-xs text-fit-muted">{!o ? 'Lädt…' : o.failed ? 'Keine Daten' : o.published ? `${o.published} Plan${o.published > 1 ? 'e' : ''} bereitgestellt` : o.drafts ? 'Nur Entwurf — noch nichts bereitgestellt' : 'Noch kein Plan'}{o && !o.failed && o.drafts > 0 && o.published > 0 ? ` · ${o.drafts} Entwurf` : ''}</span></span>
+          <span className="shrink-0 text-right text-xs text-fit-muted">{o && !o.failed && <><span className="block font-semibold text-fit-ink">{o.week} / 7 Tage</span>{o.last ? `zuletzt ${new Date(o.last).toLocaleDateString('de-AT')}` : 'noch kein Workout'}</>}</span>
+        </button>; })}
+      </section>}
       {error && <p role="alert" className="text-sm text-fit-red">{error}<button onClick={load} className="ml-2 underline">Erneut versuchen</button></p>}
       {clientUid && <>
         <section className="space-y-3"><h2 className="text-lg font-semibold">Workout-Vorlagen</h2>
@@ -52,7 +81,7 @@ export default function CoachWorkspace({ onBack }) {
           {busy ? <p className="text-sm text-fit-muted">Lädt…</p> : routines.map((r) => <button key={r.id} onClick={() => setEditing(r.id)} className="flex w-full items-center justify-between rounded-xl border border-fit-line bg-fit-card p-4 text-left"><span><span className="block font-semibold">{r.name}</span><span className="text-xs text-fit-muted">{r.exerciseCount || 0} Übungen · Sätze, Pausen und Hinweise bearbeiten</span></span><Pencil size={16} /></button>)}
           {!busy && !routines.length && <p className="text-sm text-fit-muted">Erstelle die erste Einheit. Füge anschließend ihre Übungen und Satzvorgaben hinzu.</p>}
         </section>
-        <TrainingPlans key={clientUid} clientUid={clientUid} templates={routines} workouts={workouts} onChanged={load} />
+        <TrainingPlans key={clientUid} clientUid={clientUid} clients={clients} templates={routines} workouts={workouts} onChanged={load} />
         <section><h2 className="mb-3 text-lg font-semibold">Absolvierte Workouts</h2>{workouts.filter((w) => w.finished_at).sort((a,b) => b.finished_at.localeCompare(a.finished_at)).slice(0, 12).map((w) => <div key={w.id} className="mb-2 rounded-xl border border-fit-line p-3"><p className="font-medium">{w.name}</p><p className="text-xs text-fit-muted">{new Date(w.finished_at).toLocaleDateString('de-AT')} · {workoutTotals(w).sets} Sätze · {formatDuration(workoutTotals(w).durationMs)}</p>{(w.eventLog || []).map((s,i) => <p key={i} className="mt-1 text-xs text-fit-dim">{s.name} · {s.reps != null ? `${s.reps} Wdh` : `${s.seconds || 0} s`}{s.weight != null ? ` · ${s.weight} kg` : ''}</p>)}</div>)}{!workouts.some((w) => w.finished_at) && <p className="text-sm text-fit-muted">Hier erscheinen die tatsächlichen Ergebnisse des Klienten.</p>}</section>
       </>}
     </div>

@@ -4,7 +4,7 @@ import { listMacrocycles, createMacrocycle, getUid } from "@db";
 import PlanCard from "./components/PlanCard.jsx";
 
 // Shared plan composition for personal training and the client workspace.
-export default function TrainingPlans({ templates, workouts, onChanged, clientUid, onStart }) {
+export default function TrainingPlans({ templates, workouts, onChanged, clientUid, clients, onStart }) {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(true);
@@ -48,7 +48,7 @@ export default function TrainingPlans({ templates, workouts, onChanged, clientUi
       {open && (
         <div className="space-y-3">
           {plans.map((p) => (
-            <PlanCard key={p.id} plan={p} templates={templates} workouts={workouts} clientUid={clientUid} onReload={reload} onStart={onStart} />
+            <PlanCard key={p.id} plan={p} templates={templates} workouts={workouts} clientUid={clientUid} clients={clients} onReload={reload} onStart={onStart} />
           ))}
           <button
             onClick={newPlan}

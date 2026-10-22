@@ -40,6 +40,29 @@ derselben Einheit verwenden: eine Konfliktauflösung ist noch nicht umgesetzt.
    Seine tatsächlichen Sätze erscheinen im Coach-Workspace unter
    **Absolvierte Workouts**. Fortschritt entsteht durch abgeschlossene Workouts.
 
+**Auslieferung (seit 2026-10-22):**
+- Die **Klienten-Übersicht** zeigt pro Klient bereitgestellte Pläne/Entwürfe und
+  Workouts der letzten 7 Tage; Antippen öffnet den Klienten.
+- Am Plan steht ein **Hinweis für den Klienten** (Ziel, Ablauf, Cues). Er wird
+  beim Verlassen des Feldes gespeichert und erscheint beim Klienten über dem Plan.
+- **Zurück in den Entwurf setzen** zieht einen Plan zurück (für den Klienten
+  unsichtbar); erneutes Bereitstellen ist jederzeit möglich.
+- **Wochenplan:** Pro Einheit setzt der Coach Wochentage (Mo–So, mehrere möglich).
+  Der Plan zeigt dann einen 7-Tage-Streifen; der Klient sieht „Heute geplant: …“,
+  bis die Einheit heute abgeschlossen ist. Die Tage sind Orientierung, keine Sperre;
+  Einheiten ohne Tage rotieren wie bisher. Kopien übernehmen die Wochentage.
+- **Neu-Hinweis:** Stellt der Coach einen Plan bereit (oder erneut bereit), erscheint
+  beim Klienten oben im Training ein Banner und ein Punkt am Reiter „Trainingspläne“.
+  Der Stand „gesehen“ liegt pro Gerät im localStorage. Echte Push-Nachrichten gibt es nicht.
+- **Push-Nachricht:** Der Klient aktiviert sie über die Karte „Benachrichtigung …“
+  oben im Training (Browser-Erlaubnis nötig, nur im Firebase-Build). Die Cloud
+  Function `onPlanPublished` (`functions/index.js`, Logik in `functions/planPublished.js`)
+  sendet bei neuem `publishedAt` eines Coach-Plans einen Push an seine Geräte
+  (Token in `fitness/{uid}/settings/push`, Typ `plan` abschaltbar). Hinweis-Änderungen
+  oder Wochentage lösen nichts aus. Deploy: `firebase deploy --only functions:onPlanPublished`.
+- **An weiteren Klienten kopieren** legt den Plan samt Einheiten und Hinweis als
+  Entwurf bei einem anderen Klienten an; dort prüfen und bereitstellen.
+
 Änderungen an einer Vorlage aktualisieren bestehende Plan-Snapshots nicht
 stillschweigend. Für einen geänderten Plan die betreffende Einheit neu aus der
 aktualisierten Vorlage hinzufügen. Veröffentlichte Planänderungen werden aktuell
