@@ -1,0 +1,23 @@
+67a68,70
+>     // Pläne (macrocycles): der Besitzer darf nur Pläne schreiben, die er selbst angelegt hat
+>     // (coachUid == uid, Self-Service). Coach-Pläne und ihre Versionen sind für den Klienten
+>     // schreibgeschützt; Versionen sind nach dem Anlegen unveränderlich. Completions bleiben offen.
+69c72,73
+<       allow read, write: if owner(uid) || isCoach();
+---
+>       allow read: if owner(uid) || isCoach();
+>       allow write: if isCoach() || (owner(uid) && !string(request.path).matches('.*/macrocycles/.*'));
+70a75,87
+>     match /fitness/{uid}/macrocycles/{planId} {
+>       allow create: if owner(uid) && request.resource.data.coachUid == uid;
+>       allow update: if owner(uid) && resource.data.coachUid == uid && request.resource.data.coachUid == uid;
+>       allow delete: if owner(uid) && resource.data.coachUid == uid;
+>       match /versions/{versionId} {
+>         allow create: if owner(uid)
+>           && get(/databases/$(database)/documents/fitness/$(uid)/macrocycles/$(planId)).data.coachUid == uid;
+>       }
+>       match /completions/{completionId} {
+>         allow write: if owner(uid);
+>       }
+>     }
+> 

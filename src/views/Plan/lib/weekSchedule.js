@@ -1,3 +1,5 @@
+import { doneOnDay } from './planProgress.js';
+
 // Wochenplan: Plan-Einheiten tragen optional `weekdays` (0 = Montag … 6 = Sonntag).
 export const WEEKDAY_LABELS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 
@@ -20,10 +22,7 @@ export function routinesForDay(routines = [], day = weekdayIndex()) {
   return routines.filter((r) => r.weekdays?.includes(day));
 }
 
-// Heute geplante Einheit, die seit Mitternacht noch nicht abgeschlossen wurde.
+// Heute geplante Einheit, die heute (lokaler Kalendertag) noch nicht abgeschlossen wurde.
 export function todaysOpenRoutines(routines, workouts = [], now = new Date()) {
-  const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-  return routinesForDay(routines, weekdayIndex(now)).filter((r) =>
-    !workouts.some((w) => w.finished_at && Date.parse(w.finished_at) >= midnight
-      && (w.sourcePlanRoutineId === r.id || (r.sourceTemplateId && w.routine_id === r.sourceTemplateId))));
+  return routinesForDay(routines, weekdayIndex(now)).filter((r) => !doneOnDay(r, workouts, now));
 }
