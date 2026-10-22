@@ -62,11 +62,11 @@ export async function getMacrocycle(clientUid, cycleId) {
   }
 }
 
-export async function createMacrocycle(clientUid, { name, coachUid, totalWeeks, status = "published" }) {
+export async function createMacrocycle(clientUid, { name, coachUid, totalWeeks, status = "published", description = "" }) {
   try {
     const ref = doc(collection(db, 'fitness', clientUid, 'macrocycles'))
     const record = {
-      name, clientUid, coachUid, status,
+      name, clientUid, coachUid, status, description,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       totalWeeks: Number(totalWeeks) || 10,
@@ -90,7 +90,7 @@ export async function deleteMacrocycle(clientUid, cycleId) {
   }
 }
 
-export async function addRoutine(clientUid, cycleId, { label, isDeload, restHoursAfter, targetCount, targetPeriodDays, sourceTemplateId, exercises = [] }) {
+export async function addRoutine(clientUid, cycleId, { label, isDeload, restHoursAfter, targetCount, targetPeriodDays, sourceTemplateId, exercises = [], weekdays = [] }) {
   try {
     const m = await loadDoc(clientUid, cycleId)
     if (!m) return null
@@ -102,6 +102,7 @@ export async function addRoutine(clientUid, cycleId, { label, isDeload, restHour
       targetCount: Number(targetCount) || 0,
       targetPeriodDays: Number(targetPeriodDays) || 0,
       sourceTemplateId: sourceTemplateId || null,
+      weekdays: Array.isArray(weekdays) ? weekdays : [],
       exercises,
     }]
     return await saveDoc(clientUid, m)
@@ -163,4 +164,19 @@ export async function publishMacrocycle(clientUid, cycleId) {
   const m = await loadDoc(clientUid, cycleId);
   if (!m?.routines?.length || m.routines.some((r) => !r.exercises?.length)) throw new Error('Jede Einheit braucht Übungen, bevor du den Plan bereitstellst.');
   return saveDoc(clientUid, { ...m, status: 'published', publishedAt: new Date().toISOString() });
+}
+
+// Name, Coach-Hinweis (description) oder Status (draft/published) ändern.
+export async function updateMacrocycle(clientUid, cycleId, patch) {
+  const m = await loadDoc(clientUid, cycleId);
+  if (!m) return null;
+  const next = { ...m };
+  if (patch.status === 'published') return publishMacrocycle(clientUid, cycleId);
+  if (patch.status === 'draft') next.status = 'draft';
+  if (typeof patch.name === 'string') {
+    if (!patch.name.trim()) throw new Error('Name erforderlich.');
+    next.name = patch.name.trim();
+  }
+  if (typeof patch.description === 'string') next.description = patch.description.trim().slice(0, 2000);
+  return saveDoc(clientUid, next);
 }

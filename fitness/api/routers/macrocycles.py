@@ -52,6 +52,13 @@ def _save(client_uid: str, macrocycle: dict[str, Any]) -> dict[str, Any]:
     return macrocycle
 
 
+def _weekdays(value: Any) -> list[int]:
+    """Wochentage 0=Mo … 6=So; ungültige Werte werden verworfen."""
+    if not isinstance(value, list):
+        return []
+    return sorted({int(d) for d in value if isinstance(d, (int, float)) and not isinstance(d, bool) and 0 <= int(d) <= 6})
+
+
 def _completions(client_uid: str, cycle_id: str) -> list[dict[str, Any]]:
     dir_ = _completions_dir(client_uid, cycle_id)
     if not dir_.exists():
@@ -132,6 +139,7 @@ async def create_macrocycle(client_uid: str, request: Request):
         "totalWeeks": int(body.get("totalWeeks") or 10),
         "routines": [],
         "status": body.get("status", "published"),
+        "description": (body.get("description") or "").strip()[:2000],
     }
     _write_json(_path(client_uid, cycle_id), record)
     logger.info(f"macrocycles: {coach_uid} → {client_uid} '{name}' angelegt")
@@ -169,6 +177,7 @@ async def add_routine(client_uid: str, cycle_id: str, request: Request):
         # existieren (Rotation sagt "was ist dran", Ziel sagt "reicht das").
         "targetCount": int(body.get("targetCount") or 0),
         "targetPeriodDays": int(body.get("targetPeriodDays") or 0),
+        "weekdays": _weekdays(body.get("weekdays")),
         # Verweis auf das Template (routines.json-Eintrag), aus dem diese
         # Plan-Routine erzeugt wurde — Fortschritt wird darüber gegen die
         # echten Workout-Completions gezählt (workouts.routine_id), nicht
@@ -198,6 +207,8 @@ async def update_routine(client_uid: str, cycle_id: str, routine_id: str, reques
         routine["targetCount"] = int(body["targetCount"] or 0)
     if "targetPeriodDays" in body:
         routine["targetPeriodDays"] = int(body["targetPeriodDays"] or 0)
+    if "weekdays" in body:
+        routine["weekdays"] = _weekdays(body["weekdays"])
     if "exercises" in body and isinstance(body["exercises"], list):
         routine["exercises"] = body["exercises"]
     _save(client_uid, m)
@@ -247,14 +258,26 @@ def last_performance(client_uid: str, cycle_id: str, routine_id: str):
 
 
 @router.patch("/{client_uid}/{cycle_id}")
-async def publish_macrocycle(client_uid: str, cycle_id: str, request: Request):
+async def update_macrocycle(client_uid: str, cycle_id: str, request: Request):
+    """Status (draft/published), Name und Coach-Hinweis (description) ändern."""
     body = await request.json()
     m = _load(client_uid, cycle_id)
-    if body.get("status") != "published":
+    status = body.get("status")
+    if status not in (None, "draft", "published"):
         raise HTTPException(422, detail="unsupported_status")
-    if not m.get("routines") or any(not r.get("exercises") for r in m["routines"]):
-        raise HTTPException(422, detail="Jede Einheit braucht Übungen.")
-    m["status"] = "published"
-    m["publishedAt"] = datetime.now().isoformat()
+    if status == "published":
+        if not m.get("routines") or any(not r.get("exercises") for r in m["routines"]):
+            raise HTTPException(422, detail="Jede Einheit braucht Übungen.")
+        m["status"] = "published"
+        m["publishedAt"] = datetime.now().isoformat()
+    elif status == "draft":
+        m["status"] = "draft"
+    if "name" in body:
+        name = (body.get("name") or "").strip()
+        if not name:
+            raise HTTPException(400, detail="name erforderlich")
+        m["name"] = name
+    if "description" in body:
+        m["description"] = (body.get("description") or "").strip()[:2000]
     _save(client_uid, m)
     return {"ok": True, "macrocycle": m}

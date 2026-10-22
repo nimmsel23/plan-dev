@@ -4,6 +4,8 @@ import { YUHONAS_EXERCISES, filterCatalog, mergeCatalog } from '../../src/views/
 import { assignedWorkoutBody } from '../../src/views/Plan/lib/assignedWorkout.js';
 import { completedSetPatch } from '../../src/views/Plan/lib/completedSet.js';
 import { createWorkoutDraft } from '../../src/views/Plan/lib/workoutDraft.js';
+import { toggleWeekday, weekGrid, weekdayIndex, todaysOpenRoutines } from '../../src/views/Plan/lib/weekSchedule.js';
+import { unseenCoachPlans } from '../../src/views/Plan/lib/newPlans.js';
 import { workoutTemplateExercises } from '../../src/views/Plan/lib/workoutTemplate.js';
 
 test('Yuhonas catalog retains source IDs, instructions and bodyweight tracking', () => {
@@ -73,4 +75,29 @@ test('workout-to-template conversion keeps values as targets and leaves history 
   assert.equal(result[0].rest_seconds, 0);
   assert.equal(result[0].templateSets[0].completed, undefined);
   assert.deepEqual(workout, copy);
+});
+test('weekly schedule: toggle, grid and open routines for today', () => {
+  assert.deepEqual(toggleWeekday([4, 0], 2), [0, 2, 4]);
+  assert.deepEqual(toggleWeekday([0, 2], 0), [2]);
+  const wed = new Date(2026, 9, 21, 15); // Mittwoch
+  assert.equal(weekdayIndex(wed), 2);
+  assert.equal(weekdayIndex(new Date(2026, 9, 25)), 6);
+  const routines = [{ id: 'a', label: 'Push', weekdays: [0, 2], sourceTemplateId: 't1' }, { id: 'b', label: 'Pull', weekdays: [1] }, { id: 'c', label: 'Legs' }];
+  assert.deepEqual(weekGrid(routines)[2].routines.map((r) => r.id), ['a']);
+  assert.deepEqual(todaysOpenRoutines(routines, [], wed).map((r) => r.id), ['a']);
+  const done = [{ finished_at: new Date(2026, 9, 21, 9).toISOString(), routine_id: 't1' }];
+  assert.deepEqual(todaysOpenRoutines(routines, done, wed), []);
+  const yesterday = [{ finished_at: new Date(2026, 9, 20, 9).toISOString(), sourcePlanRoutineId: 'a' }];
+  assert.equal(todaysOpenRoutines(routines, yesterday, wed).length, 1);
+});
+test('unseen coach plans: only published, foreign, changed since last seen', () => {
+  const plans = [
+    { id: 'a', coachUid: 'coach', status: 'published', publishedAt: 't1' },
+    { id: 'b', coachUid: 'coach', status: 'draft', publishedAt: 't1' },
+    { id: 'c', coachUid: 'me', status: 'published', publishedAt: 't1' },
+    { id: 'd', coachUid: 'coach', status: 'published' },
+    { id: 'e', coachUid: 'coach', status: 'published', publishedAt: 't2' },
+  ];
+  assert.deepEqual(unseenCoachPlans(plans, 'me', {}).map((p) => p.id), ['a', 'e']);
+  assert.deepEqual(unseenCoachPlans(plans, 'me', { a: 't1', e: 'old' }).map((p) => p.id), ['e']);
 });

@@ -68,6 +68,13 @@ class PlanBackendTest(unittest.TestCase):
                 self.assertEqual(client.patch(url, json={"status": "published"}).status_code, 422)
                 added = client.post(f"{url}/routines", json={"label": "Push", "sourceTemplateId": routine_id, "exercises": routine["exercises"]}).json()["macrocycle"]
                 self.assertEqual(client.patch("/api" + url, json={"status": "published"}).json()["macrocycle"]["status"], "published")
+                wd = client.put(f"{url}/routines/{added['routines'][0]['id']}", json={"weekdays": [4, 0, 0, 9, "x"]}).json()["macrocycle"]
+                self.assertEqual(wd["routines"][0]["weekdays"], [0, 4])
+                noted = client.patch(url, json={"description": " Dreimal pro Woche, Technik vor Gewicht. "}).json()["macrocycle"]
+                self.assertEqual(noted["description"], "Dreimal pro Woche, Technik vor Gewicht.")
+                self.assertEqual(client.patch(url, json={"status": "draft"}).json()["macrocycle"]["status"], "draft")
+                self.assertEqual(client.patch(url, json={"status": "archived"}).status_code, 422)
+                self.assertEqual(client.patch(url, json={"status": "published"}).json()["macrocycle"]["status"], "published")
                 body = {"routine_id": routine_id, "sourcePlanId": plan["id"], "sourcePlanRoutineId": added["routines"][0]["id"], "routine_snapshot": routine}
                 result = client.post("/api/workouts?uid=client", json=body)
                 self.assertEqual(result.status_code, 200)
