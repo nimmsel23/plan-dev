@@ -213,3 +213,10 @@ Offline-Backendbetrieb. Authentifizierte Cloud-Abnahme steht separat aus.
 Atlas bleibt eine eigene App; gemeinsam sind Quelle und Referenzen, kein
 originübergreifender Gerätespeicher. Legacy-Checklisten werden als neue Workouts
 startbar, ihr bisheriger Hakenfortschritt wird nicht als Leistung umgeschrieben.
+
+## 2026-10-22: Auslieferung an Klienten
+
+Neu: Klienten-Übersicht, Plan-Hinweis, Zurückziehen, Kopieren, Wochenplan,
+Neu-Banner und Push (`onPlanPublished`). Details: `ARCHITECTURE.md`. Versionierung ist umgesetzt (`ARCHITECTURE.md`). Offen:
+atomares Kopieren, Push-Token-Bereinigung
+ungültiger Geräte, authentifizierte Geräte-Abnahme des Pushs.

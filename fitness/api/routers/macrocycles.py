@@ -52,6 +52,28 @@ def _save(client_uid: str, macrocycle: dict[str, Any]) -> dict[str, Any]:
     return macrocycle
 
 
+def _versions_dir(client_uid: str, cycle_id: str) -> Path:
+    return _dir(client_uid) / cycle_id / "versions"
+
+
+def _snapshot(m: dict[str, Any]) -> dict[str, Any]:
+    """Inhalt, der veröffentlicht wird (Git: Tree eines Commits)."""
+    routines = [{**r, "weekdays": sorted(r.get("weekdays") or []), "exercises": r.get("exercises") or []} for r in m.get("routines") or []]
+    return {
+        "name": m.get("name", ""),
+        "description": m.get("description") or "",
+        "totalWeeks": int(m.get("totalWeeks") or 10),
+        "routines": routines,
+    }
+
+
+def _versions(client_uid: str, cycle_id: str) -> list[dict[str, Any]]:
+    dir_ = _versions_dir(client_uid, cycle_id)
+    items = [v for f in dir_.glob("*.json") if (v := _read_json(f))] if dir_.exists() else []
+    items.sort(key=lambda v: v.get("number", 0))
+    return items
+
+
 def _weekdays(value: Any) -> list[int]:
     """Wochentage 0=Mo … 6=So; ungültige Werte werden verworfen."""
     if not isinstance(value, list):
@@ -259,7 +281,7 @@ def last_performance(client_uid: str, cycle_id: str, routine_id: str):
 
 @router.patch("/{client_uid}/{cycle_id}")
 async def update_macrocycle(client_uid: str, cycle_id: str, request: Request):
-    """Status (draft/published), Name und Coach-Hinweis (description) ändern."""
+    """Status (draft/published), Name und Coach-Hinweis ändern. Veröffentlichen legt eine Version an (message/author optional)."""
     body = await request.json()
     m = _load(client_uid, cycle_id)
     status = body.get("status")
@@ -268,6 +290,24 @@ async def update_macrocycle(client_uid: str, cycle_id: str, request: Request):
     if status == "published":
         if not m.get("routines") or any(not r.get("exercises") for r in m["routines"]):
             raise HTTPException(422, detail="Jede Einheit braucht Übungen.")
+        snap = _snapshot(m)
+        head = m.get("published")
+        if m.get("status") == "published" and head is not None and head == snap:
+            raise HTTPException(422, detail="Keine Änderungen seit der letzten Version.")
+        if head is None or head != snap:
+            number = int(m.get("headVersion") or 0) + 1
+            message = (body.get("message") or "").strip()[:200] or ("Erste Version" if number == 1 else "Aktualisiert")
+            record = {
+                "id": f"v{number}", "number": number, "message": message,
+                "createdAt": datetime.now().isoformat(),
+                "author": body.get("author") or m.get("coachUid"),
+                "parent": f"v{number - 1}" if number > 1 else None,
+                "snapshot": snap,
+            }
+            _write_json(_versions_dir(client_uid, cycle_id) / f"v{number}.json", record)
+            m["published"] = snap
+            m["headVersion"] = number
+            m["headMessage"] = message
         m["status"] = "published"
         m["publishedAt"] = datetime.now().isoformat()
     elif status == "draft":
@@ -279,5 +319,26 @@ async def update_macrocycle(client_uid: str, cycle_id: str, request: Request):
         m["name"] = name
     if "description" in body:
         m["description"] = (body.get("description") or "").strip()[:2000]
+    _save(client_uid, m)
+    return {"ok": True, "macrocycle": m}
+
+
+@router.get("/{client_uid}/{cycle_id}/versions")
+def list_versions(client_uid: str, cycle_id: str):
+    """Veröffentlichungs-Verlauf (neueste zuletzt), je mit unveränderlichem Snapshot."""
+    _load(client_uid, cycle_id)
+    return {"ok": True, "versions": _versions(client_uid, cycle_id)}
+
+
+@router.post("/{client_uid}/{cycle_id}/restore")
+async def restore_version(client_uid: str, cycle_id: str, request: Request):
+    """Arbeitsstand auf eine frühere Version zurücksetzen (Git: checkout). Der Klient
+    sieht davon nichts, bis wieder veröffentlicht wird; die Historie bleibt unverändert."""
+    body = await request.json()
+    version = next((v for v in _versions(client_uid, cycle_id) if v["id"] == body.get("version")), None)
+    if not version:
+        raise HTTPException(404, detail="Version nicht gefunden")
+    m = _load(client_uid, cycle_id)
+    m.update({k: v for k, v in version["snapshot"].items()})
     _save(client_uid, m)
     return {"ok": True, "macrocycle": m}

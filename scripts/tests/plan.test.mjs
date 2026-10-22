@@ -6,6 +6,7 @@ import { completedSetPatch } from '../../src/views/Plan/lib/completedSet.js';
 import { createWorkoutDraft } from '../../src/views/Plan/lib/workoutDraft.js';
 import { toggleWeekday, weekGrid, weekdayIndex, todaysOpenRoutines } from '../../src/views/Plan/lib/weekSchedule.js';
 import { unseenCoachPlans } from '../../src/views/Plan/lib/newPlans.js';
+import { snapshotOf, clientView, hasUnpublishedChanges, diffSnapshots } from '../../src/views/Plan/lib/planVersions.js';
 import { workoutTemplateExercises } from '../../src/views/Plan/lib/workoutTemplate.js';
 
 test('Yuhonas catalog retains source IDs, instructions and bodyweight tracking', () => {
@@ -100,4 +101,19 @@ test('unseen coach plans: only published, foreign, changed since last seen', () 
   ];
   assert.deepEqual(unseenCoachPlans(plans, 'me', {}).map((p) => p.id), ['a', 'e']);
   assert.deepEqual(unseenCoachPlans(plans, 'me', { a: 't1', e: 'old' }).map((p) => p.id), ['e']);
+});
+
+test('plan versions: client sees the published snapshot, diff lists readable changes', () => {
+  const ex = (n, reps) => ({ exercise_id: n, name: n, templateSets: [{ targetReps: reps, targetWeight: 60 }] });
+  const v1 = snapshotOf({ name: 'PPL', description: '', routines: [{ id: 'r1', label: 'Push', weekdays: [2, 0], exercises: [ex('Bench', '8'), ex('Dips', '10')] }] });
+  const working = { name: 'PPL', description: 'Technik', published: v1, routines: [
+    { id: 'r1', label: 'Push', weekdays: [0, 2, 4], exercises: [ex('Bench', '6'), ex('Fly', '12')] },
+    { id: 'r2', label: 'Pull', weekdays: [], exercises: [ex('Row', '8')] }] };
+  assert.equal(clientView(working).description, '');
+  assert.equal(clientView(working).routines.length, 1);
+  assert.equal(hasUnpublishedChanges(working), true);
+  assert.equal(hasUnpublishedChanges({ ...working, ...v1 }), false);
+  const text = diffSnapshots(v1, snapshotOf(working)).map((l) => `${l.kind}:${l.text}`).join('\n');
+  for (const part of ['add:Einheit „Pull“', 'add:„Push“: + Fly', 'remove:„Push“: − Dips', 'change:Coach-Hinweis', 'Tage Mo, Mi → Mo, Mi, Fr', 'Bench']) assert.ok(text.includes(part), part);
+  assert.equal(diffSnapshots(null, v1).filter((l) => l.kind === 'add').length, 1);
 });

@@ -9,7 +9,11 @@ import NextUpCard from './components/NextUpCard.jsx';
 import { groupRoutinesIntoFolders } from './lib/splitFolders.js';
 import { startWorkout } from './lib/startWorkout.js';
 import { readActiveWorkout, writeActiveWorkout } from './lib/activeWorkout.js';
-import { getUid, listMacrocycles } from '@db';
+import { getUid, listMacrocycles, getMacrocycle } from '@db';
+import { pickNextPlanRoutine } from '../../lib/habitProgress.js';
+import { todaysOpenRoutines, hasSchedule } from './lib/weekSchedule.js';
+import { clientView } from './lib/planVersions.js';
+import CoachPlanToday from './components/CoachPlanToday.jsx';
 import { useUser } from '../../contexts/UserContext.jsx';
 import PushOptIn from './components/PushOptIn.jsx';
 import { markSeen, readSeen, unseenCoachPlans } from './lib/newPlans.js';
@@ -23,6 +27,7 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
   const [section, setSection] = useState('templates');
   const { user } = useUser();
   const [newPlans, setNewPlans] = useState([]);
+  const [coachPlans, setCoachPlans] = useState([]);
   const lock = useRef(false);
   const folderKey = `plan-empty-folders:${getUid()}`;
   const [emptyFolders, setEmptyFolders] = useState(() => {
@@ -43,7 +48,13 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
   useEffect(() => {
     let alive = true;
     const uid = getUid();
-    listMacrocycles(uid).then((plans) => { if (alive) setNewPlans(unseenCoachPlans(plans, uid, readSeen(uid))); }).catch(() => {});
+    listMacrocycles(uid).then(async (plans) => {
+      if (!alive) return;
+      setNewPlans(unseenCoachPlans(plans, uid, readSeen(uid)));
+      const mine = plans.filter((p) => p.status !== 'draft' && p.coachUid && p.coachUid !== uid && p.routineCount > 0);
+      const details = await Promise.all(mine.map((p) => getMacrocycle(uid, p.id).then((d) => d?.macrocycle).catch(() => null)));
+      if (alive) setCoachPlans(details.filter(Boolean).map(clientView));
+    }).catch(() => {});
     return () => { alive = false; };
   }, []);
   function showPlans() { markSeen(getUid(), newPlans); setNewPlans([]); setSection('plans'); }
@@ -76,6 +87,11 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
   const { folders, folderNames: detected, uncategorized } = groupRoutinesIntoFolders(routines);
   const folderNames = [...new Set([...detected, ...emptyFolders])];
   const unfinished = workouts.find((w) => !w.finished_at);
+  const coachNext = !loading && coachPlans.map((plan) => {
+    const open = hasSchedule(plan.routines) ? todaysOpenRoutines(plan.routines, workouts)[0] : null;
+    const routine = open || pickNextPlanRoutine(plan.routines || [], workouts);
+    return routine?.exercises?.length ? { plan, routine, today: !!open } : null;
+  }).filter(Boolean).sort((a, b) => b.today - a.today)[0];
   const cardProps = { onEdit: onEditRoutine, onStart: begin, onRename: rename, onDelete: remove, onSetCategory: category, busy, workouts };
   return (
     <div className="mx-auto max-w-2xl px-4 py-6">
@@ -83,7 +99,7 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
       {error && <div role="alert" className="mb-4 rounded-xl border border-red-500/30 p-3 text-sm text-fit-red">{error}<button onClick={load} className="ml-2 underline">Erneut laden</button></div>}
       <PushOptIn user={user} />
       {newPlans.length > 0 && <button onClick={showPlans} className="mb-4 flex w-full items-center justify-between rounded-2xl border border-fit-accent bg-fit-accent/10 p-4 text-left"><span><span className="block font-semibold">{newPlans.length === 1 ? `Neuer Trainingsplan: ${newPlans[0].name}` : `${newPlans.length} neue Trainingspläne von deinem Coach`}</span><span className="text-xs text-fit-muted">Antippen zum Ansehen</span></span><Layers size={20} className="text-fit-accent" /></button>}
-      {unfinished ? <button disabled={busy} onClick={() => onOpenWorkout(unfinished.id)} className="mb-6 flex w-full items-center justify-between rounded-2xl border border-fit-accent bg-fit-accent/10 p-4 text-left"><span><span className="block font-semibold">{unfinished.name}</span><span className="text-xs text-fit-muted">Workout läuft · Fortsetzen</span></span><Play size={20} className="text-fit-accent" /></button> : next && <NextUpCard routine={next} onStart={begin} onEdit={onEditRoutine} busy={busy} />}
+      {unfinished ? <button disabled={busy} onClick={() => onOpenWorkout(unfinished.id)} className="mb-6 flex w-full items-center justify-between rounded-2xl border border-fit-accent bg-fit-accent/10 p-4 text-left"><span><span className="block font-semibold">{unfinished.name}</span><span className="text-xs text-fit-muted">Workout läuft · Fortsetzen</span></span><Play size={20} className="text-fit-accent" /></button> : coachNext ? <CoachPlanToday {...coachNext} onStart={begin} onOpenPlans={showPlans} busy={busy} /> : next && <NextUpCard routine={next} onStart={begin} onEdit={onEditRoutine} busy={busy} />}
       <div className="mb-6 grid grid-cols-2 gap-2"><button disabled={busy || loading} onClick={() => begin()} className="rounded-xl border border-fit-line bg-fit-card px-3 py-3 text-sm font-semibold disabled:opacity-50">Leeres Workout</button><button disabled={busy} onClick={newRoutine} className="flex items-center justify-center gap-2 rounded-xl bg-fit-accent px-3 py-3 text-sm font-semibold text-fit-bg disabled:opacity-50"><Plus size={16} /> Neue Vorlage</button></div>
       <div aria-label="Trainingsbereich" className="mb-5 flex gap-1 rounded-xl bg-fit-bg2 p-1">{[['templates', 'Workout-Vorlagen'], ['plans', 'Trainingspläne']].map(([id,label]) => <button key={id} aria-pressed={section === id} onClick={() => { if (id === 'plans' && newPlans.length) markSeen(getUid(), newPlans), setNewPlans([]); setSection(id); }} className={`flex-1 rounded-lg px-3 py-2 text-sm font-semibold ${section === id ? 'bg-fit-card text-fit-ink shadow-sm' : 'text-fit-muted'}`}>{label}{id === 'plans' && newPlans.length > 0 && <span aria-label="neu" className="ml-1.5 inline-block h-2 w-2 rounded-full bg-fit-accent align-middle" />}</button>)}</div>
       {section === 'plans' ? <><p className="mb-4 text-sm text-fit-muted">Ein Trainingsplan bündelt deine Workout-Vorlagen und zeigt, wie oft du sie trainieren möchtest.</p><AssignedPlans onStart={(body) => begin(null, body)} /><TrainingPlans templates={routines} workouts={workouts} onChanged={load} onStart={begin} /></> : <section>
@@ -96,3 +112,4 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
     </div>
   );
 }
+

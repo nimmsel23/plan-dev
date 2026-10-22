@@ -63,10 +63,15 @@ derselben Einheit verwenden: eine Konfliktauflösung ist noch nicht umgesetzt.
 - **An weiteren Klienten kopieren** legt den Plan samt Einheiten und Hinweis als
   Entwurf bei einem anderen Klienten an; dort prüfen und bereitstellen.
 
+**Versionen (seit 2026-10-22):** Bereitstellen ist wie ein Git-Commit: Der Coach
+gibt eine Nachricht an („Woche 3: mehr Volumen“), der Plan bekommt Version N. Klienten sehen
+immer nur die letzte Version; Bearbeiten danach bleibt unsichtbar. Der Plan zeigt
+„Unveröffentlichte Änderungen“ als Diff, **Verlauf** listet alle Versionen mit ihren Änderungen,
+**Als Arbeitsstand wiederherstellen** holt eine ältere Version zurück (danach neu veröffentlichen).
+
 Änderungen an einer Vorlage aktualisieren bestehende Plan-Snapshots nicht
 stillschweigend. Für einen geänderten Plan die betreffende Einheit neu aus der
-aktualisierten Vorlage hinzufügen. Veröffentlichte Planänderungen werden aktuell
-direkt sichtbar; eine Versionsverwaltung ist noch offen. Laufende und vergangene
+aktualisierten Vorlage hinzufügen. Veröffentlichte Planänderungen werden erst mit der nächsten Version sichtbar. Laufende und vergangene
 Workouts bleiben eigenständige Snapshots.
 
 Ältere Coach-Zuweisungen sind ebenfalls als normales Workout startbar. Ihre
