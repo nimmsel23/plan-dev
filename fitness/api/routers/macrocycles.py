@@ -14,6 +14,8 @@ Completions: .../macrocycles/<id>/completions/<timestamp>.json
 """
 from __future__ import annotations
 
+import shutil
+import threading
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -25,6 +27,53 @@ from loguru import logger
 from fitness.api.config import RUNTIME, _read_json, _write_json
 
 router = APIRouter(prefix="/fitness/coach/macrocycles")
+
+# Alle Lesen-Ändern-Schreiben-Pfade laufen unter diesem Lock (Threadpool-Handler überlappen sonst).
+_lock = threading.RLock()
+
+
+def _int(value: Any, default: int = 0) -> int:
+    """Robuste Ganzzahl: Strings/None/Müll ergeben `default` statt eines 500."""
+    if isinstance(value, bool):
+        return default
+    try:
+        return int(float(value))
+    except (TypeError, ValueError, OverflowError):
+        return default
+
+
+def _weeks(value: Any) -> int:
+    n = _int(value, 10)
+    return n if 0 < n <= 520 else 10
+
+
+def _text(value: Any) -> str:
+    return value.strip() if isinstance(value, str) else ""
+
+
+def _new_routine(body: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "id": f"rt_{uuid4().hex[:8]}",
+        "label": body["label"],
+        "isDeload": bool(body.get("isDeload", False)),
+        # Pflicht-Pause NACH dieser Routine, bevor die nächste fällig wird —
+        # pro Routine frei wählbar (Push→24h, Pull→48h, Legs→72h o.ä.), kein
+        # globales Fenster für den ganzen Zyklus.
+        "restHoursAfter": max(_int(body.get("restHoursAfter")), 0),
+        # Plan-Ziel pro Routine: x-mal in y Tagen (rollierendes Fenster),
+        # unabhängig von der Rotation-Reihenfolge — beides kann parallel
+        # existieren (Rotation sagt "was ist dran", Ziel sagt "reicht das").
+        "targetCount": max(_int(body.get("targetCount")), 0),
+        "targetPeriodDays": max(_int(body.get("targetPeriodDays")), 0),
+        "weekdays": _weekdays(body.get("weekdays")),
+        # Verweis auf das Template (routines.json-Eintrag), aus dem diese
+        # Plan-Routine erzeugt wurde — Fortschritt wird darüber gegen die
+        # echten Workout-Completions gezählt (workouts.routine_id), nicht
+        # gegen einen separaten /complete-Aufruf. Optional: von Hand
+        # angelegte Plan-Routinen ohne Template-Bezug bleiben None.
+        "sourceTemplateId": body.get("sourceTemplateId"),
+        "exercises": body.get("exercises") if isinstance(body.get("exercises"), list) else [],
+    }
 
 
 def _dir(client_uid: str) -> Path:
@@ -62,7 +111,7 @@ def _snapshot(m: dict[str, Any]) -> dict[str, Any]:
     return {
         "name": m.get("name", ""),
         "description": m.get("description") or "",
-        "totalWeeks": int(m.get("totalWeeks") or 10),
+        "totalWeeks": _weeks(m.get("totalWeeks")),
         "routines": routines,
     }
 
@@ -99,7 +148,10 @@ def list_macrocycles(client_uid: str):
     for f in sorted(dir_.glob("*.json")):
         m = _read_json(f)
         if m:
-            items.append({k: v for k, v in m.items() if k != "routines"} | {"routineCount": len(m.get("routines") or [])})
+            working = len(m.get("routines") or [])
+            published = m.get("published")
+            count = len(published.get("routines") or []) if isinstance(published, dict) else working
+            items.append({k: v for k, v in m.items() if k not in ("routines", "published")} | {"routineCount": count, "workingRoutineCount": working})
     items.sort(key=lambda m: m.get("createdAt", ""), reverse=True)
     return {"ok": True, "macrocycles": items}
 
@@ -123,7 +175,7 @@ def get_macrocycle(client_uid: str, cycle_id: str):
             if ready_at > datetime.now().timestamp():
                 resting_until = datetime.fromtimestamp(ready_at).isoformat()
 
-    total_weeks = m.get("totalWeeks") or 10
+    total_weeks = _weeks(m.get("totalWeeks"))
     elapsed_weeks = int((datetime.now() - datetime.fromisoformat(m["createdAt"])).days // 7)
     current_week = min(elapsed_weeks + 1, total_weeks)
 
@@ -142,10 +194,14 @@ def get_macrocycle(client_uid: str, cycle_id: str):
 @router.post("/{client_uid}")
 async def create_macrocycle(client_uid: str, request: Request):
     body: dict[str, Any] = await request.json()
-    name = (body.get("name") or "").strip()
+    name = _text(body.get("name"))
     coach_uid = body.get("coachUid")
     if not name or not coach_uid:
         raise HTTPException(400, detail="name und coachUid erforderlich")
+
+    raw_routines = body.get("routines")
+    routines = [_new_routine(r) for r in raw_routines if isinstance(r, dict) and _text(r.get("label"))] if isinstance(raw_routines, list) else []
+    status = body.get("status")
 
     cycle_id = f"mc_{uuid4().hex[:12]}"
     record = {
@@ -158,21 +214,29 @@ async def create_macrocycle(client_uid: str, request: Request):
         # Ein Makrozyklus hat einen Rahmen (z.B. 10 Wochen) — die Rotation
         # (Push/Pull/Legs/...) läuft flexibel innerhalb davon, ohne an
         # Wochentage gebunden zu sein, aber der Zyklus selbst hat Anfang+Ende.
-        "totalWeeks": int(body.get("totalWeeks") or 10),
-        "routines": [],
-        "status": body.get("status", "published"),
-        "description": (body.get("description") or "").strip()[:2000],
+        "totalWeeks": _weeks(body.get("totalWeeks")),
+        "routines": routines,
+        "status": status if status in ("draft", "published") else "draft",
+        "description": _text(body.get("description"))[:2000],
     }
-    _write_json(_path(client_uid, cycle_id), record)
+    with _lock:
+        _write_json(_path(client_uid, cycle_id), record)
     logger.info(f"macrocycles: {coach_uid} → {client_uid} '{name}' angelegt")
     return {"ok": True, "macrocycle": record}
 
 
 @router.delete("/{client_uid}/{cycle_id}")
 def delete_macrocycle(client_uid: str, cycle_id: str):
-    path = _path(client_uid, cycle_id)
-    if path.exists():
-        path.unlink()
+    if cycle_id in ("", ".", "..") or "/" in cycle_id or "\\" in cycle_id:
+        raise HTTPException(400, detail="Ungültige Zyklus-ID")
+    with _lock:
+        path = _path(client_uid, cycle_id)
+        if path.exists():
+            path.unlink()
+        root = _dir(client_uid).resolve()
+        sub = (root / cycle_id).resolve()
+        if sub.is_dir() and sub.parent == root:
+            shutil.rmtree(sub, ignore_errors=True)
     return {"ok": True}
 
 
@@ -181,67 +245,51 @@ def delete_macrocycle(client_uid: str, cycle_id: str):
 @router.post("/{client_uid}/{cycle_id}/routines")
 async def add_routine(client_uid: str, cycle_id: str, request: Request):
     body: dict[str, Any] = await request.json()
-    label = (body.get("label") or "").strip()
+    label = _text(body.get("label"))
     if not label:
         raise HTTPException(400, detail="label erforderlich")
 
-    m = _load(client_uid, cycle_id)
-    m["routines"].append({
-        "id": f"rt_{uuid4().hex[:8]}",
-        "label": label,
-        "isDeload": bool(body.get("isDeload", False)),
-        # Pflicht-Pause NACH dieser Routine, bevor die nächste fällig wird —
-        # pro Routine frei wählbar (Push→24h, Pull→48h, Legs→72h o.ä.), kein
-        # globales Fenster für den ganzen Zyklus.
-        "restHoursAfter": int(body.get("restHoursAfter") or 0),
-        # Plan-Ziel pro Routine: x-mal in y Tagen (rollierendes Fenster),
-        # unabhängig von der Rotation-Reihenfolge — beides kann parallel
-        # existieren (Rotation sagt "was ist dran", Ziel sagt "reicht das").
-        "targetCount": int(body.get("targetCount") or 0),
-        "targetPeriodDays": int(body.get("targetPeriodDays") or 0),
-        "weekdays": _weekdays(body.get("weekdays")),
-        # Verweis auf das Template (routines.json-Eintrag), aus dem diese
-        # Plan-Routine erzeugt wurde — Fortschritt wird darüber gegen die
-        # echten Workout-Completions gezählt (workouts.routine_id), nicht
-        # gegen einen separaten /complete-Aufruf. Optional: von Hand
-        # angelegte Plan-Routinen ohne Template-Bezug bleiben None.
-        "sourceTemplateId": body.get("sourceTemplateId"),
-        "exercises": body.get("exercises") or [],
-    })
-    _save(client_uid, m)
+    with _lock:
+        m = _load(client_uid, cycle_id)
+        m["routines"].append(_new_routine({**body, "label": label}))
+        _save(client_uid, m)
     return {"ok": True, "macrocycle": m}
 
 
 @router.put("/{client_uid}/{cycle_id}/routines/{routine_id}")
 async def update_routine(client_uid: str, cycle_id: str, routine_id: str, request: Request):
     body: dict[str, Any] = await request.json()
-    m = _load(client_uid, cycle_id)
-    routine = next((r for r in m["routines"] if r["id"] == routine_id), None)
-    if not routine:
-        raise HTTPException(404, detail="Routine nicht gefunden")
-    if "label" in body:
-        routine["label"] = body["label"]
-    if "isDeload" in body:
-        routine["isDeload"] = bool(body["isDeload"])
-    if "restHoursAfter" in body:
-        routine["restHoursAfter"] = int(body["restHoursAfter"] or 0)
-    if "targetCount" in body:
-        routine["targetCount"] = int(body["targetCount"] or 0)
-    if "targetPeriodDays" in body:
-        routine["targetPeriodDays"] = int(body["targetPeriodDays"] or 0)
-    if "weekdays" in body:
-        routine["weekdays"] = _weekdays(body["weekdays"])
-    if "exercises" in body and isinstance(body["exercises"], list):
-        routine["exercises"] = body["exercises"]
-    _save(client_uid, m)
+    with _lock:
+        m = _load(client_uid, cycle_id)
+        routine = next((r for r in m["routines"] if r["id"] == routine_id), None)
+        if not routine:
+            raise HTTPException(404, detail="Routine nicht gefunden")
+        if "label" in body:
+            routine["label"] = body["label"]
+        if "isDeload" in body:
+            routine["isDeload"] = bool(body["isDeload"])
+        if "restHoursAfter" in body:
+            routine["restHoursAfter"] = max(_int(body["restHoursAfter"]), 0)
+        if "targetCount" in body:
+            routine["targetCount"] = max(_int(body["targetCount"]), 0)
+        if "targetPeriodDays" in body:
+            routine["targetPeriodDays"] = max(_int(body["targetPeriodDays"]), 0)
+        if "weekdays" in body:
+            routine["weekdays"] = _weekdays(body["weekdays"])
+        if "exercises" in body and isinstance(body["exercises"], list):
+            routine["exercises"] = body["exercises"]
+        _save(client_uid, m)
     return {"ok": True, "macrocycle": m}
 
 
 @router.delete("/{client_uid}/{cycle_id}/routines/{routine_id}")
 def delete_routine(client_uid: str, cycle_id: str, routine_id: str):
-    m = _load(client_uid, cycle_id)
-    m["routines"] = [r for r in m["routines"] if r["id"] != routine_id]
-    _save(client_uid, m)
+    with _lock:
+        m = _load(client_uid, cycle_id)
+        if not any(r["id"] == routine_id for r in m["routines"]):
+            raise HTTPException(404, detail="Routine nicht gefunden")
+        m["routines"] = [r for r in m["routines"] if r["id"] != routine_id]
+        _save(client_uid, m)
     return {"ok": True, "macrocycle": m}
 
 
@@ -283,43 +331,51 @@ def last_performance(client_uid: str, cycle_id: str, routine_id: str):
 async def update_macrocycle(client_uid: str, cycle_id: str, request: Request):
     """Status (draft/published), Name und Coach-Hinweis ändern. Veröffentlichen legt eine Version an (message/author optional)."""
     body = await request.json()
-    m = _load(client_uid, cycle_id)
     status = body.get("status")
     if status not in (None, "draft", "published"):
         raise HTTPException(422, detail="unsupported_status")
-    if status == "published":
-        if not m.get("routines") or any(not r.get("exercises") for r in m["routines"]):
-            raise HTTPException(422, detail="Jede Einheit braucht Übungen.")
-        snap = _snapshot(m)
-        head = m.get("published")
-        if m.get("status") == "published" and head is not None and head == snap:
-            raise HTTPException(422, detail="Keine Änderungen seit der letzten Version.")
-        if head is None or head != snap:
-            number = int(m.get("headVersion") or 0) + 1
-            message = (body.get("message") or "").strip()[:200] or ("Erste Version" if number == 1 else "Aktualisiert")
-            record = {
-                "id": f"v{number}", "number": number, "message": message,
-                "createdAt": datetime.now().isoformat(),
-                "author": body.get("author") or m.get("coachUid"),
-                "parent": f"v{number - 1}" if number > 1 else None,
-                "snapshot": snap,
-            }
-            _write_json(_versions_dir(client_uid, cycle_id) / f"v{number}.json", record)
-            m["published"] = snap
-            m["headVersion"] = number
-            m["headMessage"] = message
-        m["status"] = "published"
-        m["publishedAt"] = datetime.now().isoformat()
-    elif status == "draft":
-        m["status"] = "draft"
+    name = None
     if "name" in body:
-        name = (body.get("name") or "").strip()
+        name = _text(body.get("name"))
         if not name:
             raise HTTPException(400, detail="name erforderlich")
-        m["name"] = name
-    if "description" in body:
-        m["description"] = (body.get("description") or "").strip()[:2000]
-    _save(client_uid, m)
+    with _lock:
+        m = _load(client_uid, cycle_id)
+        # Name/Hinweis zuerst anwenden, damit der Snapshot sie schon enthält.
+        if name is not None:
+            m["name"] = name
+        if "description" in body:
+            m["description"] = _text(body.get("description"))[:2000]
+        if status == "published":
+            if not m.get("routines") or any(not r.get("exercises") for r in m["routines"]):
+                raise HTTPException(422, detail="Jede Einheit braucht Übungen.")
+            snap = _snapshot(m)
+            head = m.get("published")
+            if m.get("status") == "published" and head is not None and head == snap:
+                raise HTTPException(422, detail="Keine Änderungen seit der letzten Version.")
+            now = datetime.now().isoformat()
+            if head is None or head != snap:
+                number = _int(m.get("headVersion")) + 1
+                vpath = _versions_dir(client_uid, cycle_id) / f"v{number}.json"
+                if vpath.exists():
+                    raise HTTPException(409, detail=f"Version v{number} existiert bereits")
+                message = _text(body.get("message"))[:200] or ("Erste Version" if number == 1 else "Aktualisiert")
+                author = _text(body.get("author")) or m.get("coachUid")
+                record = {
+                    "id": f"v{number}", "number": number, "message": message,
+                    "createdAt": now, "author": author,
+                    "parent": f"v{number - 1}" if number > 1 else None,
+                    "snapshot": snap,
+                }
+                _write_json(vpath, record)
+                m["published"] = snap
+                m["headVersion"] = number
+                m["headMessage"] = message
+            m["status"] = "published"
+            m["publishedAt"] = now
+        elif status == "draft":
+            m["status"] = "draft"
+        _save(client_uid, m)
     return {"ok": True, "macrocycle": m}
 
 
@@ -338,7 +394,8 @@ async def restore_version(client_uid: str, cycle_id: str, request: Request):
     version = next((v for v in _versions(client_uid, cycle_id) if v["id"] == body.get("version")), None)
     if not version:
         raise HTTPException(404, detail="Version nicht gefunden")
-    m = _load(client_uid, cycle_id)
-    m.update({k: v for k, v in version["snapshot"].items()})
-    _save(client_uid, m)
+    with _lock:
+        m = _load(client_uid, cycle_id)
+        m.update({k: v for k, v in version["snapshot"].items()})
+        _save(client_uid, m)
     return {"ok": True, "macrocycle": m}

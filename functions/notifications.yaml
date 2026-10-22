@@ -37,3 +37,8 @@ planPublished:
   title: "Neuer Trainingsplan"
   body: "Dein Coach hat „{plan}“ für dich bereitgestellt."
   link: "/"
+
+planUpdated:
+  title: "Trainingsplan aktualisiert"
+  body: "Dein Plan „{plan}“ wurde aktualisiert ({detail})."
+  link: "/"

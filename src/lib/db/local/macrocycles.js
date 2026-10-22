@@ -22,8 +22,8 @@ export async function getMacrocycle(clientUid, cycleId) {
   }
 }
 
-export async function createMacrocycle(clientUid, { name, coachUid, totalWeeks, status = "published", description = "" }) {
-  const data = await api.post(base(clientUid), { name, coachUid, totalWeeks, status, description });
+export async function createMacrocycle(clientUid, { name, coachUid, totalWeeks, status = "draft", description = "", routines }) {
+  const data = await api.post(base(clientUid), { name, coachUid, totalWeeks, status, description, ...(routines ? { routines } : {}) });
   return data?.macrocycle || null;
 }
 
