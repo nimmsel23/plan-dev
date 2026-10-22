@@ -61,6 +61,26 @@ Logger überführt (`sourceAssignmentId`). Alte Checklisten-Completions werden
 nicht nachträglich als gemessene Sätze übernommen. Coach-Ergebnisse stammen
 im neuen Workspace aus den tatsächlichen Workout-Logs des gewählten Klienten.
 
+## Auslieferung an Klienten (2026-10-22)
+
+Makrozyklus-Felder: `description` (Coach-Hinweis, ≤ 2000 Zeichen), `status`
+(`draft`/`published`, per PATCH in beide Richtungen), `publishedAt`. Plan-Einheiten
+tragen zusätzlich `weekdays` (0 = Mo … 6 = So, vom Router normalisiert).
+Beide Backends (`fitness/api/routers/macrocycles.py`, `lib/db/firestore/macrocycles.js`)
+bieten `updateMacrocycle`.
+
+- `CoachWorkspace`: Klienten-Übersicht (Pläne/Entwürfe, Workouts der letzten 7 Tage).
+- `PlanCard`: Hinweis-Editor, Zurück-in-Entwurf, Wochentags-Chips, 7-Tage-Streifen,
+  „Heute geplant“. Wochentage sind Orientierung, keine Sperre (`lib/weekSchedule.js`).
+- `lib/copyPlan.js`: Plan als Entwurf zu anderem Klienten kopieren (Snapshots,
+  Einheit für Einheit, nicht atomar – bei Abbruch bleibt ein unvollständiger Entwurf).
+- `lib/newPlans.js` + Banner in `WorkoutList`: „Neu vom Coach“ je Gerät über
+  `publishedAt` im localStorage.
+- Push: `PushOptIn` nutzt `usePushNotifications` (Token in `fitness/{uid}/settings/push`);
+  Cloud Function `onPlanPublished` (`functions/`, Entscheidung in `planPublished.js`)
+  sendet bei neuem `publishedAt` eines fremden Coach-Plans. Test:
+  `scripts/tests/functions-plan.test.mjs`.
+
 ## Speicherung und Wiederaufnahme
 
 `lib/startWorkout` serialisiert Starts im aktuellen Browser-Kontext und setzt
