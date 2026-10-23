@@ -167,7 +167,7 @@ Bedienanleitung: `../../../docs/PLAN-WORKFLOW.md`.
 
 ## Meine Woche und Rückmeldung (Klient → Coach)
 
-- `lib/weekOverview.js` + `components/WeekOverview.jsx`: Wochenübersicht (Mo–So, lokale Zeit) unter der Startkarte, nur bei Plänen mit Wochentagen. Status je Einheit nach dem Fälligkeitsfenster (siehe unten): erledigt / ab jetzt möglich / heute fällig / überfällig / verpasst / geplant.
+- `lib/weekOverview.js` + `components/WeekOverview.jsx`: Wochenübersicht (Mo–So, lokale Zeit) unter der Startkarte, nur bei Plänen mit Wochentagen. Status je Einheit nach dem Fälligkeitsfenster (siehe unten): erledigt / ab jetzt möglich / heute fällig / offen (überfällig) / geplant.
 - `lib/workoutFeedback.js`: nach dem Training optional Anstrengung (1–10) und Notiz → `workout.feedback = {effort, note, at}` (normalisiert, Notiz max. 1000 Zeichen). Der Coach sieht sie unter „Absolvierte Workouts“ im Coach-Workspace.
 - Tests: `scripts/tests/plan-week.test.mjs`.
 - „Was ist neu?“ (`lib/planUpdates.js`, `components/WhatsNew.jsx`): je Coach-Plan merkt sich das Gerät die zuletzt gesehene Version (`plan-seen-versions:<uid>`, nur lokal). Ist `headVersion` neuer, erscheint auf der Startseite ein Banner mit Commit-Nachricht und Änderungsliste (`diffSnapshots` zwischen gesehener und aktueller Version aus `versions/`). Ohne Eintrag wird still der Ausgangsstand gesetzt; neue Pläne meldet weiter „Neu vom Coach“. Keine Lesebestätigung an den Coach (Rules lassen Klienten nichts an Coach-Plänen schreiben).
@@ -181,9 +181,8 @@ Eine geplante Einheit (Plan-Einheit + Wochentag) ist ein *Vorkommen* mit Fenster
 |---|---|---|
 | Vortag (z. B. So für Mo) | `scheduled` | ab jetzt möglich |
 | Plantag | `due` | heute fällig |
-| Folgetag | `overdue` | überfällig, noch zählbar |
-| danach | `missed` | verpasst (nicht mehr offen) |
+| ab Folgetag | `overdue` | offen, bis es gemacht wird – **„verpasst“ gibt es nicht** |
 
-Erledigt = im Fenster [Vortag, Folgetag] abgeschlossen; ein Abschluss belegt höchstens ein Vorkommen (das früheste freie). Startkarte (`openOccurrences`: überfällig → fällig → ab jetzt möglich) und „Meine Woche“ nutzen dieselbe Logik; Wochenübersicht über die Wochengrenze (So für Mo) eingeschlossen.
+Erledigt = im ±1-Tag-Fenster abgeschlossen; ein Abschluss belegt höchstens ein Vorkommen (das früheste freie im Fenster). Bleibt ein Abschluss übrig (Zusatztraining), holt er das älteste offene Vorkommen derselben Einheit nach. Offenes bleibt bis 28 Tage zurück (oder ab Veröffentlichung des Plans) sichtbar; auf der Startkarte erscheint pro Einheit nur das älteste offene Vorkommen. Startkarte (`openOccurrences`: überfällig → fällig → ab jetzt möglich) und „Meine Woche“ nutzen dieselbe Logik; Wochenübersicht über die Wochengrenze (So für Mo) eingeschlossen.
 
 **Vision (nicht gebaut):** Pro Klient eine Taskwarrior-DB auf dem Server als Task-DB. Das Vorkommen-Modell bildet direkt darauf ab: `scheduled:` = Vortag, `due:` = Plantag, Overdue/Missed aus `due` + Fenster; ein Abschluss ist `task done` mit Verknüpfung zur Workout-ID. Voraussetzung ist ein Backend, das neben dem Firestore-SDK denselben Plan-/Abschlussstand führt (Sync-Richtung noch offen).
