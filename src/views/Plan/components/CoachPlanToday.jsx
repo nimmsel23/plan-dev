@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Play } from 'lucide-react';
 
+const LABELS = { due: 'Heute fällig', overdue: 'Überfällig – war für gestern geplant, heute noch möglich', scheduled: 'Ab heute möglich – geplant für morgen' };
+
 // Startseite des Klienten: die nächste Einheit aus dem Plan des Coaches samt Hinweis und Versionsstand.
-export default function CoachPlanToday({ plan, routine, today, doneToday, alsoToday = [], onStart, onOpenPlans, busy }) {
+export default function CoachPlanToday({ plan, routine, status, doneToday, alsoToday = [], onStart, onOpenPlans, busy }) {
   const [more, setMore] = useState(false);
   const note = plan.description?.trim();
   const long = note && (note.length > 140 || note.includes('\n'));
-  const label = today ? 'Heute laut Plan' : doneToday ? 'Heute erledigt ✓ · als Nächstes' : 'Als Nächstes in deinem Plan';
+  const label = LABELS[status] || (doneToday ? 'Heute erledigt ✓ · als Nächstes' : 'Als Nächstes in deinem Plan');
   return <section className="mb-5 rounded-2xl border border-fit-accent/30 bg-fit-accent/10 p-4">
     <p className="mb-1 text-xs font-medium text-fit-accent">{label} · {plan.name}</p>
     <h2 className="text-xl font-bold">{routine.label}</h2>

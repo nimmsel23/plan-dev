@@ -11,7 +11,8 @@ import { startWorkout } from './lib/startWorkout.js';
 import { readActiveWorkout, writeActiveWorkout } from './lib/activeWorkout.js';
 import { getUid, listMacrocycles, getMacrocycle, markPlanRead } from '@db';
 import { pickNextPlanRoutine } from '../../lib/habitProgress.js';
-import { todaysOpenRoutines, hasSchedule, routinesForDay, weekdayIndex } from './lib/weekSchedule.js';
+import { hasSchedule } from './lib/weekSchedule.js';
+import { occurrences, openOccurrences } from './lib/occurrences.js';
 import { localDay } from './lib/planProgress.js';
 import { clientView } from './lib/planVersions.js';
 import CoachPlanToday from './components/CoachPlanToday.jsx';
@@ -129,14 +130,16 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
   const folderNames = [...new Set([...detected, ...emptyFolders])];
   const unfinished = workouts.find((w) => !w.finished_at);
   const now = new Date();
+  const RANK = { overdue: 0, due: 1, scheduled: 2 };
   const coachNext = !loading && coachPlans.map((plan) => {
     const scheduled = hasSchedule(plan.routines);
-    const openToday = scheduled ? todaysOpenRoutines(plan.routines, workouts, now).filter((r) => r.exercises?.length) : [];
-    const open = openToday[0];
-    const routine = open || pickNextPlanRoutine(plan.routines || [], workouts);
-    const doneToday = scheduled && !open && routinesForDay(plan.routines, weekdayIndex(now)).length > 0;
-    return routine?.exercises?.length ? { plan, routine, today: !!open, doneToday, alsoToday: openToday.slice(1).map((r) => r.label) } : null;
-  }).filter(Boolean).sort((a, b) => b.today - a.today)[0];
+    const open = scheduled ? openOccurrences(plan.routines, workouts, now).filter((o) => o.routine.exercises?.length) : [];
+    const first = open[0];
+    const routine = first?.routine || pickNextPlanRoutine(plan.routines || [], workouts);
+    const todays = scheduled && !first ? occurrences(plan.routines, workouts, now, now, now) : [];
+    const doneToday = todays.length > 0 && todays.every((o) => o.status === 'done');
+    return routine?.exercises?.length ? { plan, routine, status: first?.status || null, doneToday, alsoToday: open.slice(1).map((o) => o.routine.label) } : null;
+  }).filter(Boolean).sort((a, b) => (RANK[a.status] ?? 3) - (RANK[b.status] ?? 3))[0];
   const bannerPlans = newPlans.filter((p) => !updates.some((u) => u.plan.id === p.id));
   const cardProps = { onEdit: onEditRoutine, onStart: begin, onRename: rename, onDelete: remove, onSetCategory: category, busy, workouts };
   return (
