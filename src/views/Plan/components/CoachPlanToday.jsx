@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Play } from 'lucide-react';
 
-const LABELS = { due: 'Heute fällig', overdue: 'Überfällig – war für gestern geplant, heute noch möglich', scheduled: 'Ab heute möglich – geplant für morgen' };
+const LABELS = { due: 'Heute fällig', overdue: 'Offen – noch nicht gemacht, jederzeit nachholbar', scheduled: 'Ab heute möglich – geplant für morgen' };
 
 // Startseite des Klienten: die nächste Einheit aus dem Plan des Coaches samt Hinweis und Versionsstand.
 export default function CoachPlanToday({ plan, routine, status, doneToday, alsoToday = [], onStart, onOpenPlans, busy }) {

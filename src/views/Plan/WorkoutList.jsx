@@ -12,7 +12,7 @@ import { readActiveWorkout, writeActiveWorkout } from './lib/activeWorkout.js';
 import { getUid, listMacrocycles, getMacrocycle, markPlanRead } from '@db';
 import { pickNextPlanRoutine } from '../../lib/habitProgress.js';
 import { hasSchedule } from './lib/weekSchedule.js';
-import { occurrences, openOccurrences } from './lib/occurrences.js';
+import { occurrences, openByRoutine } from './lib/occurrences.js';
 import { localDay } from './lib/planProgress.js';
 import { clientView } from './lib/planVersions.js';
 import CoachPlanToday from './components/CoachPlanToday.jsx';
@@ -133,10 +133,10 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
   const RANK = { overdue: 0, due: 1, scheduled: 2 };
   const coachNext = !loading && coachPlans.map((plan) => {
     const scheduled = hasSchedule(plan.routines);
-    const open = scheduled ? openOccurrences(plan.routines, workouts, now).filter((o) => o.routine.exercises?.length) : [];
+    const open = scheduled ? openByRoutine(plan.routines, workouts, now, { since: plan.publishedAt }).filter((o) => o.routine.exercises?.length) : [];
     const first = open[0];
     const routine = first?.routine || pickNextPlanRoutine(plan.routines || [], workouts);
-    const todays = scheduled && !first ? occurrences(plan.routines, workouts, now, now, now) : [];
+    const todays = scheduled && !first ? occurrences(plan.routines, workouts, now, now, now, { since: plan.publishedAt }) : [];
     const doneToday = todays.length > 0 && todays.every((o) => o.status === 'done');
     return routine?.exercises?.length ? { plan, routine, status: first?.status || null, doneToday, alsoToday: open.slice(1).map((o) => o.routine.label) } : null;
   }).filter(Boolean).sort((a, b) => (RANK[a.status] ?? 3) - (RANK[b.status] ?? 3))[0];
