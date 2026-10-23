@@ -80,7 +80,7 @@ export default function AssignPlan({ clientUid: presetClientUid, clientName: pre
     if (!newName.trim() || !user?.uid || !selectedClient) return
     setCreating(true)
     try {
-      const created = await createMacrocycle(selectedClient, { name: newName.trim(), coachUid: user.uid, totalWeeks: Number(newTotalWeeks) || 10 })
+      const created = await createMacrocycle(selectedClient, { name: newName.trim(), coachUid: user.uid, totalWeeks: Number(newTotalWeeks) || 10, status: 'published' })
       if (created) {
         setNewName('')
         setCycles(await listMacrocycles(selectedClient))

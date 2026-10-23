@@ -1,5 +1,7 @@
 // Git-artige Versionen für Coach-Pläne: Der Plan selbst ist der Arbeitsstand,
 // jede Veröffentlichung ist ein unveränderlicher Commit (`versions/vN`) mit Nachricht.
+// snapshotOf bleibt bewusst nah an den Backends (Python vergleicht dict-Gleichheit: weekdays sortiert,
+// exercises default []); nur fehlende Ziel-Zahlen (Legacy) zählen als 0.
 // Klienten sehen immer den Stand des letzten Commits (`plan.published`), nie den Arbeitsstand.
 
 export function snapshotOf(plan = {}) {
@@ -7,7 +9,7 @@ export function snapshotOf(plan = {}) {
     name: plan.name || '',
     description: plan.description || '',
     totalWeeks: Number(plan.totalWeeks) || 10,
-    routines: (plan.routines || []).map((r) => ({ ...r, weekdays: [...(r.weekdays || [])].sort((a, b) => a - b), exercises: r.exercises || [] })),
+    routines: (plan.routines || []).map((r) => ({ ...r, targetCount: Number(r.targetCount) || 0, targetPeriodDays: Number(r.targetPeriodDays) || 0, weekdays: [...(r.weekdays || [])].sort((a, b) => a - b), exercises: r.exercises || [] })),
   };
 }
 
@@ -30,10 +32,45 @@ export function hasUnpublishedChanges(plan) {
 }
 
 const DAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
-const setsOf = (ex) => ex.templateSets || [];
-const setText = (s) => [s.targetReps && `${s.targetReps} Wdh.`, s.targetWeight != null && s.targetWeight !== '' && `${s.targetWeight} kg`].filter(Boolean).join(' × ');
+const eq = (x, y) => stable({ v: x }) === stable({ v: y });
+const days = (w) => (Array.isArray(w) ? [...new Set(w.filter((d) => Number.isInteger(d) && d >= 0 && d <= 6))].sort((x, y) => x - y) : []);
+const dayText = (w) => days(w).map((d) => DAYS[d]).join(', ') || '–';
+const show = (v) => (v === undefined || v === null || v === '' ? '–' : typeof v === 'object' ? JSON.stringify(v) : String(v));
+const ROUTINE_SKIP = new Set(['id', 'label', 'exercises', 'weekdays', 'sourceTemplateId', 'targetCount', 'targetPeriodDays']);
+const ROUTINE_LABEL = { isDeload: 'Deload', restHoursAfter: 'Pause danach (h)' };
+const EX_SKIP = new Set(['name', 'templateSets', 'exercise_id', 'id']);
+const EX_LABEL = { notes: 'Hinweis', rest_seconds: 'Pause', instructions: 'Anleitung', target_sets: 'Sätze', target_reps: 'Wdh.', target_weight: 'Gewicht' };
+const SET_LABEL = { targetReps: 'Wdh.', targetWeight: 'kg', targetDistance: 'km', targetDuration: 's', setType: 'Typ', progressionStage: 'Stufe' };
+const isObj = (x) => x && typeof x === 'object' && !Array.isArray(x);
+const keysOf = (a, b) => [...new Set([...Object.keys(isObj(a) ? a : {}), ...Object.keys(isObj(b) ? b : {})])];
+const setText = (s) => (isObj(s) ? Object.keys(s).filter((k) => k !== 'setIndex' && s[k] !== null && s[k] !== undefined && s[k] !== '').map((k) => `${show(s[k])}${SET_LABEL[k] ? ` ${SET_LABEL[k]}` : ` (${k})`}`).join(' × ') : show(s)) || '–';
+
+// Elemente mit Schlüssel; Kollisionen (gleiche ID/gleicher Name mehrfach) bekommen den Vorkommens-Index.
+function keyed(list, keyFn) {
+  const n = new Map();
+  return (list || []).map((x) => { const k = String(keyFn(x) ?? ''); const i = n.get(k) || 0; n.set(k, i + 1); return [`${k}#${i}`, x]; });
+}
+const orderChanged = (aKeys, bKeys) => { const inB = new Set(bKeys); const inA = new Set(aKeys); return aKeys.filter((k) => inB.has(k)).join('\u0000') !== bKeys.filter((k) => inA.has(k)).join('\u0000'); };
+
+function diffExercise(tag, p, e, lines) {
+  const parts = [];
+  if (p.name !== e.name) parts.push(`Name „${show(p.name)}“ → „${show(e.name)}“`);
+  const ps = p.templateSets; const es = e.templateSets;
+  const bothSets = Array.isArray(ps) && Array.isArray(es);
+  if (bothSets && !eq(ps, es)) {
+    const sets = [];
+    if (ps.length !== es.length) sets.push(`${ps.length}→${es.length} Sätze`);
+    for (let i = 0; i < Math.min(ps.length, es.length); i++) if (!eq(ps[i], es[i])) sets.push(`Satz ${i + 1}: ${setText(ps[i])} → ${setText(es[i])}`);
+    parts.push(sets.join('; ') || 'Sätze geändert');
+  }
+  const fields = keysOf(p, e).filter((k) => !EX_SKIP.has(k) && !eq(p[k], e[k])).map((k) => EX_LABEL[k] || k);
+  if (!bothSets && !eq(ps, es)) fields.push('Sätze');
+  if (fields.length) parts.push(`${fields.join(', ')} geändert`);
+  if (parts.length) lines.push({ kind: 'change', text: `${tag}: ${e.name || p.name || 'Übung'} – ${parts.join('; ')}` });
+}
 
 // Lesbare Änderungsliste von `from` nach `to` (beide Snapshots; `from` darf null sein = leer).
+// Garantie: sameSnapshot(a, b) === false => mindestens eine Zeile.
 export function diffSnapshots(from, to) {
   const a = snapshotOf(from || {});
   const b = snapshotOf(to || {});
@@ -41,31 +78,36 @@ export function diffSnapshots(from, to) {
   if (from && a.name !== b.name) lines.push({ kind: 'change', text: `Name: „${a.name}“ → „${b.name}“` });
   if (a.description !== b.description) lines.push({ kind: 'change', text: 'Coach-Hinweis geändert' });
   if (from && a.totalWeeks !== b.totalWeeks) lines.push({ kind: 'change', text: `Dauer: ${a.totalWeeks} → ${b.totalWeeks} Wochen` });
-  const old = new Map(a.routines.map((r) => [r.id, r]));
-  const seen = new Set();
-  for (const r of b.routines) {
-    const o = old.get(r.id);
-    if (!o) { lines.push({ kind: 'add', text: `Einheit „${r.label}“ hinzugefügt (${r.exercises.length} Übungen)` }); continue; }
-    seen.add(r.id);
+  const rk = (r) => r.id ?? r.label;
+  const aR = keyed(a.routines, rk);
+  const bR = keyed(b.routines, rk);
+  const old = new Map(aR);
+  const cur = new Map(bR);
+  if (from && orderChanged(aR.map(([k]) => k), bR.map(([k]) => k))) {
+    const inB = new Set(cur.keys()); const inA = new Set(old.keys());
+    lines.push({ kind: 'change', text: `Reihenfolge der Einheiten geändert: ${aR.filter(([k]) => inB.has(k)).map(([, r]) => r.label).join(', ')} → ${bR.filter(([k]) => inA.has(k)).map(([, r]) => r.label).join(', ')}` });
+  }
+  for (const [k, r] of bR) {
+    const o = old.get(k);
+    const exs = r.exercises || [];
+    if (!o) { lines.push({ kind: 'add', text: `Einheit „${r.label}“ hinzugefügt (${exs.length} Übungen)` }); continue; }
     const tag = `„${r.label}“`;
     if (o.label !== r.label) lines.push({ kind: 'change', text: `Einheit „${o.label}“ → „${r.label}“` });
-    if (stable(o.weekdays) !== stable(r.weekdays)) lines.push({ kind: 'change', text: `${tag}: Tage ${o.weekdays.map((d) => DAYS[d]).join(', ') || '–'} → ${r.weekdays.map((d) => DAYS[d]).join(', ') || '–'}` });
-    if (o.targetCount !== r.targetCount || o.targetPeriodDays !== r.targetPeriodDays) lines.push({ kind: 'change', text: `${tag}: Ziel ${o.targetCount || 0}× in ${o.targetPeriodDays || 0} Tagen → ${r.targetCount || 0}× in ${r.targetPeriodDays || 0} Tagen` });
-    const oldEx = new Map(o.exercises.map((e) => [e.exercise_id || e.id || e.name, e]));
-    const keys = new Set();
-    for (const e of r.exercises) {
-      const k = e.exercise_id || e.id || e.name; keys.add(k);
-      const p = oldEx.get(k);
-      if (!p) { lines.push({ kind: 'add', text: `${tag}: + ${e.name}` }); continue; }
-      const before = setsOf(p).map(setText).join(' | ');
-      const after = setsOf(e).map(setText).join(' | ');
-      if (setsOf(p).length !== setsOf(e).length || before !== after) lines.push({ kind: 'change', text: `${tag}: ${e.name} ${setsOf(p).length}→${setsOf(e).length} Sätze${before !== after ? ` (${after || '–'})` : ''}` });
-      else if ((p.notes || '') !== (e.notes || '') || (p.rest_seconds ?? null) !== (e.rest_seconds ?? null)) lines.push({ kind: 'change', text: `${tag}: ${e.name} Hinweis/Pause geändert` });
+    if (stable(o.weekdays) !== stable(r.weekdays)) lines.push({ kind: 'change', text: `${tag}: Tage ${dayText(o.weekdays)} → ${dayText(r.weekdays)}` });
+    if (o.targetCount !== r.targetCount || o.targetPeriodDays !== r.targetPeriodDays) lines.push({ kind: 'change', text: `${tag}: Ziel ${o.targetCount}× in ${o.targetPeriodDays} Tagen → ${r.targetCount}× in ${r.targetPeriodDays} Tagen` });
+    for (const f of keysOf(o, r)) if (!ROUTINE_SKIP.has(f) && !eq(o[f], r[f])) lines.push({ kind: 'change', text: `${tag}: ${ROUTINE_LABEL[f] || f} ${show(o[f])} → ${show(r[f])}` });
+    const ek = (e) => e.exercise_id || e.id || e.name;
+    const aE = keyed(o.exercises, ek); const bE = keyed(exs, ek);
+    const oldEx = new Map(aE); const curEx = new Map(bE);
+    for (const [ key, e] of bE) {
+      const p = oldEx.get(key);
+      if (!p) lines.push({ kind: 'add', text: `${tag}: + ${e.name}` });
+      else diffExercise(tag, p, e, lines);
     }
-    for (const [k, e] of oldEx) if (!keys.has(k)) lines.push({ kind: 'remove', text: `${tag}: − ${e.name}` });
-    const order = (x) => x.exercises.map((e) => e.exercise_id || e.id || e.name).filter((k) => oldEx.has(k) && keys.has(k)).join();
-    if (order(o) !== order(r) && !lines.some((l) => l.text.startsWith(tag) && l.kind !== 'change')) lines.push({ kind: 'change', text: `${tag}: Reihenfolge geändert` });
+    for (const [key, e] of aE) if (!curEx.has(key)) lines.push({ kind: 'remove', text: `${tag}: − ${e.name}` });
+    if (orderChanged(aE.map(([x]) => x), bE.map(([x]) => x))) lines.push({ kind: 'change', text: `${tag}: Reihenfolge der Übungen geändert` });
   }
-  for (const [id, r] of old) if (!seen.has(id) && !b.routines.some((x) => x.id === id)) lines.push({ kind: 'remove', text: `Einheit „${r.label}“ entfernt` });
+  for (const [k, r] of aR) if (!cur.has(k)) lines.push({ kind: 'remove', text: `Einheit „${r.label}“ entfernt` });
+  if (!lines.length && !sameSnapshot(a, b)) lines.push({ kind: 'change', text: 'Interne Daten geändert (z. B. Vorlagen-Verknüpfung)' });
   return lines;
 }

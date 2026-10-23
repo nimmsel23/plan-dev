@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, Plus, Pencil, Users } from 'lucide-react';
 import { getAllUserProfiles, listMacrocycles } from '@db';
 import { createPlanApi } from './api.js';
@@ -16,38 +16,48 @@ export default function CoachWorkspace({ onBack }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [overview, setOverview] = useState({});
+  const [profilesError, setProfilesError] = useState('');
+  const [filter, setFilter] = useState('');
+  const seq = useRef(0);
+  const aliveRef = useRef(true);
+  useEffect(() => () => { aliveRef.current = false; }, []);
   const clientApi = useMemo(() => createPlanApi(clientUid), [clientUid]);
-  useEffect(() => { getAllUserProfiles().then(setProfiles).catch((err) => setError(err.message)); }, []);
+  const loadProfiles = useCallback(() => {
+    setProfilesError('');
+    getAllUserProfiles().then((p) => aliveRef.current && setProfiles(p || {})).catch((err) => aliveRef.current && setProfilesError(err?.message || 'Klienten konnten nicht geladen werden.'));
+  }, []);
+  useEffect(() => { loadProfiles(); }, [loadProfiles]);
   const clients = useMemo(() => Object.entries(profiles).map(([uid, p]) => [uid, p.displayName || p.email || uid]).sort((a, b) => a[1].localeCompare(b[1])), [profiles]);
-  // Pro Klient: bereitgestellte/Entwurfs-Pläne und letztes absolviertes Workout.
-  useEffect(() => {
-    let alive = true;
-    clients.forEach(async ([uid]) => {
-      try {
-        const [plans, w] = await Promise.all([listMacrocycles(uid), createPlanApi(uid).get('/workouts')]);
-        const finished = (w.workouts || []).filter((x) => x.finished_at).map((x) => x.finished_at).sort();
-        const weekAgo = Date.now() - 7 * 86400000;
-        const info = {
-          published: plans.filter((p) => p.status !== 'draft').length,
-          drafts: plans.filter((p) => p.status === 'draft').length,
-          last: finished.at(-1) || null,
-          week: finished.filter((d) => Date.parse(d) >= weekAgo).length,
-        };
-        if (alive) setOverview((o) => ({ ...o, [uid]: info }));
-      } catch { if (alive) setOverview((o) => ({ ...o, [uid]: { failed: true } })); }
-    });
-    return () => { alive = false; };
-  }, [clients]);
+  // Pro Klient: bereitgestellte/Entwurfs-Pläne und Workouts der letzten 7 Tage.
+  const loadOverview = useCallback(async (uid) => {
+    setOverview((o) => ({ ...o, [uid]: undefined }));
+    try {
+      const [plans, w] = await Promise.all([listMacrocycles(uid), createPlanApi(uid).get('/workouts')]);
+      const finished = (w.workouts || []).filter((x) => x.finished_at).map((x) => x.finished_at).sort();
+      const weekAgo = Date.now() - 7 * 86400000;
+      const info = {
+        published: plans.filter((p) => p.status !== 'draft').length,
+        drafts: plans.filter((p) => p.status === 'draft').length,
+        last: finished.at(-1) || null,
+        week: finished.filter((d) => Date.parse(d) >= weekAgo).length,
+      };
+      if (aliveRef.current) setOverview((o) => ({ ...o, [uid]: info }));
+    } catch { if (aliveRef.current) setOverview((o) => ({ ...o, [uid]: { failed: true } })); }
+  }, []);
+  useEffect(() => { clients.forEach(([uid]) => loadOverview(uid)); }, [clients, loadOverview]);
+  const shown = useMemo(() => { const q = filter.trim().toLowerCase(); return q ? clients.filter(([, label]) => label.toLowerCase().includes(q)) : clients; }, [clients, filter]);
   async function load() {
     if (!clientUid) return;
+    const mine = ++seq.current;
     setBusy(true); setError('');
     try {
       const [r, w] = await Promise.all([clientApi.get('/routines'), clientApi.get('/workouts')]);
+      if (mine !== seq.current) return;
       setRoutines(r.routines || []); setWorkouts(w.workouts || []);
-    } catch (err) { setError(err.message); }
-    finally { setBusy(false); }
+    } catch (err) { if (mine === seq.current) setError(err.message); }
+    finally { if (mine === seq.current) setBusy(false); }
   }
-  useEffect(() => { setRoutines([]); setWorkouts([]); setEditing(null); load(); }, [clientUid]);
+  useEffect(() => { seq.current++; setRoutines([]); setWorkouts([]); setEditing(null); setError(''); setBusy(false); load(); return () => { seq.current++; }; }, [clientUid]);
   async function create() {
     if (busy || !name.trim()) return;
     setBusy(true); setError('');
@@ -66,13 +76,17 @@ export default function CoachWorkspace({ onBack }) {
           {clients.map(([uid, label]) => <option key={uid} value={uid}>{label}</option>)}
         </select>
       </label>
+      {profilesError && <p role="alert" className="text-sm text-fit-red">Klienten konnten nicht geladen werden: {profilesError}<button onClick={loadProfiles} className="ml-2 min-h-[44px] underline">Erneut versuchen</button></p>}
       {!clientUid && clients.length > 0 && <section aria-label="Klienten-Übersicht" className="space-y-2">
         <h2 className="text-lg font-semibold">Klienten-Übersicht</h2>
-        {clients.map(([uid, label]) => { const o = overview[uid]; return <button key={uid} onClick={() => setClientUid(uid)} className="flex w-full items-center justify-between gap-3 rounded-xl border border-fit-line bg-fit-card p-3 text-left">
-          <span className="min-w-0"><span className="block truncate font-semibold">{label}</span>
-            <span className="text-xs text-fit-muted">{!o ? 'Lädt…' : o.failed ? 'Keine Daten' : o.published ? `${o.published} Plan${o.published > 1 ? 'e' : ''} bereitgestellt` : o.drafts ? 'Nur Entwurf — noch nichts bereitgestellt' : 'Noch kein Plan'}{o && !o.failed && o.drafts > 0 && o.published > 0 ? ` · ${o.drafts} Entwurf` : ''}</span></span>
-          <span className="shrink-0 text-right text-xs text-fit-muted">{o && !o.failed && <><span className="block font-semibold text-fit-ink">{o.week} / 7 Tage</span>{o.last ? `zuletzt ${new Date(o.last).toLocaleDateString('de-AT')}` : 'noch kein Workout'}</>}</span>
-        </button>; })}
+        {clients.length > 8 && <input type="search" aria-label="Klienten filtern" placeholder="Klienten filtern…" value={filter} onChange={(e) => setFilter(e.target.value)} className="min-h-[44px] w-full rounded-xl border border-fit-line bg-fit-card p-3 text-sm" />}
+        {!shown.length && <p className="text-sm text-fit-muted">Kein Klient gefunden.</p>}
+        {shown.map(([uid, label]) => { const o = overview[uid]; return <div key={uid} className="flex w-full items-center justify-between gap-3 rounded-xl border border-fit-line bg-fit-card p-3">
+          <button onClick={() => setClientUid(uid)} className="min-h-[44px] min-w-0 flex-1 text-left"><span className="block truncate font-semibold">{label}</span>
+            <span className="text-xs text-fit-muted">{!o ? 'Lädt…' : o.failed ? 'Konnte nicht geladen werden' : o.published ? `${o.published} Plan${o.published > 1 ? 'e' : ''} bereitgestellt` : o.drafts ? 'Nur Entwurf — noch nichts bereitgestellt' : 'Noch kein Plan'}{o && !o.failed && o.drafts > 0 && o.published > 0 ? ` · ${o.drafts} Entwurf` : ''}</span></button>
+          {o?.failed ? <button onClick={() => loadOverview(uid)} className="min-h-[44px] shrink-0 px-2 text-xs underline">Erneut versuchen</button>
+            : <span className="shrink-0 text-right text-xs text-fit-muted">{o && <><span className="block font-semibold text-fit-ink">{o.week} Workouts · 7 Tage</span>{o.last ? `zuletzt ${new Date(o.last).toLocaleDateString('de-AT')}` : 'noch kein Workout'}</>}</span>}
+        </div>; })}
       </section>}
       {error && <p role="alert" className="text-sm text-fit-red">{error}<button onClick={load} className="ml-2 underline">Erneut versuchen</button></p>}
       {clientUid && <>

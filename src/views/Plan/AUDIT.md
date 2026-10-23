@@ -217,6 +217,5 @@ startbar, ihr bisheriger Hakenfortschritt wird nicht als Leistung umgeschrieben.
 ## 2026-10-22: Auslieferung an Klienten
 
 Neu: Klienten-Übersicht, Plan-Hinweis, Zurückziehen, Kopieren, Wochenplan,
-Neu-Banner und Push (`onPlanPublished`). Details: `ARCHITECTURE.md`. Versionierung ist umgesetzt (`ARCHITECTURE.md`). Offen:
-atomares Kopieren, Push-Token-Bereinigung
+Neu-Banner und Push (`onPlanPublished`). Details: `ARCHITECTURE.md`. Versionierung, atomares Kopieren und Rules-Härtung (Patch) sind umgesetzt (`ARCHITECTURE.md`). Offen: Push-Token-Bereinigung
 ungültiger Geräte, authentifizierte Geräte-Abnahme des Pushs.

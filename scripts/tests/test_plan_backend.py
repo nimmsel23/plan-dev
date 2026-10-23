@@ -107,6 +107,63 @@ class PlanBackendTest(unittest.TestCase):
                 for path in Path(root).rglob("*.json"):
                     self.assertTrue(path.is_relative_to(root))
 
+    def test_patch_list_delete_and_input_hardening(self):
+        with tempfile.TemporaryDirectory(prefix="plan-router-test-") as root:
+            config = types.ModuleType("fitness.api.config")
+            config.RUNTIME = Path(root)
+            config.SESS_ROOT = Path(root) / "users"
+            config._read_json = lambda path: json.loads(path.read_text()) if path.exists() else None
+
+            def write(path, value):
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(json.dumps(value))
+
+            config._write_json = write
+            config._uid_from_request = lambda request: "client"
+            sys.modules["fitness.api.config"] = config
+            sys.modules.pop("fitness.api.routers.macrocycles", None)
+            import importlib
+            macrocycles = importlib.import_module("fitness.api.routers.macrocycles")
+            app = FastAPI()
+            app.include_router(macrocycles.router)
+            ex = [{"exercise_id": "a", "name": "A"}]
+            with RouterClient(app) as client:
+                base = "/fitness/coach/macrocycles/client"
+                plan = client.post(base, json={"name": "PPL", "coachUid": "coach", "totalWeeks": "abc"}).json()["macrocycle"]
+                self.assertEqual(plan["status"], "draft")
+                self.assertEqual(plan["totalWeeks"], 10)
+                url = f'{base}/{plan["id"]}'
+                client.post(f"{url}/routines", json={"label": "Push", "exercises": ex, "restHoursAfter": "x", "weekdays": [2, 2, 8]})
+                # name + description + status im selben PATCH, message/author als Nicht-String
+                out = client.patch(url, json={"status": "published", "name": " Neu ", "description": "Hinweis", "message": 5, "author": ["x"]}).json()["macrocycle"]
+                self.assertEqual(out["published"]["name"], "Neu")
+                self.assertEqual(out["published"]["description"], "Hinweis")
+                self.assertEqual(out["headMessage"], "Erste Version")
+                self.assertEqual(out["routines"][0]["restHoursAfter"], 0)
+                self.assertEqual(out["routines"][0]["weekdays"], [2])
+                v1 = client.get(f"{url}/versions").json()["versions"][0]
+                self.assertEqual(v1["author"], "coach")
+                self.assertEqual(client.patch(url, json={"name": "  "}).status_code, 400)
+                # Liste: ohne published, Zähler vom veröffentlichten Stand
+                client.post(f"{url}/routines", json={"label": "Pull", "exercises": ex})
+                entry = client.get(base).json()["macrocycles"][0]
+                self.assertNotIn("published", entry)
+                self.assertNotIn("routines", entry)
+                self.assertEqual((entry["routineCount"], entry["workingRoutineCount"]), (1, 2))
+                # createMacrocycle mit routines
+                copy = client.post(base, json={"name": "Kopie", "coachUid": "coach", "routines": [{"label": "A", "exercises": ex, "weekdays": [5, 1], "sourceTemplateId": None}, {"label": " "}]}).json()["macrocycle"]
+                self.assertEqual([r["weekdays"] for r in copy["routines"]], [[1, 5]])
+                self.assertEqual(copy["routines"][0]["exercises"], ex)
+                # delete_routine: unbekannt -> 404
+                self.assertEqual(client.delete(f"{url}/routines/rt_nope").status_code, 404)
+                # delete räumt Unterordner auf
+                sub = Path(root) / "users" / "client" / "macrocycles" / plan["id"]
+                self.assertTrue((sub / "versions").exists())
+                self.assertEqual(client.delete(url).status_code, 200)
+                self.assertFalse(sub.exists())
+                self.assertFalse((sub.parent / f'{plan["id"]}.json').exists())
+                self.assertTrue((sub.parent / f'{copy["id"]}.json').exists())
+
 
 if __name__ == "__main__":
     unittest.main()

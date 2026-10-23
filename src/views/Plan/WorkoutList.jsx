@@ -11,7 +11,8 @@ import { startWorkout } from './lib/startWorkout.js';
 import { readActiveWorkout, writeActiveWorkout } from './lib/activeWorkout.js';
 import { getUid, listMacrocycles, getMacrocycle } from '@db';
 import { pickNextPlanRoutine } from '../../lib/habitProgress.js';
-import { todaysOpenRoutines, hasSchedule } from './lib/weekSchedule.js';
+import { todaysOpenRoutines, hasSchedule, routinesForDay, weekdayIndex } from './lib/weekSchedule.js';
+import { localDay } from './lib/planProgress.js';
 import { clientView } from './lib/planVersions.js';
 import CoachPlanToday from './components/CoachPlanToday.jsx';
 import { useUser } from '../../contexts/UserContext.jsx';
@@ -45,17 +46,39 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
     finally { setLoading(false); }
   }
   useEffect(() => { load(); }, []);
-  useEffect(() => {
-    let alive = true;
+  const [coachState, setCoachState] = useState({ loaded: false, error: '' });
+  const [dayKey, setDayKey] = useState(() => localDay(new Date()));
+  const alive = useRef(true);
+  async function loadCoachPlans() {
     const uid = getUid();
-    listMacrocycles(uid).then(async (plans) => {
-      if (!alive) return;
+    try {
+      const plans = await listMacrocycles(uid);
+      if (!alive.current) return;
       setNewPlans(unseenCoachPlans(plans, uid, readSeen(uid)));
       const mine = plans.filter((p) => p.status !== 'draft' && p.coachUid && p.coachUid !== uid && p.routineCount > 0);
-      const details = await Promise.all(mine.map((p) => getMacrocycle(uid, p.id).then((d) => d?.macrocycle).catch(() => null)));
-      if (alive) setCoachPlans(details.filter(Boolean).map(clientView));
-    }).catch(() => {});
-    return () => { alive = false; };
+      const details = await Promise.all(mine.map((p) => getMacrocycle(uid, p.id).then((d) => d?.macrocycle)));
+      if (!alive.current) return;
+      // Ohne veröffentlichten Stand bekommt der Klient keinen Arbeitsstand zu sehen.
+      setCoachPlans(details.filter((d) => d?.published).map(clientView));
+      setCoachState({ loaded: true, error: '' });
+    } catch (err) {
+      if (alive.current) setCoachState({ loaded: true, error: err?.message || 'Plan vom Coach konnte nicht geladen werden.' });
+    }
+  }
+  // Beim Zurückkehren in die App und nach Mitternacht neu laden (Plan kann sich geändert haben, „heute“ ist ein anderer Tag).
+  useEffect(() => {
+    alive.current = true;
+    loadCoachPlans();
+    const refresh = () => {
+      if (document.visibilityState === 'hidden') return;
+      setDayKey(localDay(new Date()));
+      loadCoachPlans();
+      load();
+    };
+    const tick = window.setInterval(() => setDayKey(localDay(new Date())), 60000);
+    document.addEventListener('visibilitychange', refresh);
+    window.addEventListener('focus', refresh);
+    return () => { alive.current = false; window.clearInterval(tick); document.removeEventListener('visibilitychange', refresh); window.removeEventListener('focus', refresh); };
   }, []);
   function showPlans() { markSeen(getUid(), newPlans); setNewPlans([]); setSection('plans'); }
   async function act(fn) {
@@ -65,7 +88,15 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
     finally { lock.current = false; setBusy(false); }
   }
   async function begin(routineId, extra = {}) {
-    await act(async () => { const id = await startWorkout({ ...extra, ...(routineId ? { routine_id: routineId } : {}) }); onOpenWorkout(id); });
+    await act(async () => {
+      try {
+        const id = await startWorkout({ ...extra, ...(routineId ? { routine_id: routineId } : {}) });
+        onOpenWorkout(id);
+      } catch (err) {
+        if (err.code !== 'ACTIVE_WORKOUT') throw err;
+        if (confirm(`„${err.active.name}“ läuft noch. Jetzt dorthin wechseln? (Abbrechen: hier bleiben — dort erst beenden oder verwerfen)`)) onOpenWorkout(err.active.id);
+      }
+    });
   }
   function newRoutine() {
     return act(async () => { const r = await api.post('/routines', { name: 'Neue Workout-Vorlage' }); onEditRoutine(r.id); });
@@ -87,10 +118,14 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
   const { folders, folderNames: detected, uncategorized } = groupRoutinesIntoFolders(routines);
   const folderNames = [...new Set([...detected, ...emptyFolders])];
   const unfinished = workouts.find((w) => !w.finished_at);
+  const now = new Date();
   const coachNext = !loading && coachPlans.map((plan) => {
-    const open = hasSchedule(plan.routines) ? todaysOpenRoutines(plan.routines, workouts)[0] : null;
+    const scheduled = hasSchedule(plan.routines);
+    const openToday = scheduled ? todaysOpenRoutines(plan.routines, workouts, now).filter((r) => r.exercises?.length) : [];
+    const open = openToday[0];
     const routine = open || pickNextPlanRoutine(plan.routines || [], workouts);
-    return routine?.exercises?.length ? { plan, routine, today: !!open } : null;
+    const doneToday = scheduled && !open && routinesForDay(plan.routines, weekdayIndex(now)).length > 0;
+    return routine?.exercises?.length ? { plan, routine, today: !!open, doneToday, alsoToday: openToday.slice(1).map((r) => r.label) } : null;
   }).filter(Boolean).sort((a, b) => b.today - a.today)[0];
   const cardProps = { onEdit: onEditRoutine, onStart: begin, onRename: rename, onDelete: remove, onSetCategory: category, busy, workouts };
   return (
@@ -99,12 +134,13 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
       {error && <div role="alert" className="mb-4 rounded-xl border border-red-500/30 p-3 text-sm text-fit-red">{error}<button onClick={load} className="ml-2 underline">Erneut laden</button></div>}
       <PushOptIn user={user} />
       {newPlans.length > 0 && <button onClick={showPlans} className="mb-4 flex w-full items-center justify-between rounded-2xl border border-fit-accent bg-fit-accent/10 p-4 text-left"><span><span className="block font-semibold">{newPlans.length === 1 ? `Neuer Trainingsplan: ${newPlans[0].name}` : `${newPlans.length} neue Trainingspläne von deinem Coach`}</span><span className="text-xs text-fit-muted">Antippen zum Ansehen</span></span><Layers size={20} className="text-fit-accent" /></button>}
-      {unfinished ? <button disabled={busy} onClick={() => onOpenWorkout(unfinished.id)} className="mb-6 flex w-full items-center justify-between rounded-2xl border border-fit-accent bg-fit-accent/10 p-4 text-left"><span><span className="block font-semibold">{unfinished.name}</span><span className="text-xs text-fit-muted">Workout läuft · Fortsetzen</span></span><Play size={20} className="text-fit-accent" /></button> : coachNext ? <CoachPlanToday {...coachNext} onStart={begin} onOpenPlans={showPlans} busy={busy} /> : next && <NextUpCard routine={next} onStart={begin} onEdit={onEditRoutine} busy={busy} />}
+      {coachState.error && <div role="alert" className="mb-4 rounded-xl border border-red-500/30 p-3 text-sm text-fit-red">Plan vom Coach konnte nicht geladen werden.<button onClick={loadCoachPlans} className="ml-2 underline">Erneut laden</button></div>}
+      {unfinished ? <button disabled={busy} onClick={() => onOpenWorkout(unfinished.id)} className="mb-6 flex w-full items-center justify-between rounded-2xl border border-fit-accent bg-fit-accent/10 p-4 text-left"><span><span className="block font-semibold">{unfinished.name}</span><span className="text-xs text-fit-muted">Workout läuft · Fortsetzen</span></span><Play size={20} className="text-fit-accent" /></button> : coachNext ? <CoachPlanToday key={dayKey} {...coachNext} onStart={begin} onOpenPlans={showPlans} busy={busy} /> : next && <NextUpCard routine={next} onStart={begin} onEdit={onEditRoutine} busy={busy} />}
       <div className="mb-6 grid grid-cols-2 gap-2"><button disabled={busy || loading} onClick={() => begin()} className="rounded-xl border border-fit-line bg-fit-card px-3 py-3 text-sm font-semibold disabled:opacity-50">Leeres Workout</button><button disabled={busy} onClick={newRoutine} className="flex items-center justify-center gap-2 rounded-xl bg-fit-accent px-3 py-3 text-sm font-semibold text-fit-bg disabled:opacity-50"><Plus size={16} /> Neue Vorlage</button></div>
       <div aria-label="Trainingsbereich" className="mb-5 flex gap-1 rounded-xl bg-fit-bg2 p-1">{[['templates', 'Workout-Vorlagen'], ['plans', 'Trainingspläne']].map(([id,label]) => <button key={id} aria-pressed={section === id} onClick={() => { if (id === 'plans' && newPlans.length) markSeen(getUid(), newPlans), setNewPlans([]); setSection(id); }} className={`flex-1 rounded-lg px-3 py-2 text-sm font-semibold ${section === id ? 'bg-fit-card text-fit-ink shadow-sm' : 'text-fit-muted'}`}>{label}{id === 'plans' && newPlans.length > 0 && <span aria-label="neu" className="ml-1.5 inline-block h-2 w-2 rounded-full bg-fit-accent align-middle" />}</button>)}</div>
-      {section === 'plans' ? <><p className="mb-4 text-sm text-fit-muted">Ein Trainingsplan bündelt deine Workout-Vorlagen und zeigt, wie oft du sie trainieren möchtest.</p><AssignedPlans onStart={(body) => begin(null, body)} /><TrainingPlans templates={routines} workouts={workouts} onChanged={load} onStart={begin} /></> : <section>
+      {section === 'plans' ? <>{coachState.loaded && !coachState.error && !coachPlans.length && <p role="status" className="mb-4 rounded-xl border border-dashed border-fit-line p-4 text-sm text-fit-muted">Dein Coach hat noch keinen Trainingsplan bereitgestellt. Sobald er einen veröffentlicht, erscheint er hier und ganz oben auf der Startseite.</p>}<p className="mb-4 text-sm text-fit-muted">Ein Trainingsplan bündelt deine Workout-Vorlagen und zeigt, wie oft du sie trainieren möchtest.</p><AssignedPlans onStart={(body) => begin(null, body)} /><TrainingPlans templates={routines} workouts={workouts} onChanged={load} onStart={begin} /></> : <section>
         <div className="mb-4 flex items-center justify-between"><h2 className="text-sm font-semibold">Deine Vorlagen {!loading && `(${routines.length})`}</h2><button onClick={createFolder} className="flex items-center gap-1 text-xs text-fit-muted"><FolderPlus size={15} /> Ordner</button></div>
-        {loading ? <p className="py-12 text-center text-sm text-fit-muted">Vorlagen laden…</p> : !routines.length ? <div className="rounded-2xl border border-dashed border-fit-line p-6 text-center"><Dumbbell size={30} className="mx-auto mb-3 text-fit-accent" /><h3 className="font-semibold">Dein erstes Workout beginnt hier</h3><p className="my-3 text-sm text-fit-muted">Erstelle eine Vorlage, z. B. „Push A“, und füge Übungen aus dem Yuhonas-Katalog hinzu. Oder starte leer und speichere dein Workout danach als Vorlage.</p><button onClick={newRoutine} className="rounded-xl bg-fit-accent px-4 py-2 text-sm font-semibold text-fit-bg">Erste Vorlage erstellen</button><button onClick={() => setSection('plans')} className="mt-3 block w-full text-sm text-fit-accent">Trainingspläne vom Coach ansehen</button></div> : <>
+        {loading ? <p className="py-12 text-center text-sm text-fit-muted">Vorlagen laden…</p> : !routines.length ? <div className="rounded-2xl border border-dashed border-fit-line p-6 text-center"><Dumbbell size={30} className="mx-auto mb-3 text-fit-accent" /><h3 className="font-semibold">{coachState.loaded && !coachPlans.length ? 'Noch kein Plan von deinem Coach' : 'Dein erstes Workout beginnt hier'}</h3><p className="my-3 text-sm text-fit-muted">Erstelle eine Vorlage, z. B. „Push A“, und füge Übungen aus dem Yuhonas-Katalog hinzu. Oder starte leer und speichere dein Workout danach als Vorlage.</p><button onClick={newRoutine} className="rounded-xl bg-fit-accent px-4 py-2 text-sm font-semibold text-fit-bg">Erste Vorlage erstellen</button><button onClick={() => setSection('plans')} className="mt-3 block w-full text-sm text-fit-accent">Trainingspläne vom Coach ansehen</button></div> : <>
           {folderNames.map((name) => <RoutineFolder key={name} label={name} routines={folders[name] || []} defaultOpen onDeleteFolder={() => foldersChanged(emptyFolders.filter((f) => f !== name))} {...cardProps} />)}
           {uncategorized.length > 0 && <RoutineFolder label="Workout-Vorlagen" routines={uncategorized} defaultOpen {...cardProps} />}
         </>}

@@ -4,7 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const yaml = require("js-yaml");
 const strava = require("./strava.js");
-const { shouldNotifyPlanPublished } = require("./planPublished.js");
+const { shouldNotifyPlanPublished, planPushContent } = require("./planPublished.js");
 
 admin.initializeApp();
 
@@ -355,7 +355,8 @@ exports.onPlanPublished = functions
     const tokens = normalizeTokens(pushData);
     if (tokens.length === 0) return null;
 
-    const text = notificationText("planPublished", { plan: after.name || "Trainingsplan" });
+    const content = planPushContent(after);
+    const text = notificationText(content.type, content.vars);
     return sendReminder(uid, tokens, text.title, text.body, text.link);
   });
 

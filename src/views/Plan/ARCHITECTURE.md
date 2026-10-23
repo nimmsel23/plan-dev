@@ -72,7 +72,7 @@ bieten `updateMacrocycle`.
 - `PlanCard`: Hinweis-Editor, Zurück-in-Entwurf, Wochentags-Chips, 7-Tage-Streifen,
   „Heute geplant“. Wochentage sind Orientierung, keine Sperre (`lib/weekSchedule.js`).
 - `lib/copyPlan.js`: Plan als Entwurf zu anderem Klienten kopieren (Snapshots,
-  Einheit für Einheit, nicht atomar – bei Abbruch bleibt ein unvollständiger Entwurf).
+  in einem Schreibvorgang (atomar)).
 - `lib/newPlans.js` + Banner in `WorkoutList`: „Neu vom Coach“ je Gerät über
   `publishedAt` im localStorage.
 - Push: `PushOptIn` nutzt `usePushNotifications` (Token in `fitness/{uid}/settings/push`);
@@ -94,8 +94,24 @@ bleibt; ein Revert ist also restore + neu veröffentlichen. `diffSnapshots` lief
 Änderungsliste (neue/entfernte Einheiten und Übungen, Sätze, Tage, Ziele, Hinweis). Workouts tragen
 `sourcePlanVersion`. UI: `components/PlanVersions.jsx`. Beide Backends
 (`macrocycles.py`, `firestore/macrocycles.js`) bieten `publish`/`listPlanVersions`/`restorePlanVersion`.
-Bestehende, schon bereitgestellte Pläne ohne Version zeigen weiter den Arbeitsstand, bis zur ersten
-Veröffentlichung als v1. Offen: Branches/Merge gibt es bewusst nicht; Klienten sehen kein Änderungsprotokoll.
+Bestehende, schon bereitgestellte Pläne ohne Version zeigen dem Coach „Live ohne Version“ (Klienten sehen
+ohne `published` keinen Arbeitsstand mehr) bis zur ersten Veröffentlichung als v1. Neue Pläne starten als `draft`.
+
+Konsistenz (2026-10-23): Firestore-Schreibpfade laufen über `runTransaction` und schreiben nur geänderte Felder;
+Publish vergibt die Nummer in der Transaktion und legt `versions/vN` nur an, wenn sie fehlt (parallele Publishes
+kollidieren nicht). Lokal sichert ein Lock alle Lesen-Ändern-Schreiben-Pfade. `copyPlan` legt den Zielplan in
+einem Schreibvorgang an (Entwurf, neue IDs, `sourceTemplateId` null, Warnung bei unveröffentlichten Änderungen).
+Die Listenantwort enthält kein `published`, `routineCount` zählt den veröffentlichten Stand. Push nennt Version
+und Nachricht (`planUpdated`), feuert nur bei neuerem `publishedAt`.
+
+„Erledigt“ ist eine Regel (`lib/planProgress.js`, lokale Zeit): primär über `sourcePlanRoutineId`, sonst über
+die Herkunfts-Vorlage; gilt für „heute offen“, Zeitraumziele und die Empfehlung (`habitProgress`, `weekSchedule`).
+Ein Start, der von einem laufenden Workout abweicht, fragt nach (`startTarget.js`, `ACTIVE_WORKOUT`).
+
+Rules: Owner-Schreibrechte auf `macrocycles/**` erlauben Klienten, `published`/`versions` ihrer Coach-Pläne zu fälschen.
+Gehärtete Fassung (Emulator-getestet, `npm run test:rules`): `docs/firestore-rules-plan.patch`, anzuwenden auf
+`~/vitalos/firestore.rules` und von dort zu deployen. Nicht gehärtet: Klienten können unveröffentlichte Entwürfe lesen.
+Vertrag `@db`: `scripts/tests/db-barrel-contract.test.mjs` prüft alle Importe gegen die Barrels von plan-dev und fitness-dev.
 
 ## Speicherung und Wiederaufnahme
 

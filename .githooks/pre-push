@@ -36,6 +36,12 @@ while read -r local_ref local_sha remote_ref remote_sha; do
 done
 
 if [[ "$should_build_dev" == true ]]; then
+  echo "🔍 plan-dev: prüfe @db-Exporte gegen alle Ziel-Barrels (fitness-dev u. a.)…"
+  if ! node scripts/tests/db-barrel-contract.test.mjs >/dev/null; then
+    node scripts/tests/db-barrel-contract.test.mjs 2>&1 | grep -A8 "Fehlende" >&2 || true
+    echo "❌ @db-Vertrag verletzt — Push wird abgebrochen (Override: git push --no-verify)." >&2
+    exit 1
+  fi
   echo "🔍 plan-dev: Push zu dev — baue Plan-Firebase-Artefakt als Build-Verifikation…"
   if ! pnpm run build:firebase; then
     echo "❌ Plan-Build fehlgeschlagen — Push wird abgebrochen." >&2
