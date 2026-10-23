@@ -164,3 +164,9 @@ Browser geprüft. Eine mobile Ansicht mit 390 px wurde ohne horizontalen
 Überlauf geprüft. Das ersetzt keine authentifizierte Firebase-Abnahme.
 
 Bedienanleitung: `../../../docs/PLAN-WORKFLOW.md`.
+
+## Meine Woche und Rückmeldung (Klient → Coach)
+
+- `lib/weekOverview.js` + `components/WeekOverview.jsx`: Wochenübersicht (Mo–So, lokale Zeit) unter der Startkarte, nur bei Plänen mit Wochentagen. Status je Einheit: erledigt / heute offen / verpasst / geplant; gezählt nach der einen „erledigt“-Regel aus `planProgress.js`.
+- `lib/workoutFeedback.js`: nach dem Training optional Anstrengung (1–10) und Notiz → `workout.feedback = {effort, note, at}` (normalisiert, Notiz max. 1000 Zeichen). Der Coach sieht sie unter „Absolvierte Workouts“ im Coach-Workspace.
+- Tests: `scripts/tests/plan-week.test.mjs`.

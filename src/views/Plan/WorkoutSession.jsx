@@ -309,6 +309,7 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
 
   if (summary) {
     return <WorkoutSummary workout={summary.workout} prs={summary.prs} onDone={onFinished}
+      onSaveFeedback={async (feedback) => { await api.patch(`/workouts/${workoutId}`, { feedback }); }}
       onSaveTemplate={saveAsTemplate}
       onUpdateTemplate={workout.routine_id && !workout.sourcePlanId ? async () => {
         await api.patch(`/routines/${workout.routine_id}`, { exercises: workoutTemplateExercises({ exercises }) });
