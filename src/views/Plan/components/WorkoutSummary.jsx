@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { Trophy, Clock, Dumbbell, Layers } from "lucide-react";
+import { effortLabel, normFeedback } from "../lib/workoutFeedback.js";
 import { formatDuration, formatKg, formatSet, groupWorkoutSets, bestSet, workoutTotals } from "../lib/history.js";
 
 // Strong-Abschluss-Screen nach "Fertig": Dauer, Volumen, Sätze, neue
 // persönliche Rekorde und bester Satz pro Übung.
-export default function WorkoutSummary({ workout, prs = [], onDone, onSaveTemplate, onUpdateTemplate }) {
+export default function WorkoutSummary({ workout, prs = [], onDone, onSaveTemplate, onUpdateTemplate, onSaveFeedback }) {
+  const [effort, setEffort] = useState(workout.feedback?.effort || 0);
+  const [note, setNote] = useState(workout.feedback?.note || '');
+  const [fbState, setFbState] = useState(workout.feedback ? 'saved' : '');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   async function save(action, done) {
@@ -57,6 +61,16 @@ export default function WorkoutSummary({ workout, prs = [], onDone, onSaveTempla
           </div>
         ))}
       </section>
+
+      {onSaveFeedback && <section className="mb-5 rounded-xl border border-fit-line p-4">
+        <h2 className="text-sm font-semibold">Wie war das Training?</h2>
+        <p className="my-1 text-xs text-fit-muted">Dein Coach sieht deine Rückmeldung.</p>
+        <div role="group" aria-label="Anstrengung 1 bis 10" className="mt-2 grid grid-cols-10 gap-1">{[1,2,3,4,5,6,7,8,9,10].map((n) => <button key={n} aria-pressed={effort === n} onClick={() => { setEffort(effort === n ? 0 : n); setFbState(''); }} className={`min-h-[44px] rounded-lg text-sm font-semibold ${effort === n ? 'bg-fit-accent text-fit-bg' : 'bg-fit-card text-fit-muted'}`}>{n}</button>)}</div>
+        <p className="mt-1 h-4 text-xs text-fit-muted">{effort ? `Anstrengung ${effort}/10 · ${effortLabel(effort)}` : ''}</p>
+        <textarea value={note} maxLength={1000} onChange={(e) => { setNote(e.target.value); setFbState(''); }} aria-label="Notiz an den Coach" placeholder="Notiz an den Coach (optional): Schmerzen, Gewichte zu leicht/schwer …" rows={3} className="mt-2 w-full rounded-xl border border-fit-line bg-fit-bg p-3 text-sm" />
+        <button disabled={busy || fbState === 'saved' || !normFeedback({ effort, note })} onClick={async () => { setBusy(true); setFbState(''); try { await onSaveFeedback(normFeedback({ effort, note })); setFbState('saved'); } catch { setFbState('error'); } finally { setBusy(false); } }} className="mt-2 min-h-[44px] rounded-xl bg-fit-card px-4 text-sm font-semibold text-fit-accent disabled:opacity-50">{fbState === 'saved' ? 'Gesendet ✓' : 'Rückmeldung senden'}</button>
+        {fbState === 'error' && <p role="alert" className="mt-2 text-sm text-fit-red">Rückmeldung konnte nicht gespeichert werden. Bitte erneut versuchen.</p>}
+      </section>}
 
       {(onSaveTemplate || onUpdateTemplate) && <section className="mb-5 rounded-xl border border-fit-line p-4">
         <h2 className="text-sm font-semibold">Beim nächsten Mal wiederverwenden</h2>

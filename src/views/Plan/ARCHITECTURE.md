@@ -164,3 +164,11 @@ Browser geprüft. Eine mobile Ansicht mit 390 px wurde ohne horizontalen
 Überlauf geprüft. Das ersetzt keine authentifizierte Firebase-Abnahme.
 
 Bedienanleitung: `../../../docs/PLAN-WORKFLOW.md`.
+
+## Meine Woche und Rückmeldung (Klient → Coach)
+
+- `lib/weekOverview.js` + `components/WeekOverview.jsx`: Wochenübersicht (Mo–So, lokale Zeit) unter der Startkarte, nur bei Plänen mit Wochentagen. Status je Einheit: erledigt / heute offen / verpasst / geplant; gezählt nach der einen „erledigt“-Regel aus `planProgress.js`.
+- `lib/workoutFeedback.js`: nach dem Training optional Anstrengung (1–10) und Notiz → `workout.feedback = {effort, note, at}` (normalisiert, Notiz max. 1000 Zeichen). Der Coach sieht sie unter „Absolvierte Workouts“ im Coach-Workspace.
+- Tests: `scripts/tests/plan-week.test.mjs`.
+- „Was ist neu?“ (`lib/planUpdates.js`, `components/WhatsNew.jsx`): je Coach-Plan merkt sich das Gerät die zuletzt gesehene Version (`plan-seen-versions:<uid>`, nur lokal). Ist `headVersion` neuer, erscheint auf der Startseite ein Banner mit Commit-Nachricht und Änderungsliste (`diffSnapshots` zwischen gesehener und aktueller Version aus `versions/`). Ohne Eintrag wird still der Ausgangsstand gesetzt; neue Pläne meldet weiter „Neu vom Coach“. Keine Lesebestätigung an den Coach (Rules lassen Klienten nichts an Coach-Plänen schreiben).
+- Lesebestätigung: Mit „Verstanden“/„Zum Plan“ (und beim Öffnen eines neuen Plans) legt der Klient `fitness/{uid}/macrocycles/{id}/receipts/vN` an (`markPlanRead`, `{planId, version, readAt}`, je Version einmalig, unveränderlich). Der Coach sieht in `PlanVersions` „✓ Klient hat Version N gelesen“ bzw. „noch nicht gelesen“ und im Verlauf je Version. Rules: `receipts` in `firestore.rules.part` (create-only, Feldliste, Doc-ID = `v<version>`); lokal `GET/POST …/receipts`. Wirkt erst nach Einbetten in `~/vitalos` + Rules-Deploy; vorher schlägt das Schreiben still fehl (Coach sieht „noch nicht gelesen“).

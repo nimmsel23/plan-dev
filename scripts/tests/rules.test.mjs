@@ -77,3 +77,15 @@ test('Coach darf Pläne und Versionen beim Klienten voll bearbeiten', async () =
   await assertSucceeds(setDoc(doc(db, 'fitness', CLIENT, 'macrocycles', 'coachPlan', 'versions', 'v2'), { number: 2 }));
   await assertSucceeds(deleteDoc(doc(db, 'fitness', CLIENT, 'macrocycles', 'coachPlan', 'versions', 'v2')));
 });
+
+test('Lesebestätigung: Klient legt sie einmalig und nur korrekt an, Coach liest sie', async () => {
+  const db = as(CLIENT);
+  const r = (id) => doc(db, 'fitness', CLIENT, 'macrocycles', 'coachPlan', 'receipts', id);
+  await assertSucceeds(setDoc(r('v1'), { planId: 'coachPlan', version: 1, readAt: 'x' }));
+  await assertFails(setDoc(r('v1'), { planId: 'coachPlan', version: 1, readAt: 'y' }));
+  await assertFails(deleteDoc(r('v1')));
+  await assertFails(setDoc(r('v2'), { planId: 'coachPlan', version: 3, readAt: 'x' }));
+  await assertFails(setDoc(r('v3'), { planId: 'coachPlan', version: 3, readAt: 'x', extra: 1 }));
+  await assertFails(setDoc(doc(as(OTHER), 'fitness', CLIENT, 'macrocycles', 'coachPlan', 'receipts', 'v1'), { planId: 'coachPlan', version: 1, readAt: 'x' }));
+  await assertSucceeds(getDoc(doc(as(COACH), 'fitness', CLIENT, 'macrocycles', 'coachPlan', 'receipts', 'v1')));
+});

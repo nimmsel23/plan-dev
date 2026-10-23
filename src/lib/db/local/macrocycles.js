@@ -72,6 +72,18 @@ export async function listPlanVersions(clientUid, cycleId) {
   return data?.versions || [];
 }
 
+export async function markPlanRead(clientUid, cycleId, version) {
+  try {
+    const data = await api.post(`${base(clientUid)}/${encodeURIComponent(cycleId)}/receipts`, { version });
+    return !!data?.ok;
+  } catch { return false; }
+}
+
+export async function listPlanReceipts(clientUid, cycleId) {
+  const data = await api.get(`${base(clientUid)}/${encodeURIComponent(cycleId)}/receipts`);
+  return data?.receipts || [];
+}
+
 export async function restorePlanVersion(clientUid, cycleId, versionId) {
   const data = await api.post(`${base(clientUid)}/${encodeURIComponent(cycleId)}/restore`, { version: versionId });
   return data?.macrocycle || null;

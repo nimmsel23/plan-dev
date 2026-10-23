@@ -144,6 +144,13 @@ class PlanBackendTest(unittest.TestCase):
                 v1 = client.get(f"{url}/versions").json()["versions"][0]
                 self.assertEqual(v1["author"], "coach")
                 self.assertEqual(client.patch(url, json={"name": "  "}).status_code, 400)
+                # Lesebestätigung: einmalig je Version, nur für existierende Versionen
+                self.assertEqual(client.post(f"{url}/receipts", json={"version": 1}).status_code, 200)
+                self.assertEqual(client.post(f"{url}/receipts", json={"version": 1}).status_code, 200)
+                self.assertEqual(client.post(f"{url}/receipts", json={"version": 9}).status_code, 404)
+                self.assertEqual(client.post(f"{url}/receipts", json={"version": "1"}).status_code, 400)
+                receipts = client.get(f"{url}/receipts").json()["receipts"]
+                self.assertEqual([r["version"] for r in receipts], [1])
                 # Liste: ohne published, Zähler vom veröffentlichten Stand
                 client.post(f"{url}/routines", json={"label": "Pull", "exercises": ex})
                 entry = client.get(base).json()["macrocycles"][0]

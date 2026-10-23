@@ -52,6 +52,14 @@ service cloud.firestore {
         allow create: if owner(uid)
           && get(/databases/$(database)/documents/fitness/$(uid)/macrocycles/$(planId)).data.coachUid == uid;
       }
+      // Lesebestätigung: der Klient legt je Version einmalig ein Dokument an (unveränderlich, nur eigene Felder).
+      match /receipts/{receiptId} {
+        allow create: if owner(uid)
+          && request.resource.data.keys().hasOnly(['planId', 'version', 'readAt'])
+          && request.resource.data.planId == planId
+          && request.resource.data.version is int
+          && receiptId == 'v' + string(request.resource.data.version);
+      }
       match /completions/{completionId} {
         allow write: if owner(uid);
       }

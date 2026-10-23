@@ -193,6 +193,23 @@ export async function listPlanVersions(clientUid, cycleId) {
   return snap.docs.map((d) => d.data()).sort((x, y) => x.number - y.number);
 }
 
+// Lesebestätigung: der Klient hat Version N seines Plans gesehen (je Version einmalig, unveränderlich).
+export async function markPlanRead(clientUid, cycleId, version) {
+  const n = Number(version);
+  if (!Number.isInteger(n) || n < 1) return false;
+  const ref = doc(db, 'fitness', clientUid, 'macrocycles', cycleId, 'receipts', `v${n}`);
+  try {
+    if ((await getDoc(ref)).exists()) return true;
+    await setDoc(ref, { planId: cycleId, version: n, readAt: new Date().toISOString() });
+    return true;
+  } catch { return false; }
+}
+
+export async function listPlanReceipts(clientUid, cycleId) {
+  const snap = await getDocs(collection(db, 'fitness', clientUid, 'macrocycles', cycleId, 'receipts'));
+  return snap.docs.map((d) => d.data()).sort((x, y) => x.version - y.version);
+}
+
 // Arbeitsstand auf eine frühere Version setzen (Git: checkout); Historie bleibt unberührt.
 export async function restorePlanVersion(clientUid, cycleId, versionId) {
   return mutate(clientUid, cycleId, async (m, tx) => {
