@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { GitCommitHorizontal, RotateCcw, ChevronDown } from 'lucide-react';
-import { listPlanVersions, restorePlanVersion } from '@db';
+import { listPlanVersions, restorePlanVersion, listPlanReceipts } from '@db';
 import { diffSnapshots, hasUnpublishedChanges, snapshotOf } from '../lib/planVersions.js';
 
 const MARK = { add: 'text-green-500', remove: 'text-fit-red', change: 'text-fit-accent' };
@@ -15,6 +15,7 @@ function DiffLines({ lines }) {
 export default function PlanVersions({ plan, uid, busy, onPublish, onRestored }) {
   const [message, setMessage] = useState('');
   const [versions, setVersions] = useState([]);
+  const [receipts, setReceipts] = useState([]);
   const [open, setOpen] = useState(null);
   const [showLog, setShowLog] = useState(false);
   const [error, setError] = useState('');
@@ -29,8 +30,11 @@ export default function PlanVersions({ plan, uid, busy, onPublish, onRestored })
     let alive = true;
     setLoading(true);
     listPlanVersions(uid, plan.id).then((v) => alive && setVersions(v)).catch(() => alive && setVersions([])).finally(() => alive && setLoading(false));
+    listPlanReceipts(uid, plan.id).then((r) => alive && setReceipts(r)).catch(() => alive && setReceipts([]));
     return () => { alive = false; };
   }, [uid, plan.id, head]);
+  const readAt = (n) => receipts.find((r) => r.version === n)?.readAt;
+  const fmtRead = (iso) => new Date(iso).toLocaleString('de-AT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
   const pendingLines = diffSnapshots(plan.published, snapshotOf(plan));
 
   async function restore(v) {
@@ -42,6 +46,7 @@ export default function PlanVersions({ plan, uid, busy, onPublish, onRestored })
   return <div className="mb-4 rounded-xl border border-fit-line bg-fit-bg p-3">
     <p className="flex items-center gap-2 text-xs font-semibold text-fit-muted"><GitCommitHorizontal size={14} className="text-fit-accent" />
       {legacy ? 'Live ohne Version – Änderungen sind für den Klienten sofort sichtbar' : head && live ? `Beim Klienten: Version ${head}${plan.headMessage ? ` · ${plan.headMessage}` : ''}` : head ? `Zurückgezogen · letzte Version ${head}` : 'Noch nicht veröffentlicht'}</p>
+    {live && head > 0 && <p role="status" className={`mt-1 text-xs ${readAt(head) ? 'text-green-500' : 'text-fit-muted'}`}>{readAt(head) ? `✓ Klient hat Version ${head} gelesen (${fmtRead(readAt(head))})` : `Version ${head} noch nicht gelesen`}</p>}
     {plan.published && head > 0 && dirty && <div className="mt-2"><p className="mb-1 text-xs font-semibold text-fit-accent">Unveröffentlichte Änderungen ({pendingLines.length})</p><DiffLines lines={pendingLines} /></div>}
     {pending ? <div className="mt-3 space-y-2">
       {!redeploy && <input aria-label="Änderungsnachricht" maxLength={200} value={message} onChange={(e) => setMessage(e.target.value)} placeholder={head ? 'Was hat sich geändert? (z. B. „Woche 3: mehr Volumen“)' : 'Nachricht zur ersten Version (optional)'} className="min-h-[44px] w-full rounded-xl border border-fit-line bg-fit-card p-3 text-sm" />}
@@ -54,7 +59,7 @@ export default function PlanVersions({ plan, uid, busy, onPublish, onRestored })
       {showLog && <ol role="list" className="mt-2 space-y-2">{[...versions].reverse().map((v, i, all) => {
         const prev = all[i + 1];
         return <li key={v.id} className="rounded-lg border border-fit-line p-2">
-          <button aria-expanded={open === v.id} onClick={() => setOpen(open === v.id ? null : v.id)} className="flex min-h-[44px] w-full items-start justify-between gap-2 text-left text-sm"><span><span className="font-semibold">v{v.number}</span> · {v.message}<span className="block text-[11px] text-fit-muted">{new Date(v.createdAt).toLocaleString('de-AT', { dateStyle: 'short', timeStyle: 'short' })}{v.number === head && live ? ' · aktuell beim Klienten' : ''}</span></span></button>
+          <button aria-expanded={open === v.id} onClick={() => setOpen(open === v.id ? null : v.id)} className="flex min-h-[44px] w-full items-start justify-between gap-2 text-left text-sm"><span><span className="font-semibold">v{v.number}</span> · {v.message}<span className="block text-[11px] text-fit-muted">{new Date(v.createdAt).toLocaleString('de-AT', { dateStyle: 'short', timeStyle: 'short' })}{v.number === head && live ? ' · aktuell beim Klienten' : ''}{readAt(v.number) ? ` · ✓ gelesen ${fmtRead(readAt(v.number))}` : ''}</span></span></button>
           {open === v.id && <div className="mt-2 space-y-2"><DiffLines lines={diffSnapshots(prev?.snapshot, v.snapshot)} />
             {v.number !== head && <button disabled={busy} onClick={() => restore(v)} className="flex min-h-[44px] items-center gap-1 text-xs text-fit-accent"><RotateCcw size={12} /> Als Arbeitsstand wiederherstellen</button>}</div>}
         </li>;

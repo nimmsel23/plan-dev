@@ -386,6 +386,34 @@ def list_versions(client_uid: str, cycle_id: str):
     return {"ok": True, "versions": _versions(client_uid, cycle_id)}
 
 
+@router.get("/{client_uid}/{cycle_id}/receipts")
+def list_receipts(client_uid: str, cycle_id: str):
+    """Lesebestätigungen des Klienten (je Version einmalig)."""
+    _load(client_uid, cycle_id)
+    dir_ = _versions_dir(client_uid, cycle_id).parent / "receipts"
+    items = [r for f in dir_.glob("*.json") if (r := _read_json(f))] if dir_.exists() else []
+    items.sort(key=lambda r: r.get("version", 0))
+    return {"ok": True, "receipts": items}
+
+
+@router.post("/{client_uid}/{cycle_id}/receipts")
+async def mark_read(client_uid: str, cycle_id: str, request: Request):
+    """Klient bestätigt, Version N gesehen zu haben. Unveränderlich; bestehende bleibt erhalten."""
+    body: dict[str, Any] = await request.json()
+    n = body.get("version")
+    if isinstance(n, bool) or not isinstance(n, int) or n < 1:
+        raise HTTPException(400, detail="Ungültige Version")
+    with _lock:
+        _load(client_uid, cycle_id)
+        if not any(v.get("number") == n for v in _versions(client_uid, cycle_id)):
+            raise HTTPException(404, detail="Version nicht gefunden")
+        path = _versions_dir(client_uid, cycle_id).parent / "receipts" / f"v{n}.json"
+        if not path.exists():
+            path.parent.mkdir(parents=True, exist_ok=True)
+            _write_json(path, {"planId": cycle_id, "version": n, "readAt": datetime.now().isoformat()})
+    return {"ok": True}
+
+
 @router.post("/{client_uid}/{cycle_id}/restore")
 async def restore_version(client_uid: str, cycle_id: str, request: Request):
     """Arbeitsstand auf eine frühere Version zurücksetzen (Git: checkout). Der Klient
