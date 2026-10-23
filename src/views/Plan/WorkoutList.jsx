@@ -16,6 +16,8 @@ import { localDay } from './lib/planProgress.js';
 import { clientView } from './lib/planVersions.js';
 import CoachPlanToday from './components/CoachPlanToday.jsx';
 import WeekOverview from './components/WeekOverview.jsx';
+import WhatsNew from './components/WhatsNew.jsx';
+import { markVersionsSeen, pendingUpdates, readSeenVersions } from './lib/planUpdates.js';
 import { useUser } from '../../contexts/UserContext.jsx';
 import PushOptIn from './components/PushOptIn.jsx';
 import { markSeen, readSeen, unseenCoachPlans } from './lib/newPlans.js';
@@ -30,6 +32,7 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
   const { user } = useUser();
   const [newPlans, setNewPlans] = useState([]);
   const [coachPlans, setCoachPlans] = useState([]);
+  const [updates, setUpdates] = useState([]);
   const lock = useRef(false);
   const folderKey = `plan-empty-folders:${getUid()}`;
   const [emptyFolders, setEmptyFolders] = useState(() => {
@@ -60,7 +63,11 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
       const details = await Promise.all(mine.map((p) => getMacrocycle(uid, p.id).then((d) => d?.macrocycle)));
       if (!alive.current) return;
       // Ohne veröffentlichten Stand bekommt der Klient keinen Arbeitsstand zu sehen.
-      setCoachPlans(details.filter((d) => d?.published).map(clientView));
+      const visible = details.filter((d) => d?.published).map(clientView);
+      setCoachPlans(visible);
+      const { updates: pending, baseline } = pendingUpdates(visible, readSeenVersions(uid));
+      if (baseline.length) markVersionsSeen(uid, baseline);
+      setUpdates(pending);
       setCoachState({ loaded: true, error: '' });
     } catch (err) {
       if (alive.current) setCoachState({ loaded: true, error: err?.message || 'Plan vom Coach konnte nicht geladen werden.' });
@@ -81,6 +88,7 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
     window.addEventListener('focus', refresh);
     return () => { alive.current = false; window.clearInterval(tick); document.removeEventListener('visibilitychange', refresh); window.removeEventListener('focus', refresh); };
   }, []);
+  function dismissUpdate(plan) { markVersionsSeen(getUid(), [plan]); setUpdates((list) => list.filter((u) => u.plan.id !== plan.id)); }
   function showPlans() { markSeen(getUid(), newPlans); setNewPlans([]); setSection('plans'); }
   async function act(fn) {
     if (lock.current) return;
@@ -128,13 +136,15 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
     const doneToday = scheduled && !open && routinesForDay(plan.routines, weekdayIndex(now)).length > 0;
     return routine?.exercises?.length ? { plan, routine, today: !!open, doneToday, alsoToday: openToday.slice(1).map((r) => r.label) } : null;
   }).filter(Boolean).sort((a, b) => b.today - a.today)[0];
+  const bannerPlans = newPlans.filter((p) => !updates.some((u) => u.plan.id === p.id));
   const cardProps = { onEdit: onEditRoutine, onStart: begin, onRename: rename, onDelete: remove, onSetCategory: category, busy, workouts };
   return (
     <div className="mx-auto max-w-2xl px-4 py-6">
       <header className="mb-6"><p className="text-xs font-semibold uppercase tracking-wide text-fit-muted">Dein Trainingslogbuch</p><h1 className="mt-1 text-2xl font-bold tracking-tight">Training starten</h1><p className="mt-2 text-sm text-fit-muted">Vorlage wählen, Sätze abhaken und beim nächsten Mal auf deiner Leistung aufbauen.</p></header>
       {error && <div role="alert" className="mb-4 rounded-xl border border-red-500/30 p-3 text-sm text-fit-red">{error}<button onClick={load} className="ml-2 underline">Erneut laden</button></div>}
       <PushOptIn user={user} />
-      {newPlans.length > 0 && <button onClick={showPlans} className="mb-4 flex w-full items-center justify-between rounded-2xl border border-fit-accent bg-fit-accent/10 p-4 text-left"><span><span className="block font-semibold">{newPlans.length === 1 ? `Neuer Trainingsplan: ${newPlans[0].name}` : `${newPlans.length} neue Trainingspläne von deinem Coach`}</span><span className="text-xs text-fit-muted">Antippen zum Ansehen</span></span><Layers size={20} className="text-fit-accent" /></button>}
+      {updates.map((u) => <WhatsNew key={`${u.plan.id}:${u.plan.headVersion}`} update={u} onDismiss={() => dismissUpdate(u.plan)} onOpenPlans={() => { dismissUpdate(u.plan); showPlans(); }} />)}
+      {bannerPlans.length > 0 && <button onClick={showPlans} className="mb-4 flex w-full items-center justify-between rounded-2xl border border-fit-accent bg-fit-accent/10 p-4 text-left"><span><span className="block font-semibold">{bannerPlans.length === 1 ? `Neuer Trainingsplan: ${bannerPlans[0].name}` : `${bannerPlans.length} neue Trainingspläne von deinem Coach`}</span><span className="text-xs text-fit-muted">Antippen zum Ansehen</span></span><Layers size={20} className="text-fit-accent" /></button>}
       {coachState.error && <div role="alert" className="mb-4 rounded-xl border border-red-500/30 p-3 text-sm text-fit-red">Plan vom Coach konnte nicht geladen werden.<button onClick={loadCoachPlans} className="ml-2 underline">Erneut laden</button></div>}
       {unfinished ? <button disabled={busy} onClick={() => onOpenWorkout(unfinished.id)} className="mb-6 flex w-full items-center justify-between rounded-2xl border border-fit-accent bg-fit-accent/10 p-4 text-left"><span><span className="block font-semibold">{unfinished.name}</span><span className="text-xs text-fit-muted">Workout läuft · Fortsetzen</span></span><Play size={20} className="text-fit-accent" /></button> : coachNext ? <><CoachPlanToday key={dayKey} {...coachNext} onStart={begin} onOpenPlans={showPlans} busy={busy} /><WeekOverview key={`w${dayKey}`} plan={coachNext.plan} workouts={workouts} /></> : next && <NextUpCard routine={next} onStart={begin} onEdit={onEditRoutine} busy={busy} />}
       <div className="mb-6 grid grid-cols-2 gap-2"><button disabled={busy || loading} onClick={() => begin()} className="rounded-xl border border-fit-line bg-fit-card px-3 py-3 text-sm font-semibold disabled:opacity-50">Leeres Workout</button><button disabled={busy} onClick={newRoutine} className="flex items-center justify-center gap-2 rounded-xl bg-fit-accent px-3 py-3 text-sm font-semibold text-fit-bg disabled:opacity-50"><Plus size={16} /> Neue Vorlage</button></div>
