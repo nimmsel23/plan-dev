@@ -143,3 +143,79 @@ Sektion) aufgeklappt ist, und welches Plan-Template innerhalb davon
 WorkoutSession-Ebene (`view`/`id`) ist verlinkbar.
 - Quick-Complete für Coach im Firestore-Modus (siehe oben) — bewusst
   deaktiviert statt unsicher gebaut.
+
+---
+
+## Strong-App-Modus (`plan.html` → `StrongApp.jsx`, 2026-10-11)
+
+Der standalone Plan-Build (`npm run build:firebase:plan`, vos-plan.web.app)
+läuft jetzt als Strong-artige App mit Tab-Leiste unten:
+
+| Tab | Datei | Inhalt |
+|-----|-------|--------|
+| Profil | `ProfileView.jsx` | Gesamt-Workouts/-Volumen/-Zeit, "Workouts pro Woche" (8 Wochen) |
+| Verlauf | `HistoryView.jsx` | abgeschlossene Workouts nach Monat, Dauer/Volumen/Rekorde/bester Satz, Detail + Löschen |
+| Workout | `index.jsx` (PlanView) | Vorlagen, Trainingspläne, leeres Workout — unverändert, nur "controlled" geroutet |
+| Übungen | `ExercisesView.jsx` | alle trainierten Übungen A–Z → `components/ExerciseDetail.jsx` (Verlauf/Diagramme/Rekorde) |
+
+Neu im laufenden Workout (`WorkoutSession.jsx`, gilt auch im Haupt-App-Plan-Tab):
+- **"Vorher"-Spalte** (`SetRow`/`ExerciseBlock`, `previousSets`): indexgleicher
+  Satz der letzten abgeschlossenen Ausführung, antippen übernimmt die Werte;
+  hat Vorrang vor Template-Ghost-Werten beim Abhaken leerer Sätze.
+- **Workout-Uhr** im Kopf, **minimierte Leiste** über der Tab-Bar, solange ein
+  Workout läuft (`lib/activeWorkout.js`, localStorage-Zeiger, wird beim
+  Start der App gegen den Server geprüft).
+- **Auto-Save** der Satz-Eingaben (1,2 s gebündelt, vor Satz/Übung
+  hinzufügen/löschen sofort) — vorher gingen Eingaben bis "Fertig" nur im
+  React-State verloren, wenn die App zuging.
+- **Abschluss-Screen** (`components/WorkoutSummary.jsx`): Dauer, Volumen,
+  Sätze, neue Rekorde, bester Satz pro Übung. Nicht abgehakte Sätze werden
+  vor dem Beenden abgefragt; "Workout verwerfen" löscht das Workout.
+- Übungsname antippen → Verlauf/Diagramme/Rekorde dieser Übung.
+
+Datenquelle für alles: `eventLog` auf dem Workout-Meta-Dokument
+(`lib/history.js`, reine Funktionen), d.h. ein `GET /workouts` reicht — kein
+neues Firestore-Schema. `eventLog`-Einträge tragen seit diesem Stand
+zusätzlich `name` (additiv); ältere Einträge zeigen einen aus `exercise_id`
+abgeleiteten Namen. Rekorde (geschätztes 1RM nach Epley, Gewicht,
+Satzvolumen) zählen erst ab der zweiten Ausführung einer Übung.
+
+Bewusst nicht übernommen: Strongs "Measure"-Tab (Körperwerte leben im
+Fitness-Hauptprojekt), Supersets, Plate-Calculator. Der Coach-Login-Gate in
+`plan-main.jsx` bleibt unverändert.
+
+## VitalOS shell (2026-10-16)
+
+`StrongApp.jsx` owns the four navigation tabs and the active-workout return action.
+It composes `src/shell/PlanSidebar`, `PlanHeader`, `PlanTabBar`, and `ThemeSheet`,
+ported from coach-dev's VitalOS shell. Desktop uses the collapsible glass rail;
+mobile uses five slots (four tabs plus More), with safe-area padding and a
+collapsible navigation bar. The active-workout strip stays above navigation.
+Settings remain in the existing Zustand store, with vital/vital-light defaults;
+existing saved themes are preserved. `plan-main.jsx` owns authentication only
+and no longer loads the legacy coach-console stylesheet.
+
+## 2026-10-16: Strong-Ablauf und Coach-Workspace
+
+Aktuelle Struktur und Grenzen: `ARCHITECTURE.md`. Der historische Audit oben
+beschreibt teilweise abgelöste UI (Quick-Complete, Checklisten-Einstieg).
+
+Behoben: Coach-only-Zugang im Plan-Einstieg, tote Einstellungen-Aktion,
+Quick-Complete als dominanter Einstieg, nur aus Historie bestehender Übungen-Tab,
+unbemerkter Verlust von Satzänderungen bei Remote-Fehlern und fehlende Startaktion
+auf Plan-Einheiten. Ein gemeinsamer Vorlageneditor unterstützt jetzt Klienten-UIDs.
+Neue Coach-Pläne können als Entwurf zusammengestellt und bereitgestellt werden.
+
+Bekannte Grenzen: kein Mehrgeräte-Konfliktprotokoll, kein atomarer Start-Lock
+zwischen Browser-Tabs, noch kein persistenter Entwurf für ungespeicherte
+Vorlageneditor-Änderungen. Der lokale Satzentwurf ersetzt keinen vollständigen
+Offline-Backendbetrieb. Authentifizierte Cloud-Abnahme steht separat aus.
+Atlas bleibt eine eigene App; gemeinsam sind Quelle und Referenzen, kein
+originübergreifender Gerätespeicher. Legacy-Checklisten werden als neue Workouts
+startbar, ihr bisheriger Hakenfortschritt wird nicht als Leistung umgeschrieben.
+
+## 2026-10-22: Auslieferung an Klienten
+
+Neu: Klienten-Übersicht, Plan-Hinweis, Zurückziehen, Kopieren, Wochenplan,
+Neu-Banner und Push (`onPlanPublished`). Details: `ARCHITECTURE.md`. Versionierung, atomares Kopieren und Rules-Härtung (Patch) sind umgesetzt (`ARCHITECTURE.md`). Offen: Push-Token-Bereinigung
+ungültiger Geräte, authentifizierte Geräte-Abnahme des Pushs.

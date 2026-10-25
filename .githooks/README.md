@@ -1,50 +1,36 @@
 # Git Hooks
 
-Versionierte Git Hooks für dieses Repo. Nach einem frischen Clone aktivieren:
+Nach einem frischen Clone die versionierten Hooks aktivieren:
 
-```bash
+```sh
 git config core.hooksPath .githooks
 ```
 
-## Hooks
+## `pre-commit`
 
-### pre-commit
-Ein Teil, non-blocking (kein Commit wird verhindert):
+Gibt bei Änderungen an `src/views/<View>/` einen nicht blockierenden Hinweis,
+wenn keine `ARCHITECTURE.md` oder `AUDIT.md` mitgeändert wurde.
 
-1. **View-Docs-Reminder** (branch-unabhängig): warnt, wenn `src/views/<View>/*.jsx`
-   staged ist ohne begleitendes `ARCHITECTURE.md`/`AUDIT.md`-Update. Siehe
-   `src/views/AGENTS.md`. War bis 2026-07-12 ein loser, nicht-versionierter
-   Hook direkt in `.git/hooks/` — jetzt hier mitversioniert.
+## `pre-push`
 
-**SW/Manifest-Bump entfernt (2026-07-22):** Bumpte früher automatisch
-`public/sw.js` + `public/manifest.json` `version`-Feld bei jedem Commit auf
-`master` mit Frontend-Änderungen — erzeugte Merge-Rauschen zwischen dev/master
-für reine Versionszahlen. Ersetzt durch `scripts/stamp-sw.mjs`, das die
-Cache-Version per Zeitstempel **post-build** direkt in `dist-firebase/`
-stempelt (analog zu fuel-dev). `public/sw.js` (`fitness-v0`-Platzhalter) und
-`public/manifest.json` (`version: "0"`) bleiben dauerhaft unverändert in der
-getrackten Quelle.
+- Push mit relevanten App-Änderungen auf `dev`: baut Plan mit
+  `pnpm run build:firebase` als lokale Verifikation. Der GitHub-Workflow
+  veröffentlicht danach den 24-Stunden-Preview.
+- Push mit relevanten App-Änderungen auf `vitalos`: führt
+  `pnpm run firebase` aus und deployt Plan Standalone auf Firebase Hosting
+  (`hosting:plan`, `https://vos-plan.web.app`). Firestore-Rules werden hier
+  nicht deployed.
+- Push auf den Branch `fitness` löst keinen Deploy aus. Die Übernahme in
+  Fitness läuft explizit über `npm run deploy:fitness`.
 
-### post-commit
-**Retired (2026-07-12), jetzt No-Op.** Deployte früher bei jedem Commit auf
-`master` — das war zu früh für mehrstufige lokale Arbeit. Deploy-Trigger ist
-jetzt `pre-push` (s.u.). Datei bleibt als Stub liegen statt gelöscht zu werden,
-damit ein aktives `core.hooksPath` nicht versehentlich die alte
-Doppel-Deploy-Logik reaktiviert.
+Reine Dokumentationsänderungen starten keinen Build oder Deploy. Ein Hook-
+Fehler bricht den Push ab; `git push --no-verify` überspringt den Hook.
 
-### pre-push
-Baut + deployt zu Firebase (`npm run firebase`) wenn ein Push auf `master`
-relevante Dateien enthält (`src/`, `public/`, `index.html`, `vite.config.*`,
-`package.json`, `firebase.json`, Firestore-Configs).
+## Explizite Release-Befehle
 
-- Trigger nur auf `master`, prüft alle gepushten Refs von stdin
-- Vergleicht `remote_sha..local_sha` (bzw. den ganzen Branch bei neuem Remote-Ref)
-- `cloud_chamber/`, Doku-Dateien und `dist-firebase/` selbst zählen **nicht**
-  als Deploy-Grund — das ist Build-Output des vorherigen Laufs, sonst
-  triggert sich der Hook bei jedem Push auf sich selbst
-- `npm run firebase` = `build:firebase` (Vite-Build, dann
-  `scripts/stamp-sw.mjs` stempelt die Cache-Version per Zeitstempel post-build
-  direkt in `dist-firebase/`, `public/sw.js`/`public/manifest.json` bleiben
-  unverändert) gefolgt von `deploy:firebase` (`firebase deploy --only hosting`)
-- Schlägt der Build/Deploy fehl, wird der Push abgebrochen (kein halb-deployter
-  Stand) — Override mit `git push --no-verify`
+- `npm run deploy:fitness`: pins den aktuellen, bereits gepushten Plan-`dev`-
+  Commit als Fitness-Submodul-Gitlink, baut Fitness und pusht dessen `dev`-
+  Branch.
+- `npm run deploy:vos`: ruft `vos-release plan` auf. Der Release-Workflow
+  übernimmt Plan in `vitalos/plan-app`; der Push auf Plan-`vitalos` löst den
+  Standalone Firebase-Deploy aus.

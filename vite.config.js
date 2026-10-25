@@ -1,3 +1,4 @@
+import { vosChangelog } from './scripts/vos-changelog/vos-changelog-vite.mjs'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
@@ -50,7 +51,7 @@ export default defineConfig(async ({ mode }) => {
     // Präfix (z.B. /fitness-dev/) fälschlich zur Domain-Wurzel auf (404 →
     // Whitescreen). Core4/Door/Game/Fuel haben denselben Fix schon.
     base: './',
-    plugins: [react()],
+    plugins: [vosChangelog({ appId: 'plan', appName: 'Plan', accent: '#fb923c' }), react()],
     resolve: {
       preserveSymlinks: true,
       alias: {
@@ -98,6 +99,7 @@ export default defineConfig(async ({ mode }) => {
         ],
       },
       proxy: {
+        '/api': BACKEND,
         '/exercises': BACKEND,
         '/session':   BACKEND,
         '/journal':   BACKEND,

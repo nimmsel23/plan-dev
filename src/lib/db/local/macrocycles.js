@@ -1,7 +1,7 @@
 import { api } from "./core";
 
 // Makrozyklen — rotierender Trainingszyklus (Push/Pull/Legs o.ä.), kein Kalender.
-const base = (clientUid) => `/fitness/coach/macrocycles/${encodeURIComponent(clientUid)}`;
+const base = (clientUid) => `api/fitness/coach/macrocycles/${encodeURIComponent(clientUid)}`;
 
 export async function listMacrocycles(clientUid) {
   try {
@@ -22,8 +22,8 @@ export async function getMacrocycle(clientUid, cycleId) {
   }
 }
 
-export async function createMacrocycle(clientUid, { name, coachUid, totalWeeks }) {
-  const data = await api.post(base(clientUid), { name, coachUid, totalWeeks });
+export async function createMacrocycle(clientUid, { name, coachUid, totalWeeks, status = "draft", description = "", routines }) {
+  const data = await api.post(base(clientUid), { name, coachUid, totalWeeks, status, description, ...(routines ? { routines } : {}) });
   return data?.macrocycle || null;
 }
 
@@ -32,8 +32,8 @@ export async function deleteMacrocycle(clientUid, cycleId) {
   return true;
 }
 
-export async function addRoutine(clientUid, cycleId, { label, isDeload, restHoursAfter, targetCount, targetPeriodDays, sourceTemplateId }) {
-  const data = await api.post(`${base(clientUid)}/${encodeURIComponent(cycleId)}/routines`, { label, isDeload, restHoursAfter, targetCount, targetPeriodDays, sourceTemplateId });
+export async function addRoutine(clientUid, cycleId, { label, isDeload, restHoursAfter, targetCount, targetPeriodDays, sourceTemplateId, exercises = [], weekdays = [] }) {
+  const data = await api.post(`${base(clientUid)}/${encodeURIComponent(cycleId)}/routines`, { label, isDeload, restHoursAfter, targetCount, targetPeriodDays, sourceTemplateId, exercises, weekdays });
   return data?.macrocycle || null;
 }
 
@@ -59,4 +59,38 @@ export async function getLastPerformance(clientUid, cycleId, routineId) {
   } catch {
     return null;
   }
+}
+
+// Veröffentlichen legt eine Version an (message = Commit-Nachricht).
+export async function publishMacrocycle(clientUid, cycleId, { message = '', author = null } = {}) {
+  const data = await api.patch(`${base(clientUid)}/${encodeURIComponent(cycleId)}`, { status: 'published', message, author });
+  return data?.macrocycle || null;
+}
+
+export async function listPlanVersions(clientUid, cycleId) {
+  const data = await api.get(`${base(clientUid)}/${encodeURIComponent(cycleId)}/versions`);
+  return data?.versions || [];
+}
+
+export async function markPlanRead(clientUid, cycleId, version) {
+  try {
+    const data = await api.post(`${base(clientUid)}/${encodeURIComponent(cycleId)}/receipts`, { version });
+    return !!data?.ok;
+  } catch { return false; }
+}
+
+export async function listPlanReceipts(clientUid, cycleId) {
+  const data = await api.get(`${base(clientUid)}/${encodeURIComponent(cycleId)}/receipts`);
+  return data?.receipts || [];
+}
+
+export async function restorePlanVersion(clientUid, cycleId, versionId) {
+  const data = await api.post(`${base(clientUid)}/${encodeURIComponent(cycleId)}/restore`, { version: versionId });
+  return data?.macrocycle || null;
+}
+
+// Name, Coach-Hinweis (description) oder Status (draft/published) ändern.
+export async function updateMacrocycle(clientUid, cycleId, patch) {
+  const data = await api.patch(`${base(clientUid)}/${encodeURIComponent(cycleId)}`, patch);
+  return data?.macrocycle || null;
 }

@@ -32,3 +32,13 @@ coachFeedback:
   title: "Coach Feedback"
   link: "/?tab=session"
   # body ist dynamisch (Feedback-Text selbst) — kein Template hier
+
+planPublished:
+  title: "Neuer Trainingsplan"
+  body: "Dein Coach hat „{plan}“ für dich bereitgestellt."
+  link: "/"
+
+planUpdated:
+  title: "Trainingsplan aktualisiert"
+  body: "Dein Plan „{plan}“ wurde aktualisiert ({detail})."
+  link: "/"

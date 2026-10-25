@@ -36,8 +36,33 @@ service cloud.firestore {
 
     // Coach needs full direct access to client fitness records to build and
     // assign routines/macrocycles/workouts.
+    //
+    // Pläne (macrocycles): der Besitzer darf nur Pläne schreiben, die er selbst angelegt hat
+    // (coachUid == uid, Self-Service). Coach-Pläne und ihre Versionen sind für den Klienten
+    // schreibgeschützt; Versionen sind nach dem Anlegen unveränderlich. Completions bleiben offen.
     match /fitness/{uid}/{document=**} {
-      allow read, write: if owner(uid) || isCoach();
+      allow read: if owner(uid) || isCoach();
+      allow write: if isCoach() || (owner(uid) && !string(request.path).matches('.*/macrocycles/.*'));
+    }
+    match /fitness/{uid}/macrocycles/{planId} {
+      allow create: if owner(uid) && request.resource.data.coachUid == uid;
+      allow update: if owner(uid) && resource.data.coachUid == uid && request.resource.data.coachUid == uid;
+      allow delete: if owner(uid) && resource.data.coachUid == uid;
+      match /versions/{versionId} {
+        allow create: if owner(uid)
+          && get(/databases/$(database)/documents/fitness/$(uid)/macrocycles/$(planId)).data.coachUid == uid;
+      }
+      // Lesebestätigung: der Klient legt je Version einmalig ein Dokument an (unveränderlich, nur eigene Felder).
+      match /receipts/{receiptId} {
+        allow create: if owner(uid)
+          && request.resource.data.keys().hasOnly(['planId', 'version', 'readAt'])
+          && request.resource.data.planId == planId
+          && request.resource.data.version is int
+          && receiptId == 'v' + string(request.resource.data.version);
+      }
+      match /completions/{completionId} {
+        allow write: if owner(uid);
+      }
     }
 
     // Curated KB: clients can read, only Coach can edit.

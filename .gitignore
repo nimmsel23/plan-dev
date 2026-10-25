@@ -2,6 +2,7 @@ node_modules/
 dist/
 dist-firebase/
 dist-coach/
+dist-plan/
 dist-federation/
 .firebase/
 .firebase/hosting.*.cache
@@ -39,3 +40,4 @@ src/lib/db/firestore/push.generated.js
 src/lib/db/firestore/pull.generated.js
 src/lib/db/firestore/legs.generated.js
 src/lib/coachNotesData.generated.js
+.claude/hooks/*.log

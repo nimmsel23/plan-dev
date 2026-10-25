@@ -1,3 +1,16 @@
+## 2026-10-21 — Gemeinsamer Changelog
+
+Universalisierten VitalOS-Release-Dialog über vendorte Vite-Module eingebunden. Standalone mit eigener Bestätigung; eingebettet unterdrückt zugunsten des zentralen Shell-Dialogs.
+
+# Plan: Splash, plan-sw.js und SW-Register aus @vos/mini-app-shell (2026-10-16)
+
+- Splash, Service Worker und SW-Register kommen aus `@vos/mini-app-shell` (SSOT `~/vitalos/packages/mini-app-shell`, hier vendored unter `scripts/mini-app-shell/` — nicht editieren, Aktualisieren/Drift: `node ~/vitalos/packages/mini-app-shell/cli.mjs vendor scripts/mini-app-shell [--check]`; Konfig `mini-app.json`).
+- `plan.html` ohne Inline-Splash/-Register; `npm run build:firebase:plan` stempelt `dist-plan` (Splash, Register mit `window.__swRegistration`, generierter `plan-sw.js`).
+- Cache jetzt pro Build versioniert (`vos-plan-v<build>`; vorher statisch `vos-plan-v1` → Updates nicht erkennbar). Dateiname `plan-sw.js` bleibt.
+  Workout-Notifications (`SHOW_/CLEAR_WORKOUT_TIMER_NOTIFICATION`) im SW — die App sendet sie bereits (restTimer, SessionGateCard).
+- Alter SW: `docs/archive/plan-sw.static-v1.js`. Commit `67e3c8f` auf `dev`, Build geprüft, nicht gepusht, nicht auf Gerät getestet.
+- Release wie fitness-dev: `vos-release plan` (dev → vitalos). Erwarteter Konflikt `.githooks/pre-push` → dev gewinnt (Preflight in vos-release); der Fitness-KB-Push-Block im dev-Hook ist für Plan unpassend, ggf. bereinigen.
+
 # Session Gate als "Mission-Konsole" neu gestaltet, Release nach vitalos (2026-09-24)
 
 Redesign des Session-Gate-Einstiegs (`/frontend-design`-Skill) plus
@@ -1326,3 +1339,82 @@ Damit wird kein Expert-Exercise mehr ohne lokale YAML-Lineage erzeugt, nur weil
 der lokale Server fehlt. `sendToInbox()` queued neue Items zuerst lokal ueber
 `/fitness/inbox/queue`; Firestore wird nur noch als Offline-Warteschlange mit
 `sync_status: pending_local` genutzt, falls local nicht erreichbar ist.
+
+## 2026-10-16: Zusätzlicher Coach-Account
+`nimmdaniel@gmail.com` (Firebase-UID `pJay0LeAwDN93Q4NT6i5FNxrQHH2`) in den Coach-Zugangsprüfungen ergänzt. Zentrale Firebase-Rolle `roles/pJay0LeAwDN93Q4NT6i5FNxrQHH2` auf `coach` gesetzt und zurückgelesen; gilt für alle Apps mit dem zentralen Ruleset. Bestehender Coach bleibt freigeschaltet. Kein Push oder Deployment.
+
+## 2026-10-16: Plan übernimmt die VitalOS-Shell
+
+Shell-Bausteine aus coach-dev portiert: einklappbare Desktop-Glas-Sidebar,
+Safe-Area-Header, einklappbare mobile Navigation mit vier Plan-Tabs plus Mehr,
+Theme-Sheet und VitalOS-CSS-Primitives. vital/vital-light sind die Defaults;
+gespeicherte Theme-Einstellungen bleiben erhalten. Legacy coach-console-CSS
+wird im Plan-Einstieg nicht mehr geladen. Workout-Fortsetzen bleibt erreichbar;
+Akzent-Buttons verwenden Theme-Kontrast statt festem Weiß/Blau.
+
+Validiert: kompletter ESLint-Lauf, `npm run build:firebase:plan`, Shell-Render-Smoke
+(Sidebar auf/zu, fünf mobile Slots, inert bei geschlossener Navigation, Theme-Sheet)
+und `git diff --check`. Build meldet große Chunks. Kein angemeldeter Browser-Test,
+kein Push, Merge oder Deployment. pnpm war durch einen schreibgeschützten
+Engine-Store blockiert; vorhandene lokale Tools und npm wurden verwendet.
+
+## 2026-10-16: Plan VitalOS-Shell veröffentlicht
+
+Auf ausdrücklichen Auftrag Feature-Branch `agent/plan-vitalos-shell` nach `dev`
+fast-forward gemergt und beide Branches zu origin gepusht (Release `1bfa834`).
+Plan-Produktionsbuild erneut erfolgreich; Firebase `hosting:plan` im Projekt
+`fitness-aos` nach https://vos-plan.web.app deployed. Live index.html und alle
+fünf direkt referenzierten JS/CSS-Assets bytegenau mit dist-plan verglichen.
+Kein authentifizierter Browser-Durchlauf. GitHub-Workflow für denselben Commit
+wurde durch den Push gestartet und war beim ersten Check noch in Arbeit.
+## 2026-10-16: Strong-Inspiration für Plan dokumentiert
+
+`INSPIRATION.md` angelegt: Produktablauf, Begriffe, Workout-Interaktion,
+Yuhonas-/VOS-Atlas-Grenzen, Coach-zu-Klient-Zuweisung, beobachtete Brüche,
+Umsetzungsreihenfolge und Abnahmeszenarien. Implementierung als offene Aufgabe
+in TODO.md erfasst; dieses Ergebnis umfasst die Dokumentation.
+
+## 2026-10-16: Strong-Kernablauf und Coach-Trainingspläne implementiert
+
+Plan lässt angemeldete Klienten hinein und prüft Coach-Zugang gegen die bestehenden
+Rollenmechanismen. Training trennt Vorlagen und Pläne, priorisiert laufende Einheiten
+und bietet einen verständlichen leeren Einstieg. Der Yuhonas-Katalog (873 Einträge)
+steht ohne Trainingshistorie bereit; Suche, Equipment-/Muskelfilter, Bildpaar,
+Originalanleitung und VOS-Atlas-Link verwenden bestehende Quellreferenzen.
+
+Coach kann Klienten wählen, mit demselben Editor Workout-Vorlagen inklusive Sätzen,
+Pausen und Hinweisen erstellen, sie als Trainingsplan bündeln und explizit bereitstellen.
+Einheiten aus Plänen und älteren Zuweisungen starten als eigenständige normale Workouts.
+Abschluss speichert tatsächliche Satzwerte; Verlauf erlaubt Wiederholung. Vorlagen
+ändern sich nach dem Training nur über eine ausdrückliche Aktion.
+
+Satzänderungen werden benutzerbezogen lokal gesichert und seriell remote geschrieben.
+Fehlgeschlagene Writes verlieren den Entwurf nicht. Abschluss schreibt in Firestore
+Meta, Event-Log und Übungen atomar. Doppeltipps teilen sich einen Start; 404-Zeiger
+werden bereinigt. Zielbereiche gelten nicht als gemessene Wiederholungen. Der lokale
+PATCH-Adapter wurde ergänzt. Neue lokale Aufrufe verwenden relative `api/…`-Pfade
+und einen generischen Node-Proxy; Backend-Routing liegt in Python. Die passenden
+Router-/Proxy-Verträge sind auch im tatsächlichen Backend-Owner fitness-dev portiert.
+
+Validiert: `npm run test:plan` (6 Daten-/Entwurftests, 1 Firestore-Adapter-Szenario,
+1 generischer Proxytest und 1 Python-Router-Integration), vollständiges ESLint,
+Plan-Firebase-Build und `git diff --check`. Der isolierte Browserdurchlauf umfasst
+Coach-Planbereitstellung → Klientenstart → Satzlogging → Reload/Wiederaufnahme →
+Abschluss → Verlauf/Wiederholung sowie Katalogdetails und mobile Breite 390 px.
+Keine unbehandelten Browser-Ausnahmen im geprüften Ablauf. Große Build-Chunks
+werden weiterhin gemeldet. Details und bekannte Grenzen stehen in
+`src/views/Plan/ARCHITECTURE.md`, `AUDIT.md` und `docs/PLAN-WORKFLOW.md`.
+
+Keine echten Klientendaten geschrieben, kein authentifizierter Firebase-Durchlauf,
+kein Service-Neustart, Push, Merge oder Deployment. Lokale Backend-Dienste benötigen
+den aktualisierten Python-Stand beim nächsten regulären Neustart/Release.
+
+Abschlussprüfung: Auch der verpflichtende Pre-Commit-Hook hat den vollständigen
+Standard-Build erfolgreich ausgeführt. Der Engine-Store-Fehler wurde durch
+`npm_config_manage_package_manager_versions=false` für die vorhandene pnpm-Version
+umgangen; kein Hook wurde deaktiviert. Companion-Backend-Commit in fitness-dev:
+`77d6963`. Plan-Funktionscommit: `0643b99`. Die temporären Browser-Testprozesse
+wurden nach dem erfolgreichen Durchlauf beendet.
+
+## 2026-10-17 — Offline-Cache bei Updates
+Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öffentlicher API-Cache mit Migration, Asset-Precache standardmäßig aktiv, fehlgeschlagene Installation ersetzt bestehenden Worker nicht. IndexedDB/localStorage bleiben unverändert. Geprüft: 13 Shell-/Update-Tests, Private-Request-Test, Vendor-Parität. Kein Push/Release; kein physischer Geräte-Test.

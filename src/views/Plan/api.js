@@ -1,5 +1,6 @@
 import { isLocalMode } from '@db'
 import { searchExercises as dbSearch } from '@db'
+import { filterCatalog, mergeCatalog } from './lib/catalog.js'
 import * as fsRoutines from '../../lib/db/firestore/routines.js'
 import * as fsWorkouts from '../../lib/db/firestore/workouts.js'
 
@@ -12,12 +13,16 @@ const API_BASE = import.meta.env.VITE_API_BASE || ''
 // ist ein Stub. `db` aus `@db` ist im lokalen Dev-Build `null`, deshalb
 // bewusst per isLocalMode()-Weiche getrennt statt einheitlich über @db.
 async function localFetch(method, path, body) {
-  const res = await fetch(API_BASE + path, {
+  const res = await fetch(API_BASE + 'api/' + path.replace(/^\/+/, ''), {
     method,
     headers: body !== undefined ? { 'Content-Type': 'application/json' } : undefined,
     body: body !== undefined ? JSON.stringify(body) : undefined,
   })
-  if (!res.ok) throw new Error(`${method} ${path} → ${res.status}`)
+  if (!res.ok) {
+    const error = new Error(`${method} ${path} → ${res.status}`);
+    error.status = res.status;
+    throw error;
+  }
   return res.json()
 }
 
@@ -46,46 +51,51 @@ function normalizeSettings(raw = {}) {
 // Firebase-Build: Routinen/Workouts gegen Firestore statt server.mjs.
 // Gibt eine Promise zurueck wenn der Pfad erkannt wurde, sonst null (Aufrufer
 // faellt dann auf den generischen Fallback zurueck statt stillen No-op).
-function firestoreDispatch(method, path, body) {
+function firestoreDispatch(method, path, body, uid) {
   let m
   if (method === 'GET') {
-    if (path === '/routines') return fsRoutines.listRoutines()
-    if ((m = path.match(/^\/routines\/([^/]+)$/))) return fsRoutines.getRoutine(m[1])
-    if (path === '/workouts') return fsWorkouts.listWorkouts()
-    if ((m = path.match(/^\/workouts\/([^/]+)$/))) return fsWorkouts.getWorkout(m[1])
+    if (path === '/routines') return fsRoutines.listRoutines(uid)
+    if ((m = path.match(/^\/routines\/([^/]+)$/))) return fsRoutines.getRoutine(m[1], uid)
+    if (path === '/workouts') return fsWorkouts.listWorkouts(uid)
+    if ((m = path.match(/^\/workouts\/([^/]+)$/))) return fsWorkouts.getWorkout(m[1], uid)
   }
   if (method === 'POST') {
-    if (path === '/routines') return fsRoutines.createRoutine(body)
-    if ((m = path.match(/^\/routines\/([^/]+)\/exercises$/))) return fsRoutines.addRoutineExercise(m[1], body)
-    if (path === '/workouts') return fsWorkouts.createWorkout(body)
-    if ((m = path.match(/^\/workouts\/([^/]+)\/exercises$/))) return fsWorkouts.addWorkoutExercise(m[1], body)
-    if ((m = path.match(/^\/workouts\/([^/]+)\/exercises\/([^/]+)\/sets$/))) return fsWorkouts.addSet(m[1], m[2])
+    if (path === '/routines') return fsRoutines.createRoutine(body, uid)
+    if ((m = path.match(/^\/routines\/([^/]+)\/exercises$/))) return fsRoutines.addRoutineExercise(m[1], body, uid)
+    if (path === '/workouts') return fsWorkouts.createWorkout(body, uid)
+    if ((m = path.match(/^\/workouts\/([^/]+)\/exercises$/))) return fsWorkouts.addWorkoutExercise(m[1], body, uid)
+    if ((m = path.match(/^\/workouts\/([^/]+)\/exercises\/([^/]+)\/sets$/))) return fsWorkouts.addSet(m[1], m[2], uid)
   }
   if (method === 'PATCH') {
-    if ((m = path.match(/^\/routines\/([^/]+)$/))) return fsRoutines.updateRoutine(m[1], body)
-    if ((m = path.match(/^\/routines\/([^/]+)\/exercises\/([^/]+)$/))) return fsRoutines.updateRoutineExercise(m[1], m[2], body)
-    if ((m = path.match(/^\/workouts\/([^/]+)$/))) return fsWorkouts.updateWorkout(m[1], body)
-    if ((m = path.match(/^\/workouts\/([^/]+)\/exercises\/([^/]+)\/sets\/([^/]+)$/))) return fsWorkouts.updateSet(m[1], m[2], m[3], body)
+    if ((m = path.match(/^\/routines\/([^/]+)$/))) return fsRoutines.updateRoutine(m[1], body, uid)
+    if ((m = path.match(/^\/routines\/([^/]+)\/exercises\/([^/]+)$/))) return fsRoutines.updateRoutineExercise(m[1], m[2], body, uid)
+    if ((m = path.match(/^\/workouts\/([^/]+)$/))) return fsWorkouts.updateWorkout(m[1], body, uid)
+    if ((m = path.match(/^\/workouts\/([^/]+)\/exercises\/([^/]+)\/sets\/([^/]+)$/))) return fsWorkouts.updateSet(m[1], m[2], m[3], body, uid)
   }
   if (method === 'PUT') {
-    if ((m = path.match(/^\/routines\/([^/]+)\/exercises\/order$/))) return fsRoutines.reorderRoutineExercises(m[1], body.order)
-    if ((m = path.match(/^\/workouts\/([^/]+)\/exercises\/order$/))) return fsWorkouts.reorderWorkoutExercises(m[1], body.order)
+    if ((m = path.match(/^\/routines\/([^/]+)\/exercises\/order$/))) return fsRoutines.reorderRoutineExercises(m[1], body.order, uid)
+    if ((m = path.match(/^\/workouts\/([^/]+)\/exercises\/order$/))) return fsWorkouts.reorderWorkoutExercises(m[1], body.order, uid)
   }
   if (method === 'DELETE') {
-    if ((m = path.match(/^\/routines\/([^/]+)$/))) return fsRoutines.deleteRoutine(m[1])
-    if ((m = path.match(/^\/routines\/([^/]+)\/exercises\/([^/]+)$/))) return fsRoutines.deleteRoutineExercise(m[1], m[2])
-    if ((m = path.match(/^\/workouts\/([^/]+)$/))) return fsWorkouts.deleteWorkout(m[1])
-    if ((m = path.match(/^\/workouts\/([^/]+)\/exercises\/([^/]+)\/sets\/([^/]+)$/))) return fsWorkouts.deleteSet(m[1], m[2], m[3])
-    if ((m = path.match(/^\/workouts\/([^/]+)\/exercises\/([^/]+)$/))) return fsWorkouts.deleteWorkoutExercise(m[1], m[2])
+    if ((m = path.match(/^\/routines\/([^/]+)$/))) return fsRoutines.deleteRoutine(m[1], uid)
+    if ((m = path.match(/^\/routines\/([^/]+)\/exercises\/([^/]+)$/))) return fsRoutines.deleteRoutineExercise(m[1], m[2], uid)
+    if ((m = path.match(/^\/workouts\/([^/]+)$/))) return fsWorkouts.deleteWorkout(m[1], uid)
+    if ((m = path.match(/^\/workouts\/([^/]+)\/exercises\/([^/]+)\/sets\/([^/]+)$/))) return fsWorkouts.deleteSet(m[1], m[2], m[3], uid)
+    if ((m = path.match(/^\/workouts\/([^/]+)\/exercises\/([^/]+)$/))) return fsWorkouts.deleteWorkoutExercise(m[1], m[2], uid)
   }
   return null
 }
 
-export const api = {
+function scopedPath(path, uid) {
+  return uid ? `${path}?uid=${encodeURIComponent(uid)}` : path;
+}
+
+export function createPlanApi(uid) {
+return {
   async get(path) {
     if (matches(path, LOCAL_GET)) {
-      if (isLocalMode()) return localFetch('GET', path)
-      const result = firestoreDispatch('GET', path)
+      if (isLocalMode()) return localFetch('GET', scopedPath(path, uid))
+      const result = firestoreDispatch('GET', path, undefined, uid)
       if (result) return result
     }
 
@@ -93,15 +103,16 @@ export const api = {
       const params = new URLSearchParams(path.split('?')[1] || '')
       const q = params.get('q') || ''
       const limit = Number(params.get('limit')) || 12
-      const res = await dbSearch(q, limit)
-      const results = (res?.results || []).map(ex => ({
-        id: ex.id || ex.exercise_id,
-        name: ex.name || ex.display_name,
-        primaryMuscles: ex.primary_muscles || ex.primaryMuscles || [],
-        secondaryMuscles: ex.secondary_muscles || ex.secondaryMuscles || [],
-        equipment: ex.equipment,
-        yuhonas_id: ex.yuhonas_id || ex.external_ids?.yuhonas?.[0] || null,
-      }))
+      // Static Yuhonas remains usable when the curated cloud catalog is offline.
+      let curated = [];
+      if (q.trim()) {
+        let timeout;
+        try {
+          const result = await Promise.race([dbSearch(q, limit), new Promise((resolve) => { timeout = setTimeout(() => resolve(null), 800); })]);
+          curated = result?.results || [];
+        } catch {} finally { clearTimeout(timeout); }
+      }
+      const results = filterCatalog(mergeCatalog(curated), { q }).slice(0, limit);
       return { results }
     }
 
@@ -111,13 +122,13 @@ export const api = {
       return { settings }
     }
 
-    return {}
+    throw new Error(`Nicht unterstützte Plan-Anfrage: ${path}`)
   },
 
   async post(path, body) {
     if (matches(path, LOCAL_POST)) {
-      if (isLocalMode()) return localFetch('POST', path, body)
-      const result = firestoreDispatch('POST', path, body)
+      if (isLocalMode()) return localFetch('POST', scopedPath(path, uid), body)
+      const result = firestoreDispatch('POST', path, body, uid)
       if (result) return result
     }
 
@@ -127,33 +138,37 @@ export const api = {
       return { ok: true }
     }
 
-    return {}
+    throw new Error(`Nicht unterstützte Plan-Anfrage: ${path}`)
   },
 
   async patch(path, body) {
     if (matches(path, LOCAL_PATCH)) {
-      if (isLocalMode()) return localFetch('PATCH', path, body)
-      const result = firestoreDispatch('PATCH', path, body)
+      if (isLocalMode()) return localFetch('PATCH', scopedPath(path, uid), body)
+      const result = firestoreDispatch('PATCH', path, body, uid)
       if (result) return result
     }
-    return {}
+    throw new Error(`Nicht unterstützte Plan-Anfrage: ${path}`)
   },
 
   async put(path, body) {
     if (matches(path, LOCAL_PUT)) {
-      if (isLocalMode()) return localFetch('PUT', path, body)
-      const result = firestoreDispatch('PUT', path, body)
+      if (isLocalMode()) return localFetch('PUT', scopedPath(path, uid), body)
+      const result = firestoreDispatch('PUT', path, body, uid)
       if (result) return result
     }
-    return {}
+    throw new Error(`Nicht unterstützte Plan-Anfrage: ${path}`)
   },
 
   async delete(path) {
     if (matches(path, LOCAL_DELETE)) {
-      if (isLocalMode()) return localFetch('DELETE', path)
-      const result = firestoreDispatch('DELETE', path)
+      if (isLocalMode()) return localFetch('DELETE', scopedPath(path, uid))
+      const result = firestoreDispatch('DELETE', path, undefined, uid)
       if (result) return result
     }
-    return {}
+    throw new Error(`Nicht unterstützte Plan-Anfrage: ${path}`)
   },
+
+};
 }
+
+export const api = createPlanApi();

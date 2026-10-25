@@ -1,0 +1,88 @@
+# Deploy der Plan-App (Firebase Hosting, Target `plan` -> https://vos-plan.web.app)
+# bei jedem Push auf `dev`, der Frontend-Code berührt.
+#
+# Ersetzt die geerbten Fitness-Workflows (liegen jetzt in workflows.disabled/):
+# die bauten die Fitness-App über das vitalos-Meta-Repo, nicht die Plan-App.
+# Firestore-Rules werden hier nie deployed (SSOT: ~/vitalos/firestore.rules).
+#
+# Einmalig nötig: Repo-Secret FIREBASE_SERVICE_ACCOUNT_FITNESS_AOS
+# (Service-Account-JSON, Rolle "Firebase Hosting Admin", Projekt fitness-aos).
+# Fehlt das Secret, baut der Job nur und überspringt den Deploy mit Warnung.
+#
+# PREVIEW statt Live (Regel 2026-10-16): echte Prod-URLs (vos-*.web.app) werden nur noch
+# aus dem Branch `vitalos` der Meta-Repo-Checkouts (~/vitalos/*-app) deployt. Dieser
+# Workflow veröffentlicht auf dem Branch `dev` ausschließlich einen 24h-Preview-Channel `dev`.
+
+name: Preview Plan
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [dev]
+    paths:
+      - 'src/**'
+      - 'plan.html'
+      - 'public/**'
+      - '6pack/**'
+      - 'fitness/catalog/kb/**'
+      - 'scripts/**'
+      - 'vite.config.js'
+      - 'tailwind.config.cjs'
+      - 'postcss.config.cjs'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'firebase.json'
+      - 'firebase.config.js'
+      - '.github/workflows/deploy-plan.yml'
+      - '!**/*.md'
+      - '!**/*.txt'
+      - '!**/*.bak*'
+      - '!docs/**'
+
+concurrency:
+  group: deploy-plan
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      # @vos/cross-app-aliases (workspace:*) existiert nur im vitalos-Monorepo und steht
+      # nicht im Lockfile; vite.config.js hat dafür einen Fallback. Hoisted-Linker, weil
+      # vite.config.js preserveSymlinks nutzt und das reine pnpm-Layout damit nicht baut.
+      - name: Install
+        run: |
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json'));for(const k of ['dependencies','devDependencies','optionalDependencies'])delete p[k]?.['@vos/cross-app-aliases'];fs.writeFileSync('package.json',JSON.stringify(p,null,2)+'\n')"
+          pnpm install --frozen-lockfile --ignore-scripts --config.node-linker=hoisted
+
+      # *.generated.js sind gitignored und werden vom Plan-Build nicht selbst erzeugt
+      - name: KB-Daten generieren
+        run: pnpm run build:kb-data
+
+      - name: Build (Plan)
+        run: pnpm run build:firebase:plan
+
+      - name: Preview hosting:plan (24h-Channel dev)
+        env:
+          SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FITNESS_AOS }}
+        run: |
+          if [ -z "$SERVICE_ACCOUNT" ]; then
+            echo "::warning::Secret FIREBASE_SERVICE_ACCOUNT_FITNESS_AOS fehlt - Deploy übersprungen."
+            exit 0
+          fi
+          printf '%s' "$SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json"
+          npx --yes firebase-tools@13 hosting:channel:deploy dev --only plan --expires 24h --project fitness-aos --non-interactive
+          rm -f "$RUNNER_TEMP/sa.json"

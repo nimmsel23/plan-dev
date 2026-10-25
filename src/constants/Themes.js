@@ -1,5 +1,5 @@
 export const DARK_THEMES = [
-  'nordic', 'dracula', 'mocha',
+  'vital', 'nordic', 'dracula', 'mocha',
   'gruvbox', 'solarized-dark',
   'ant-dark', 'arc-dark',
   'matrix', 'nothing',
@@ -7,12 +7,13 @@ export const DARK_THEMES = [
 ];
 
 export const LIGHT_THEMES = [
-  'honey', 'latte', 'solarized', 'gruvbox-light',
+  'vital-light', 'honey', 'latte', 'solarized', 'gruvbox-light',
   'arc', 'ant', 'alucard', 'sweet-amber-blue',
 ];
 
 export const THEMES = {
   // Dark
+  vital: { bg: '#0b0e14', accent: '#6ee7b7' },
   nordic:             { bg: '#2e3440', accent: '#88c0d0' },
   dracula:            { bg: '#1e1f29', accent: '#bd93f9' },
   mocha:              { bg: '#1e1e2e', accent: '#cba6f7' },
@@ -26,6 +27,7 @@ export const THEMES = {
   'sweet-purple':     { bg: '#161925', accent: '#c50ed2' },
 
   // Light
+  'vital-light': { bg: '#f5f6f8', accent: '#059669' },
   honey:              { bg: '#fdfaf0', accent: '#f59e0b' },
   latte:              { bg: '#eff1f5', accent: '#7287fd' },
   solarized:          { bg: '#fdf6e3', accent: '#268bd2' },
