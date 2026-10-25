@@ -386,6 +386,27 @@ def list_versions(client_uid: str, cycle_id: str):
     return {"ok": True, "versions": _versions(client_uid, cycle_id)}
 
 
+@router.post("/taskwarrior/{client_uid}/sync")
+def taskwarrior_sync(client_uid: str):
+    """Plan-Einheiten des Klienten in seine eigene Taskwarrior-DB abgleichen (einseitig, idempotent)."""
+    try:
+        from fitness import plan_tasks
+    except ImportError as err:  # tasklib fehlt
+        raise HTTPException(501, detail=f"Taskwarrior-Anbindung nicht verfügbar: {err}")
+    with _lock:
+        return {"ok": True, "report": plan_tasks.sync(client_uid, RUNTIME)}
+
+
+@router.get("/taskwarrior/{client_uid}/pending")
+def taskwarrior_pending(client_uid: str):
+    """Offene Tasks in der Taskwarrior-DB des Klienten."""
+    try:
+        from fitness import plan_tasks
+    except ImportError as err:
+        raise HTTPException(501, detail=f"Taskwarrior-Anbindung nicht verfügbar: {err}")
+    return {"ok": True, "tasks": plan_tasks.pending(client_uid, RUNTIME)}
+
+
 @router.get("/{client_uid}/{cycle_id}/receipts")
 def list_receipts(client_uid: str, cycle_id: str):
     """Lesebestätigungen des Klienten (je Version einmalig)."""

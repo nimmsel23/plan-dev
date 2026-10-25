@@ -144,6 +144,11 @@ class PlanBackendTest(unittest.TestCase):
                 v1 = client.get(f"{url}/versions").json()["versions"][0]
                 self.assertEqual(v1["author"], "coach")
                 self.assertEqual(client.patch(url, json={"name": "  "}).status_code, 400)
+                # Taskwarrior-Anbindung: eigene DB je Klient (der Plan hat keine Wochentage → keine Tasks)
+                tw = client.post("/fitness/coach/macrocycles/taskwarrior/client/sync")
+                self.assertEqual(tw.status_code, 200)
+                self.assertEqual(tw.json()["report"]["created"], 0)
+                self.assertEqual(client.get("/fitness/coach/macrocycles/taskwarrior/client/pending").json()["tasks"], [])
                 # Lesebestätigung: einmalig je Version, nur für existierende Versionen
                 self.assertEqual(client.post(f"{url}/receipts", json={"version": 1}).status_code, 200)
                 self.assertEqual(client.post(f"{url}/receipts", json={"version": 1}).status_code, 200)
