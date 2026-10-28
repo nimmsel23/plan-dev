@@ -3,8 +3,10 @@
  */
 
 import {
-  doc, setDoc, serverTimestamp,
+  doc,
+  serverTimestamp,
 } from "firebase/firestore";
+import { setDoc, deferStart } from "./offline.js";
 import {
   onAuthStateChanged,
   signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword,
@@ -31,25 +33,29 @@ let currentUid = null;
 let _lastProfileKey = null;
 
 export function watchAuth(callback) {
-  return onAuthStateChanged(auth, async (user) => {
+  // Offline-first: Der persistierte Login-Zustand (IndexedDB) wird SOFORT gemeldet. Das Schreiben der
+  // Profil-Metadaten läuft danach im Hintergrund — vorher hing die App im Lie-Fi ("authLoading" ewig),
+  // weil `await setDoc` auf die Server-Bestätigung wartete.
+  return onAuthStateChanged(auth, (user) => {
     currentUid = user ? user.uid : null;
-    if (user) {
-      const profileKey = `${user.uid}:${user.email}:${user.displayName}`;
-      if (profileKey !== _lastProfileKey) {
-        _lastProfileKey = profileKey;
-        try {
-          await setDoc(doc(db, "fitness", user.uid, "profile", "metadata"), {
-            email: user.email || "",
-            displayName: user.displayName || "",
-            updated_at: serverTimestamp(),
-          }, { merge: true });
-        } catch (e) {
-          console.error("Profile metadata sync error:", e);
-        }
-      }
-    }
     callback?.(user);
+    if (user) deferStart(() => syncProfileMetadata(user));
   });
+}
+
+async function syncProfileMetadata(user) {
+  const profileKey = `${user.uid}:${user.email}:${user.displayName}`;
+  if (profileKey === _lastProfileKey) return;
+  _lastProfileKey = profileKey;
+  try {
+    await setDoc(doc(db, "fitness", user.uid, "profile", "metadata"), {
+      email: user.email || "",
+      displayName: user.displayName || "",
+      updated_at: serverTimestamp(),
+    }, { merge: true });
+  } catch (e) {
+    console.error("Profile metadata sync error:", e);
+  }
 }
 
 export async function signIn() {

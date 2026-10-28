@@ -1,3 +1,19 @@
+# Plan-Tab: Auslieferung an Klienten, Versionierung, Fälligkeitsfenster, Taskwarrior Stufe 1 (2026-10-23)
+
+Der Plan-Tab wurde vom Strong-Replica zum Auslieferungsweg für Trainingspläne (Coach → Klient) ausgebaut. Alles auf `dev` in `~/plan-dev`; releast bis `4e1ad47` (vos-plan.web.app, fitness-aos.web.app, Rules, Cloud Function), die Taskwarrior-Anbindung (`d0dec6d`) ist nur committet. Browser-/Geräte-Abnahme mit echtem Login fehlt durchgehend (bisher Testdoubles + Emulator).
+
+* **`src/views/Plan/components/CoachPlanToday.jsx` + `WorkoutList.jsx`**: Startkarte für Klienten (heute geplant / als Nächstes) mit „Training starten“ und „Zum Plan“; laufende Einheit hat Vorrang. Doppelte Teile einer parallelen Session bereinigt.
+* **Versionierung veröffentlichter Pläne** (`src/views/Plan/lib/planVersions.js`, `components/PlanVersions.jsx`, `fitness/api/routers/macrocycles.py`, `src/lib/db/firestore/macrocycles.js`): Git-artig — unveränderliche Commits `versions/vN` (Nachricht, Autor, Snapshot), Diff „Unveröffentlichte Änderungen“, Verlauf, „Als Arbeitsstand wiederherstellen“. Klienten sehen nur die letzte veröffentlichte Version; Workouts speichern `sourcePlanVersion`. Keine Branches/Merges.
+* **Audit-Fixes** (Commits `5f45f21`, `6d25b32`, `1927aa2`): Firestore-Schreibpfade transaktional (Veröffentlichen/Kopieren atomar, Löschen räumt Versionen ab), Startkonflikt (`ACTIVE_WORKOUT`) statt stillem Umschalten, einheitliche „erledigt“-Regel `lib/planProgress.js` (lokale Zeit, über Plan-Einheit), Leer-/Fehlerzustände, Reload nach Rückkehr/Mitternacht, Push-Text mit Version + Commit-Nachricht. Neuer `scripts/tests/db-barrel-contract.test.mjs` (in `test:plan` + `pre-push`), `@firebase/rules-unit-testing` als Dev-Paket, `npm run test:rules`.
+* **`firestore.rules.part`** (plan-dev) → eingebettet in `~/vitalos/firestore.rules` (Modul-Marker, Rules werden nur von vitalos deployed): Klienten können `published`, Versionen, `coachUid` nicht mehr selbst schreiben; später Block `receipts`. Rules deployt (`firebase deploy --only firestore:rules`), Cloud Function `onPlanPublished` neu deployt.
+* **„Meine Woche“ + Rückmeldung** (`lib/weekOverview.js`, `components/WeekOverview.jsx`, Commit `6cfe648`) und **„Was ist neu?“-Banner** (`6acf46d`) mit Commit-Nachricht und Änderungen seit gesehener Version.
+* **Lesebestätigung** (`2d50bd5`): Klient legt `fitness/{uid}/macrocycles/{id}/receipts/vN` an (je Version einmalig, unveränderlich); Coach sieht „gelesen/noch nicht gelesen“ im Versionen-Panel und Verlauf; lokales Backend `GET/POST …/receipts`.
+* **Fälligkeitsfenster ±24 h** (`lib/occurrences.js`, `f7181cf`, Korrektur `4e1ad47`): ab Vortag möglich → heute fällig → offen/überfällig; **kein „verpasst“** — Offenes bleibt offen, Zusatztraining holt das älteste offene Vorkommen nach; Backlog bis 28 Tage (`BACKLOG_DAYS`) bzw. ab Veröffentlichung.
+* **Taskwarrior Stufe 1** (`fitness/plan_tasks.py`, typer + tasklib, `d0dec6d`): eigene TW-DB je Klient unter `~/.aos/fitness/users/<uid>/taskwarrior/`; pro Vorkommen ein Task (`scheduled` Vortag, `due` Plantag, Projekt `fitness.plan`, Key `occkey`), `task done` bei Abschluss, offene Tasks verschwinden bei zurückgezogenem Plan. CLI `python -m fitness.plan_tasks sync|pending <uid>`, API `POST /fitness/coach/macrocycles/taskwarrior/<uid>/sync`, `GET …/<uid>/pending`. Einseitig, lokaler Stand.
+* **Releases/Pins**: `plan-release --yes` (plan-dev) und `fitness-release --yes` (fitness-dev, Plan-Pin) bis `4e1ad47` durchgelaufen; erster `fitness-release` nach der Startkarte lieferte fälschlich nichts aus (`~/plan-dev` ist eigenes Repo, nur `plan-release` bedient es). Doku: `src/views/Plan/ARCHITECTURE.md`, `docs/PLAN-WORKFLOW.md`, `AUDIT.md`.
+
+---
+
 ## 2026-10-21 — Gemeinsamer Changelog
 
 Universalisierten VitalOS-Release-Dialog über vendorte Vite-Module eingebunden. Standalone mit eigener Bestätigung; eingebettet unterdrückt zugunsten des zentralen Shell-Dialogs.

@@ -11,8 +11,10 @@
  * gesetzt. Kleinerer, aber ehrlicher Funktionsumfang statt stiller Lücke.
  */
 import {
-  collection, doc, getDoc, getDocs, updateDoc, writeBatch,
+  collection,
+  doc,
 } from "firebase/firestore";
+import { getDoc, getDocs, updateDoc, writeBatch } from "./offline.js";
 
 import { db } from "../../../firebase.js";
 import { getUid } from "./core.js";

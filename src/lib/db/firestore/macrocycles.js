@@ -1,8 +1,13 @@
 import { db } from '../../../firebase.js'
 import { snapshotOf, sameSnapshot } from '../../../views/Plan/lib/planVersions.js'
-import { doc, getDoc, setDoc, collection, getDocs, query, orderBy, runTransaction, writeBatch } from 'firebase/firestore'
-
-// Makrozyklen — Firestore-Pendant. Collection: fitness/{clientUid}/macrocycles/{id}
+import {
+  doc,
+  collection,
+  query,
+  orderBy,
+  runTransaction,
+} from 'firebase/firestore';
+import { getDoc, setDoc, getDocs, writeBatch } from './offline.js';// Makrozyklen — Firestore-Pendant. Collection: fitness/{clientUid}/macrocycles/{id}
 // Completions: fitness/{clientUid}/macrocycles/{id}/completions/{completionId}
 
 const planRef = (clientUid, cycleId) => doc(db, 'fitness', clientUid, 'macrocycles', cycleId)

@@ -3,9 +3,13 @@
  */
 
 import {
-  collection, doc, setDoc, getDoc, getDocs,
-  query, where, serverTimestamp,
+  collection,
+  doc,
+  query,
+  where,
+  serverTimestamp,
 } from "firebase/firestore";
+import { setDoc, getDoc, getDocs } from "./offline.js";
 
 import { db } from "../../../firebase.js";
 import { num, todayISO } from "../shared/utils.js";

@@ -3,9 +3,14 @@
  */
 
 import {
-  collection, doc, addDoc, getDoc, getDocs, deleteDoc, updateDoc,
-  query, orderBy, serverTimestamp, collectionGroup,
+  collection,
+  doc,
+  query,
+  orderBy,
+  serverTimestamp,
+  collectionGroup,
 } from "firebase/firestore";
+import { addDoc, getDoc, getDocs, deleteDoc, updateDoc } from "./offline.js";
 
 import { db } from "../../../firebase.js";
 import { getUid, LOCAL_FITNESS_API_BASE } from "./core.js";

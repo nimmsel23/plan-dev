@@ -4,9 +4,11 @@
  */
 
 import {
-  collection, doc, setDoc, getDoc, getDocs,
+  collection,
+  doc,
   serverTimestamp,
 } from "firebase/firestore";
+import { setDoc, getDoc, getDocs } from "./offline.js";
 
 import { db } from "../../../firebase.js";
 import { getStaticMuscle, getStaticMuscleDocs } from "../../kb/muscles.js";

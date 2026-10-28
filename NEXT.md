@@ -513,3 +513,5 @@ pruefen.
 - Pre-Commit-Hook-Reminder: `src/views/Session/`-Code geändert, aber
   `ARCHITECTURE.md`/`AUDIT.md` nicht im Commit — bewusst nicht aktualisiert
   (reine CSS/Layout-Fixes ohne Architektur-Relevanz), kein Nachtrag geplant.
+- Plan-Tab Taskwarrior Stufe 1 (`d0dec6d`) ist nur lokal committet, nicht released. Stufe 2 offen: Firestore → lokal Sync für Pläne/Workouts (z. B. über `fitness-firestore-daemon`), Auslöser (Timer/Daemon) statt manuellem `plan_tasks sync`, optional Rückrichtung `task done` → Workout erledigt. Mit echten lokalen Daten entstehen bisher keine Tasks.
+- Plan-Tab: Browser-/Geräte-Abnahme mit echtem Login fehlt (Banner, Lesebestätigung, Fälligkeitsfenster, Meine Woche, Rules-Verhalten live). Push-Tokens ungültiger Geräte werden nicht bereinigt; Klienten sehen kein Änderungsprotokoll, nur die aktuelle Version.

@@ -45,12 +45,7 @@
             })
           })
         }).catch(() => {})
-        let reloading = false
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          if (reloading) return
-          reloading = true
-          window.location.reload()
-        })
+        // Offline-first: kein automatisches Neuladen. Neue Versionen melden 'sw-update-available'.
       }
     </script>
   </body>

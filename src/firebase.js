@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { initializeFirestore, persistentLocalCache, persistentSingleTabManager, getFirestore } from "firebase/firestore";
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, getFirestore } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider, browserLocalPersistence, setPersistence } from "firebase/auth";
 import { getMessaging, isSupported as isMessagingSupported } from "firebase/messaging";
 import { getAI, VertexAIBackend } from "firebase/ai";
@@ -30,7 +30,7 @@ export function getVertexAI() {
 export const db = alreadyInit
   ? getFirestore(app)
   : initializeFirestore(app, {
-      localCache: persistentLocalCache({ tabManager: persistentSingleTabManager() }),
+      localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
       // Ohne dieses Flag wirft setDoc() bei jedem undefined-Feldwert (z.B. eine
       // Übung ohne aufgelöste catalog-id) — Auto-Save fängt das im silent-Modus
       // ab und zeigt keinen Fehler, wodurch ganze Session-Saves lautlos verpuffen.

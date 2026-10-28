@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
+import {
+  doc,
+} from 'firebase/firestore';
+import { getDoc } from '../lib/db/firestore/offline.js';
 import { db } from '../firebase.js';
 import { isLocalMode } from '@db';
 
