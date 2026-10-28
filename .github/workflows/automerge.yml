@@ -1,0 +1,39 @@
+# Auto-Merge bei grünem Check (Muster aus fitness-dev, dort die Referenz):
+#   - Release-PR dev -> vitalos (vos-release-pr): Merge-Commit (kein Squash, sonst driftet dev),
+#     Kein Deploy hier: die Live-Veröffentlichung läuft über den Pointer-Bump im Meta-Repo
+#     vitalos (siehe vitalos/docs/CI-DEPLOY-PR-FLOW.md).
+# Rot bleibt liegen. Läuft als workflow_run im Kontext des Default-Branch und checkt nie
+# PR-Code aus. Wirkt deshalb erst, wenn diese Datei im Default-Branch des Repos liegt.
+
+name: Auto-Merge (grüner Check Plan)
+
+on:
+  workflow_run:
+    workflows: ["Check (Plan)"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+jobs:
+  merge:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.head_branch == 'dev'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      BRANCH: ${{ github.event.workflow_run.head_branch }}
+      SHA: ${{ github.event.workflow_run.head_sha }}
+    steps:
+      - name: Mergen, wenn der grüne Lauf dem aktuellen PR-Stand entspricht
+        run: |
+          pr=$(gh pr list -R "$REPO" --head "$BRANCH" --base vitalos --state open --json number,headRefOid \
+            --jq ".[] | select(.headRefOid == \"$SHA\") | .number")
+          [ -n "$pr" ] || { echo "Kein offener PR mit Stand $SHA (veraltet oder schon gemergt)."; exit 0; }
+          gh pr merge "$pr" -R "$REPO" --merge
+          echo "Gemergt. Live-Deploy erst nach Pointer-Bump in ~/vitalos (deploy-<app>.yml)."

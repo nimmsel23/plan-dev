@@ -1,0 +1,48 @@
+# Check für Plan: Build auf jedem PR/dev-Push, ohne Deploy und ohne Firebase-Secrets.
+#
+# Gleicher Aufbau wie deploy-plan.yml (Preview Plan), aber ohne Pfadfilter und ohne Deploy
+# (Muster aus fitness-dev/check.yml). Lint läuft hier bewusst nicht mit: der Preview-Build
+# nutzt build:firebase:plan, das lintet nicht – ein neuer Lint-Zwang würde den Check dauerhaft rot machen.
+
+name: Check (Plan)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [vitalos, dev, coach]
+
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      # @vos/cross-app-aliases (workspace:*) existiert nur im vitalos-Monorepo und steht
+      # nicht im Lockfile; vite.config.js hat dafür einen Fallback (siehe deploy-plan.yml).
+      - name: Install
+        run: |
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json'));for(const k of ['dependencies','devDependencies','optionalDependencies'])delete p[k]?.['@vos/cross-app-aliases'];fs.writeFileSync('package.json',JSON.stringify(p,null,2)+'\n')"
+          pnpm install --frozen-lockfile --ignore-scripts --config.node-linker=hoisted
+
+      - name: KB-Daten generieren
+        run: pnpm run build:kb-data
+
+      - name: Build (Plan)
+        run: pnpm run build:firebase:plan

@@ -9,6 +9,8 @@
 # (Service-Account-JSON, Rolle "Firebase Hosting Admin", Projekt fitness-aos).
 # Fehlt das Secret, baut der Job nur und überspringt den Deploy mit Warnung.
 #
+# PR-Weg (wie fitness-dev): PR -> eigener PR-Channel mit Kommentar, dev-Push -> Channel dev.
+#
 # PREVIEW statt Live (Regel 2026-10-16): echte Prod-URLs (vos-*.web.app) werden nur noch
 # aus dem Branch `vitalos` der Meta-Repo-Checkouts (~/vitalos/*-app) deployt. Dieser
 # Workflow veröffentlicht auf dem Branch `dev` ausschließlich einen 24h-Preview-Channel `dev`.
@@ -38,9 +40,30 @@ on:
       - '!**/*.txt'
       - '!**/*.bak*'
       - '!docs/**'
+  pull_request:
+    branches: [vitalos, dev, coach]
+    paths:
+      - 'src/**'
+      - 'plan.html'
+      - 'public/**'
+      - '6pack/**'
+      - 'fitness/catalog/kb/**'
+      - 'scripts/**'
+      - 'vite.config.js'
+      - 'tailwind.config.cjs'
+      - 'postcss.config.cjs'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'firebase.json'
+      - 'firebase.config.js'
+      - '.github/workflows/deploy-plan.yml'
+      - '!**/*.md'
+      - '!**/*.txt'
+      - '!**/*.bak*'
+      - '!docs/**'
 
 concurrency:
-  group: deploy-plan
+  group: deploy-plan-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -49,6 +72,10 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
+      checks: write
+      pull-requests: write
+    env:
+      FIREBASE_SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FITNESS_AOS || secrets.FIREBASE_SERVICE_ACCOUNT }}
     steps:
       - uses: actions/checkout@v4
 
@@ -74,15 +101,18 @@ jobs:
       - name: Build (Plan)
         run: pnpm run build:firebase:plan
 
-      - name: Preview hosting:plan (24h-Channel dev)
-        env:
-          SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FITNESS_AOS }}
-        run: |
-          if [ -z "$SERVICE_ACCOUNT" ]; then
-            echo "::warning::Secret FIREBASE_SERVICE_ACCOUNT_FITNESS_AOS fehlt - Deploy übersprungen."
-            exit 0
-          fi
-          printf '%s' "$SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
-          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json"
-          npx --yes firebase-tools@13 hosting:channel:deploy dev --only plan --expires 24h --project fitness-aos --non-interactive
-          rm -f "$RUNNER_TEMP/sa.json"
+      - name: Hinweis - Secret fehlt
+        if: env.FIREBASE_SA == ''
+        run: echo "::warning::Secret FIREBASE_SERVICE_ACCOUNT_FITNESS_AOS fehlt (oder Fork-PR) - Deploy übersprungen."
+
+      - name: Preview hosting:plan (dev-Push -> Channel dev, PR -> PR-Channel, 24h)
+        if: env.FIREBASE_SA != ''
+        id: firebase_deploy
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ env.FIREBASE_SA }}
+          projectId: fitness-aos
+          target: plan
+          channelId: ${{ github.event_name != 'pull_request' && 'dev' || '' }}
+          expires: 24h
