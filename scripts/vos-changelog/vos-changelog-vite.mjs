@@ -12,7 +12,7 @@ export function vosChangelog(options) {
     configResolved(config) {
       const root = options.releaseRoot || config.root;
       release = options.shell
-        ? readVosShellReleaseInfo({ root, apps: options.apps })
+        ? readVosShellReleaseInfo({ root, apps: options.apps, shellPaths: options.shellPaths })
         : readVosReleaseInfo({ root });
     },
     resolveId(id) { if (id === virtualId) return resolvedId; },

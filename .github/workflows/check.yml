@@ -11,7 +11,7 @@ on:
   push:
     branches: [dev]
   pull_request:
-    branches: [vitalos, dev, coach]
+    branches: [vitalos, master, dev, coach]
 
 concurrency:
   group: check-${{ github.ref }}
