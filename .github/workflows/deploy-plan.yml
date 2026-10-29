@@ -41,7 +41,7 @@ on:
       - '!**/*.bak*'
       - '!docs/**'
   pull_request:
-    branches: [vitalos, dev, coach]
+    branches: [vitalos, master, dev, coach]
     paths:
       - 'src/**'
       - 'plan.html'
