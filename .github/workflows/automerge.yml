@@ -1,5 +1,5 @@
 # Auto-Merge bei grünem Check (Muster aus fitness-dev, dort die Referenz):
-#   - Release-PR dev -> vitalos (vos-release-pr): Merge-Commit (kein Squash, sonst driftet dev),
+#   - Release-PR dev -> master (vos-release-pr): Merge-Commit (kein Squash, sonst driftet dev),
 #     Kein Deploy hier: die Live-Veröffentlichung läuft über den Pointer-Bump im Meta-Repo
 #     vitalos (siehe vitalos/docs/CI-DEPLOY-PR-FLOW.md).
 # Rot bleibt liegen. Läuft als workflow_run im Kontext des Default-Branch und checkt nie
@@ -32,8 +32,10 @@ jobs:
     steps:
       - name: Mergen, wenn der grüne Lauf dem aktuellen PR-Stand entspricht
         run: |
-          pr=$(gh pr list -R "$REPO" --head "$BRANCH" --base vitalos --state open --json number,headRefOid \
+          pr=$(gh pr list -R "$REPO" --head "$BRANCH" --base master --state open --json number,headRefOid \
             --jq ".[] | select(.headRefOid == \"$SHA\") | .number")
           [ -n "$pr" ] || { echo "Kein offener PR mit Stand $SHA (veraltet oder schon gemergt)."; exit 0; }
           gh pr merge "$pr" -R "$REPO" --merge
-          echo "Gemergt. Live-Deploy erst nach Pointer-Bump in ~/vitalos (deploy-<app>.yml)."
+          # Merge mit GITHUB_TOKEN löst keinen Push-Trigger aus -> Live-Deploy per Dispatch
+          gh workflow run deploy-master.yml -R "$REPO" --ref master
+          echo "Gemergt. Live-Deploy per Dispatch gestartet."
