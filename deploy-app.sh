@@ -20,8 +20,13 @@ if [[ "$MODE" == "vos" ]]; then
   VOS_RELEASE="${VOS_RELEASE_BIN:-$HOME/vitalos/bin/vos-release}"
   [[ -x "$VOS_RELEASE" ]] || fail "vos-release not found or not executable at $VOS_RELEASE (override with VOS_RELEASE_BIN)."
   exec "$VOS_RELEASE" plan
-elif [[ "$MODE" != "fitness" ]]; then
-  fail "Unknown target '$MODE'. Use 'fitness' or 'vos'."
+elif [[ "$MODE" == "fitness" ]]; then
+  # Seit 2026-10-29 trägt Fitness Plan nicht mehr als Gitlink: der Fitness-Build löst Plan über den
+  # Nachbar-Checkout auf (~/plan-dev bzw. plan-app im vitalos-Workspace). Release = vos-release plan.
+  echo "deploy:fitness: Fitness pinnt Plan nicht mehr (kein Gitlink). Nutze '$0 vos' bzw. 'vos-release plan'." >&2
+  exit 1
+else
+  fail "Unknown target '$MODE'. Use 'vos'."
 fi
 
 command -v git >/dev/null || fail "git is required."
