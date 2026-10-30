@@ -188,3 +188,25 @@ Erledigt = im ±1-Tag-Fenster abgeschlossen; ein Abschluss belegt höchstens ein
 **Taskwarrior (Stufe 1, lesend/einseitig):** `fitness/plan_tasks.py` (typer + tasklib) spiegelt die Vorkommen aus dem *lokalen* Runtime-Stand (`~/.aos/fitness/users/<uid>/macrocycles` + `workouts.json`) in eine eigene Taskwarrior-DB je Klient: `~/.aos/fitness/users/<uid>/taskwarrior/` (eigenes `taskrc`, UDAs `occkey`/`planid`/`routineid`/`workoutid`). `scheduled` = Vortag 00:00, `due` = Plantag 23:59, erledigt = `task done`; nicht mehr veröffentlichte Pläne löschen ihre offenen Tasks; idempotent über `occkey = Plan:Einheit:Datum`. Aufruf: `python -m fitness.plan_tasks sync <uid>` / `pending <uid>`, API `POST /fitness/coach/macrocycles/taskwarrior/<uid>/sync` und `GET …/<uid>/pending`. Die Python-Logik spiegelt `occurrences.js` (Tests: `test_plan_tasks.py`).
 
 **Offen (Stufe 2):** Firestore ist die Quelle der Wahrheit für die Web-App; das lokale Backend sieht Firestore-Pläne/Workouts noch nicht. Nötig: Sync Firestore → lokaler Runtime-Stand (z. B. der bestehende `fitness-firestore-daemon`) und optional Rückrichtung (`task done` → Workout/Abschluss), Auslöser (Timer/Daemon statt manuell).
+
+## Mobiler Planeditor (2026-10-30)
+
+`PlanEditor.jsx` ist eine eigene Kompositionsoberfläche für vollständige Pläne.
+`TrainingPlans` erstellt einen privaten Plan und öffnet ihn unmittelbar über
+`PlanCard`. Trainingstage enthalten ihre eigenen Übungs-Snapshots; vorgelagerte
+Workout-Vorlagen sind optional. Tage lassen sich duplizieren und umordnen,
+Übungen per Katalog hinzufügen und mit `ExerciseRow` einschließlich Satzvorgaben,
+Tracking, RIR, Pause und Notizen bearbeiten. Sortierung unterstützt Pointer und
+Tastatur. Die Vorschau zeigt den noch unveröffentlichten Stand.
+
+Lokale Entwürfe sind nach angemeldetem Bearbeiter, Klient und Plan isoliert.
+Beim erneuten Öffnen entscheidet der Nutzer über Wiederaufnahme oder Verwerfen.
+Ein atomarer `updateMacrocycle` schreibt Name, Hinweise, Dauer und komplette
+Trainingstage, ohne den veröffentlichten Snapshot zu verändern. Beide Adapter
+prüfen `expectedUpdatedAt` und verweigern veraltete Entwürfe; diese bleiben lokal
+verfügbar. `Entwurf sichern` führt zurück zur vorhandenen Versionsfreigabe.
+Lokales Speichern ist kein geräteübergreifender Sync; dafür muss gesichert werden.
+
+`CoachWorkspace` trennt Pläne, optionale Vorlagen und Ergebnisse über eine
+Bereichsnavigation. Pläne sind der Einstieg nach der Klientenauswahl. `StrongApp`
+zeigt Coaches einen hervorgehobenen Zugang mit Zweckbeschreibung.

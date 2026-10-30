@@ -219,3 +219,16 @@ startbar, ihr bisheriger Hakenfortschritt wird nicht als Leistung umgeschrieben.
 Neu: Klienten-Übersicht, Plan-Hinweis, Zurückziehen, Kopieren, Wochenplan,
 Neu-Banner und Push (`onPlanPublished`). Details: `ARCHITECTURE.md`. Versionierung, atomares Kopieren und Rules-Härtung (Patch) sind umgesetzt (`ARCHITECTURE.md`). Offen: Push-Token-Bereinigung
 ungültiger Geräte, authentifizierte Geräte-Abnahme des Pushs.
+
+## 2026-10-30: Planeditor und Integration
+
+- `PlanEditor.jsx`: vollständige Plan-Komposition am Handy, lokale Wiederaufnahme,
+  Klientenvorschau, atomarer Entwurf und Schutz vor veralteten Schreibständen.
+- `TrainingPlans` / `PlanCard`: benanntes Formular statt Browser-Prompt; direkter
+  Editorzugang für neue und bestehende bearbeitbare Pläne.
+- `CoachWorkspace`: Pläne/Vorlagen/Ergebnisse statt einer langen Formularliste.
+- Firestore und Python akzeptieren komplette Trainingstage und Dauer im Patch;
+  Veröffentlichungen und Trainingsprotokolle behalten ihre eigenen Snapshots.
+- Grenzen: lokale Entwürfe sind gerätegebunden; gleichzeitiges Bearbeiten erfordert
+  nach einem Konflikt bewusstes Übernehmen der Änderungen. Kein PDF-Parsing,
+  Drive-/E-Mail-Import oder Deployment Bestandteil dieser Änderung.

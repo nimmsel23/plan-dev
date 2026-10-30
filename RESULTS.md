@@ -1434,3 +1434,20 @@ wurden nach dem erfolgreichen Durchlauf beendet.
 
 ## 2026-10-17 — Offline-Cache bei Updates
 Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öffentlicher API-Cache mit Migration, Asset-Precache standardmäßig aktiv, fehlgeschlagene Installation ersetzt bestehenden Worker nicht. IndexedDB/localStorage bleiben unverändert. Geprüft: 13 Shell-/Update-Tests, Private-Request-Test, Vendor-Parität. Kein Push/Release; kein physischer Geräte-Test.
+
+## 2026-10-30 — Trainingspläne direkt am Handy erstellen
+
+- Eigenständigen Planeditor ergänzt: Name, Ziel/Hinweise, Dauer, eigene Trainingstage,
+  optionale Vorlagenübernahme, Übungssuche, Satzvorgaben, RIR, Pausen und Notizen.
+- Tage duplizieren/umordnen, Übungen per Pointer oder Tastatur sortieren,
+  Klientenvorschau und lokale Entwürfe mit Wiederaufnahme/Verwerfen.
+- Atomare Speicherung in Python/Firestore mit Prüfung des Ausgangsstands;
+  veröffentlichter Plan und Trainingshistorie bleiben eigene Snapshots.
+- Neue Pläne öffnen direkt den Editor. Klientenbereich in Pläne/Vorlagen/Ergebnisse
+  gegliedert; hervorgehobener Zugang im Training. Workflow/Architektur/Audit aktualisiert.
+- Verifiziert: ESLint, vollständige `npm run test:plan`-Suite einschließlich neuer
+  Backend-/Firestore-Konflikt- und Snapshotprüfungen, Plan-Produktionsbuild.
+- Isolierter Chromium-Durchlauf bei 390 px: direkt erstellter Plan → lokale
+  Wiederaufnahme → Vorschau → Freigabe → Klientenlogger → Abschluss/Verlauf/Wiederholung;
+  keine unbehandelten Browserfehler. Testharness begrenzt Vite-Scan auf die Testseite.
+- Nicht gepusht/deployed. Echte Firebase-Konten und physisches Handy nicht geprüft.

@@ -79,3 +79,11 @@ Coach-Trainingspläne im selben Logger für Klienten nutzbar machen.
 Produktziel: `INSPIRATION.md`. Bedienung: `docs/PLAN-WORKFLOW.md`.
 
 - [x] Offline-Cache über App-Updates erhalten: gemeinsame SW-Strategie, API-Migration, vollständiges Asset-Precache und sichere Installation.
+
+## 2026-10-30: Mobiler Trainingsplan-Editor
+
+- [x] Eigenständigen Editor für komplette Pläne mit Tagen und Übungsvorgaben bauen.
+- [x] Lokale Entwürfe, Wiederaufnahme, Duplizieren, Sortieren und Vorschau ergänzen.
+- [x] Atomare Speicherung, Konfliktschutz und vorhandene Freigabe/Logger verbinden.
+- [x] Klientenbereich mit Pläne/Vorlagen/Ergebnisse integrieren.
+- [ ] Authentifizierte Abnahme mit echten Coach-/Klientenkonten auf Firebase.

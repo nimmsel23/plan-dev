@@ -25,7 +25,7 @@ export default function ExerciseRow({ ex, onPatch, onDelete }) {
     <div ref={setNodeRef} style={style} className="rounded-xl bg-fit-card border border-fit-line overflow-hidden">
       <ExercisePhotoStrip ex={ex} className="h-32 m-2 mb-0" />
       <div className="flex items-center gap-2 px-3 py-3">
-        <button {...attributes} {...listeners} className="text-fit-muted hover:text-fit-ink cursor-grab active:cursor-grabbing p-1">
+        <button {...attributes} {...listeners} aria-label={`${ex.name}: Reihenfolge ändern`} className="text-fit-muted hover:text-fit-ink cursor-grab active:cursor-grabbing p-1">
           <GripVertical size={16} />
         </button>
         <div className="flex-1 min-w-0">

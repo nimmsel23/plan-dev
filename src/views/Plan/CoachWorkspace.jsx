@@ -17,6 +17,7 @@ export default function CoachWorkspace({ onBack }) {
   const [error, setError] = useState('');
   const [overview, setOverview] = useState({});
   const [profilesError, setProfilesError] = useState('');
+  const [section, setSection] = useState('plans');
   const [filter, setFilter] = useState('');
   const seq = useRef(0);
   const aliveRef = useRef(true);
@@ -69,9 +70,9 @@ export default function CoachWorkspace({ onBack }) {
   return (
     <div className="mx-auto max-w-2xl space-y-6 px-4 py-6">
       <button onClick={onBack} className="flex items-center gap-2 text-sm text-fit-muted"><ArrowLeft size={16} /> Mein Training</button>
-      <header><h1 className="flex items-center gap-2 text-2xl font-bold"><Users size={23} /> Klienten-Training</h1><p className="mt-2 text-sm text-fit-muted">Klient wählen, Workout-Vorlagen erstellen und zu einem Trainingsplan bündeln. Die Vorlagen sind im persönlichen Plan des Klienten direkt startbar.</p></header>
+      <header><h1 className="flex items-center gap-2 text-2xl font-bold"><Users size={23} /> Klienten-Training</h1><p className="mt-2 text-sm text-fit-muted">Klient wählen und einen Trainingsplan direkt gestalten: Trainingstage, Übungen und Satzvorgaben. Entwurf prüfen und anschließend für den Klienten freigeben.</p></header>
       <label className="block text-sm font-medium">Klient
-        <select aria-label="Klient auswählen" value={clientUid} onChange={(e) => setClientUid(e.target.value)} className="mt-2 w-full rounded-xl border border-fit-line bg-fit-card p-3">
+        <select aria-label="Klient auswählen" value={clientUid} onChange={(e) => { setClientUid(e.target.value); setSection('plans'); }} className="mt-2 w-full rounded-xl border border-fit-line bg-fit-card p-3">
           <option value="">Klient auswählen…</option>
           {clients.map(([uid, label]) => <option key={uid} value={uid}>{label}</option>)}
         </select>
@@ -90,13 +91,15 @@ export default function CoachWorkspace({ onBack }) {
       </section>}
       {error && <p role="alert" className="text-sm text-fit-red">{error}<button onClick={load} className="ml-2 underline">Erneut versuchen</button></p>}
       {clientUid && <>
-        <section className="space-y-3"><h2 className="text-lg font-semibold">Workout-Vorlagen</h2>
+        <div className="rounded-2xl border border-fit-accent/30 bg-fit-accent/5 p-4"><p className="text-xs font-semibold uppercase tracking-wide text-fit-accent">Klientenbereich</p><h2 className="mt-1 break-words text-xl font-semibold">{clients.find(([id]) => id === clientUid)?.[1] || clientUid}</h2><p className="mt-2 text-sm text-fit-muted">Plan gestalten → Vorschau prüfen → freigeben. Ergebnisse und Rückmeldungen bleiben beim Klienten.</p></div>
+        <nav aria-label="Klientenbereiche" className="grid grid-cols-3 gap-1 rounded-2xl border border-fit-line bg-fit-card p-1">{[['plans', 'Pläne'], ['templates', 'Vorlagen'], ['results', 'Ergebnisse']].map(([id, label]) => <button key={id} aria-current={section === id ? 'page' : undefined} onClick={() => setSection(id)} className={`min-h-[48px] rounded-xl px-2 text-sm font-semibold ${section === id ? 'bg-fit-accent text-fit-bg' : 'text-fit-muted'}`}>{label}</button>)}</nav>
+        {section === 'plans' && <TrainingPlans key={clientUid} clientUid={clientUid} clients={clients} templates={routines} workouts={workouts} onChanged={load} />}
+        {section === 'templates' && <section className="space-y-3"><h2 className="text-lg font-semibold">Workout-Vorlagen</h2>
           <form onSubmit={(e) => { e.preventDefault(); create(); }} className="flex gap-2"><input aria-label="Neue Workout-Vorlage" placeholder="z. B. Push A" value={name} onChange={(e) => setName(e.target.value)} className="min-w-0 flex-1 rounded-xl border border-fit-line bg-fit-card p-3 text-sm" /><button disabled={busy || !name.trim()} className="flex items-center gap-1 rounded-xl bg-fit-accent px-4 text-sm font-semibold text-fit-bg disabled:opacity-50"><Plus size={16} /> Erstellen</button></form>
           {busy ? <p className="text-sm text-fit-muted">Lädt…</p> : routines.map((r) => <button key={r.id} onClick={() => setEditing(r.id)} className="flex w-full items-center justify-between rounded-xl border border-fit-line bg-fit-card p-4 text-left"><span><span className="block font-semibold">{r.name}</span><span className="text-xs text-fit-muted">{r.exerciseCount || 0} Übungen · Sätze, Pausen und Hinweise bearbeiten</span></span><Pencil size={16} /></button>)}
           {!busy && !routines.length && <p className="text-sm text-fit-muted">Erstelle die erste Einheit. Füge anschließend ihre Übungen und Satzvorgaben hinzu.</p>}
-        </section>
-        <TrainingPlans key={clientUid} clientUid={clientUid} clients={clients} templates={routines} workouts={workouts} onChanged={load} />
-        <section><h2 className="mb-3 text-lg font-semibold">Absolvierte Workouts</h2>{workouts.filter((w) => w.finished_at).sort((a,b) => b.finished_at.localeCompare(a.finished_at)).slice(0, 12).map((w) => <div key={w.id} className="mb-2 rounded-xl border border-fit-line p-3"><p className="font-medium">{w.name}</p><p className="text-xs text-fit-muted">{new Date(w.finished_at).toLocaleDateString('de-AT')} · {workoutTotals(w).sets} Sätze · {formatDuration(workoutTotals(w).durationMs)}</p>{w.feedback && <p className="mt-1 rounded-lg bg-fit-accent/10 px-2 py-1 text-xs"><span className="font-semibold text-fit-accent">Rückmeldung{w.feedback.effort ? ` · Anstrengung ${w.feedback.effort}/10` : ''}</span>{w.feedback.note ? `: ${w.feedback.note}` : ''}</p>}{(w.eventLog || []).map((s,i) => <p key={i} className="mt-1 text-xs text-fit-dim">{s.name} · {s.reps != null ? `${s.reps} Wdh` : `${s.seconds || 0} s`}{s.weight != null ? ` · ${s.weight} kg` : ''}</p>)}</div>)}{!workouts.some((w) => w.finished_at) && <p className="text-sm text-fit-muted">Hier erscheinen die tatsächlichen Ergebnisse des Klienten.</p>}</section>
+        </section>}
+        {section === 'results' && <section><h2 className="mb-3 text-lg font-semibold">Absolvierte Workouts</h2>{workouts.filter((w) => w.finished_at).sort((a,b) => b.finished_at.localeCompare(a.finished_at)).slice(0, 12).map((w) => <div key={w.id} className="mb-2 rounded-xl border border-fit-line p-3"><p className="font-medium">{w.name}</p><p className="text-xs text-fit-muted">{new Date(w.finished_at).toLocaleDateString('de-AT')} · {workoutTotals(w).sets} Sätze · {formatDuration(workoutTotals(w).durationMs)}</p>{w.feedback && <p className="mt-1 rounded-lg bg-fit-accent/10 px-2 py-1 text-xs"><span className="font-semibold text-fit-accent">Rückmeldung{w.feedback.effort ? ` · Anstrengung ${w.feedback.effort}/10` : ''}</span>{w.feedback.note ? `: ${w.feedback.note}` : ''}</p>}{(w.eventLog || []).map((s,i) => <p key={i} className="mt-1 text-xs text-fit-dim">{s.name} · {s.reps != null ? `${s.reps} Wdh` : `${s.seconds || 0} s`}{s.weight != null ? ` · ${s.weight} kg` : ''}</p>)}</div>)}{!workouts.some((w) => w.finished_at) && <p className="text-sm text-fit-muted">Hier erscheinen die tatsächlichen Ergebnisse des Klienten.</p>}</section>}
       </>}
     </div>
   );

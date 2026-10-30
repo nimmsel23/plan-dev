@@ -78,7 +78,7 @@ export default function StrongApp({ user, onSignOut }) {
       <div className={`min-w-0 transition-all duration-500 ${pinned ? 'lg:ml-[304px]' : 'lg:ml-[108px]'}`}>
         <PlanHeader title={NAV_ITEMS.find((item) => item.id === tab)?.label} subtitle="Plan · VitalOS" />
         <div className="mx-auto max-w-[1600px] px-[var(--safe-left)]" style={{ paddingRight: 'var(--safe-right)', paddingBottom: 'calc(var(--mobile-nav-height) + 88px)' }}>
-          {tab === 'workout' && isCoach && !coachOpen && <div className="mx-auto max-w-2xl px-4 pt-4"><button onClick={() => setCoachOpen(true)} className="flex items-center gap-2 rounded-xl border border-fit-line px-4 py-2 text-sm text-fit-accent"><Users size={16} /> Trainingspläne für Klienten</button></div>}
+          {tab === 'workout' && isCoach && !coachOpen && <div className="mx-auto max-w-2xl px-4 pt-4"><button onClick={() => setCoachOpen(true)} className="flex min-h-[72px] w-full items-center gap-3 rounded-2xl border border-fit-accent/30 bg-fit-accent/5 p-4 text-left"><Users size={24} className="shrink-0 text-fit-accent" /><span><span className="block font-semibold">Trainingspläne für Klienten</span><span className="mt-1 block text-xs text-fit-muted">Pläne am Handy gestalten, freigeben und Ergebnisse ansehen</span></span></button></div>}
           {tab === 'workout' && coachOpen && isCoach && <CoachWorkspace onBack={() => setCoachOpen(false)} />}
           {tab === "profile" && <ProfileView user={user} />}
           {tab === "history" && (

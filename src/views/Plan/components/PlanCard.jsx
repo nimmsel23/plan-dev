@@ -3,6 +3,7 @@ import { Plus, Target, Trash2, CheckCircle2, Play, ChevronDown, Copy, Undo2, Pen
 import { getMacrocycle, deleteMacrocycle, addRoutine, updateRoutine, deleteRoutine, getUid, publishMacrocycle, updateMacrocycle } from '@db';
 import { createPlanApi } from '../api.js';
 import { countCompletionsInPeriod, pickNextPlanRoutine } from '../../../lib/habitProgress.js';
+import PlanEditor from '../PlanEditor.jsx';
 import PlanVersions from './PlanVersions.jsx';
 import { clientView } from '../lib/planVersions.js';
 import TemplatePicker from './TemplatePicker.jsx';
@@ -11,7 +12,8 @@ import WeekSlider from '../../../components/WeekSlider.jsx';
 import { copyPlanToClient } from '../lib/copyPlan.js';
 import { WEEKDAY_LABELS, weekdayIndex, toggleWeekday, hasSchedule, weekGrid, todaysOpenRoutines } from '../lib/weekSchedule.js';
 
-export default function PlanCard({ plan, templates, workouts, clientUid, clients = [], onReload, onStart }) {
+export default function PlanCard({ plan, templates, workouts, clientUid, clients = [], onReload, onStart, initiallyEditing = false }) {
+  const [editing, setEditing] = useState(initiallyEditing);
   const [detail, setDetail] = useState(null);
   const [picking, setPicking] = useState(false);
   const [error, setError] = useState('');
@@ -80,7 +82,8 @@ export default function PlanCard({ plan, templates, workouts, clientUid, clients
     setCopied(clients.find(([id]) => id === toUid)?.[1] || toUid);
   }
   if (!detail) return <div className="rounded-2xl border border-fit-line p-4 text-sm text-fit-muted">{error ? <p role="alert">{error}<button onClick={load} className="ml-2 underline">Erneut versuchen</button></p> : 'Trainingsplan lädt…'}</div>;
-  const view = clientUid ? detail : clientView(detail);
+  if (editing) return <PlanEditor key={`${uid}:${plan.id}`} plan={detail} uid={uid} templates={templates} apiClient={createPlanApi(clientUid)} onClose={() => setEditing(false)} onSaved={() => { setEditing(false); load(); onReload?.(); }} />;
+  const view = canEdit ? detail : clientView(detail);
   const routines = view.routines || [];
   const next = pickNextPlanRoutine(routines, workouts);
   const targets = routines.filter((r) => r.targetCount > 0 && r.targetPeriodDays > 0);
@@ -90,6 +93,7 @@ export default function PlanCard({ plan, templates, workouts, clientUid, clients
       <header className="mb-3 flex items-start justify-between gap-2"><div><p className="text-xs text-fit-accent">{fromCoach ? 'Von deinem Coach' : clientUid ? (detail.status === 'draft' ? 'Entwurf · noch nicht als Plan bereitgestellt' : 'Für diesen Klienten bereitgestellt') : 'Dein Trainingsplan'}</p>{renaming !== null
         ? <form onSubmit={(e) => { e.preventDefault(); act(saveName); }} className="mt-1 flex gap-2"><input aria-label="Planname" autoFocus maxLength={80} value={renaming} onChange={(e) => setRenaming(e.target.value)} onKeyDown={(e) => e.key === 'Escape' && setRenaming(null)} className="min-h-[44px] min-w-0 flex-1 rounded-xl border border-fit-line bg-fit-bg p-2 text-base font-semibold" /><button disabled={busy || !renaming.trim()} className="min-h-[44px] rounded-xl bg-fit-accent px-3 text-sm font-semibold text-fit-bg disabled:opacity-50">Speichern</button><button type="button" onClick={() => setRenaming(null)} className="min-h-[44px] px-2 text-sm text-fit-muted">Abbrechen</button></form>
         : <h3 className="mt-1 flex items-center gap-2 text-lg font-semibold">{view.name}{met && <CheckCircle2 size={17} className="text-green-500" />}{clientUid && <button aria-label="Plan umbenennen" onClick={() => setRenaming(detail.name || '')} className="-m-2 p-3 text-fit-muted"><Pencil size={14} /></button>}</h3>}</div>{canEdit && <button disabled={busy} aria-label={`${detail.name} löschen`} onClick={() => { if (confirm('Trainingsplan löschen? Die Workout-Vorlagen bleiben erhalten.')) act(async () => { if (!await deleteMacrocycle(uid, plan.id)) throw new Error('Löschen fehlgeschlagen.'); onReload?.(); }); }} className="p-2 text-fit-muted hover:text-fit-red"><Trash2 size={15} /></button>}</header>
+      {canEdit && <button disabled={busy} onClick={() => setEditing(true)} className="mb-4 min-h-[48px] w-full rounded-xl bg-fit-accent p-3 text-sm font-semibold text-fit-bg"><Pencil size={16} className="mr-2 inline" />Trainingstage und Übungen bearbeiten</button>}
       {!clientUid && view.description && <p className="mb-4 whitespace-pre-wrap rounded-xl border border-fit-accent/30 bg-fit-accent/10 p-3 text-sm"><span className="mb-1 block text-xs font-semibold text-fit-accent">{fromCoach ? 'Hinweis von deinem Coach' : 'Hinweis'}</span>{view.description}</p>}
       {!clientUid && view.headVersion > 0 && <p className="mb-3 text-[11px] text-fit-muted">Version {view.headVersion}{view.headMessage ? ` · ${view.headMessage}` : ''}{detail.publishedAt ? ` · ${new Date(detail.publishedAt).toLocaleDateString('de-AT')}` : ''}</p>}
       {clientUid && <label className="mb-4 block text-xs font-semibold text-fit-muted">Hinweis für den Klienten<textarea aria-label="Hinweis für den Klienten" rows={3} maxLength={2000} placeholder="Ziel, Ablauf, worauf zu achten ist …" value={note ?? detail.description ?? ''} onChange={(e) => setNote(e.target.value)} onBlur={blurSaveNote} className="mt-1 w-full rounded-xl border border-fit-line bg-fit-bg p-3 text-sm font-normal text-fit-ink" /></label>}

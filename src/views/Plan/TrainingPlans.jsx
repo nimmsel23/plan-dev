@@ -5,6 +5,10 @@ import PlanCard from "./components/PlanCard.jsx";
 
 // Shared plan composition for personal training and the client workspace.
 export default function TrainingPlans({ templates, workouts, onChanged, clientUid, clients, onStart }) {
+  const [name, setName] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(true);
@@ -23,13 +27,14 @@ export default function TrainingPlans({ templates, workouts, onChanged, clientUi
   }
 
   async function newPlan() {
-    const name = prompt("Name des Trainingsplans:", "Mein Plan");
-    if (!name || !name.trim()) return;
+    if (busy || !name.trim()) return;
+    setBusy(true); setError('');
     try {
-      const created = await createMacrocycle(uid, { name: name.trim(), coachUid: getUid(), totalWeeks: 52, status: clientUid ? "draft" : "published" });
+      const created = await createMacrocycle(uid, { name: name.trim(), coachUid: getUid(), totalWeeks: 10, status: "draft" });
       if (!created) throw new Error("Trainingsplan konnte nicht erstellt werden.");
+      setEditingId(created.id); setCreating(false); setName('');
       await load();
-    } catch (err) { setError(err.message); }
+    } catch (err) { setError(err.message); } finally { setBusy(false); }
   }
 
   if (!loading && plans.length === 0 && !open) return null;
@@ -48,10 +53,11 @@ export default function TrainingPlans({ templates, workouts, onChanged, clientUi
       {open && (
         <div className="space-y-3">
           {plans.map((p) => (
-            <PlanCard key={p.id} plan={p} templates={templates} workouts={workouts} clientUid={clientUid} clients={clients} onReload={reload} onStart={onStart} />
+            <PlanCard key={p.id} initiallyEditing={p.id === editingId} plan={p} templates={templates} workouts={workouts} clientUid={clientUid} clients={clients} onReload={reload} onStart={onStart} />
           ))}
+          {creating && <form onSubmit={(e) => { e.preventDefault(); newPlan(); }} className="space-y-2 rounded-xl border border-fit-line p-3"><label className="block text-sm">Name des neuen Plans<input autoFocus aria-label="Neuer Planname" maxLength={80} value={name} onChange={(e) => setName(e.target.value)} className="mt-1 min-h-[44px] w-full rounded-xl border border-fit-line bg-fit-bg p-3" /></label><button disabled={busy || !name.trim()} className="vos-btn primary">{busy ? 'Erstellt…' : 'Plan gestalten'}</button><button type="button" disabled={busy} onClick={() => setCreating(false)} className="min-h-[44px] px-3">Abbrechen</button></form>}
           <button
-            onClick={newPlan}
+            onClick={() => setCreating(true)}
             className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-fit-card hover:bg-fit-accent/10 text-fit-ink text-sm font-medium transition-colors"
           >
             <Plus size={14} /> Neuer Trainingsplan
