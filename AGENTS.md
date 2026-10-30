@@ -28,3 +28,10 @@ Stand 2026-10-29. Ausführlich: `~/vitalos/docs/DEPLOYMENT.md` (GitHub: nimmsel2
   (`git worktree add .worktrees/<name> <branch>`).
 - Default-Branch des Repos ist `master`; die `.github/workflows/*.yml` auf `master` bestimmen das Live-Verhalten.
 <!-- release-weg:end -->
+
+## Plan ownership and Coach consumption (2026-10-30)
+
+Plan owns the shared training-plan editor, program composition, versioning and assignment logic.
+Coach consumes the code through its pinned `plan` Git submodule. Change the source here,
+commit it, then deliberately advance Coach's pointer; do not maintain a second editor in Coach.
+Publish Plan commits before pushing a Coach pointer referencing them.

@@ -210,3 +210,14 @@ Lokales Speichern ist kein geräteübergreifender Sync; dafür muss gesichert we
 `CoachWorkspace` trennt Pläne, optionale Vorlagen und Ergebnisse über eine
 Bereichsnavigation. Pläne sind der Einstieg nach der Klientenauswahl. `StrongApp`
 zeigt Coaches einen hervorgehobenen Zugang mit Zweckbeschreibung.
+
+## Shared Coach editor contract (2026-10-30)
+
+Plan is the source owner for plan and program authoring. `ProgramEditor` adapts
+legacy template-based programs to `PlanEditor`; `lib/programDraft` translates
+between programs and plan drafts. Inline exercise snapshots become authoritative
+after editing. `PlanEditor.saveDraft` accepts host persistence; local caches are
+isolated between program and client editing. Coach supplies identity/navigation
+and consumes this code via its pinned `plan` submodule. `lib/programStore` owns
+program persistence, transactional versions and client assignments. Existing
+Firestore paths remain unchanged.

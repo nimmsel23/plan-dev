@@ -1451,3 +1451,12 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
   Wiederaufnahme → Vorschau → Freigabe → Klientenlogger → Abschluss/Verlauf/Wiederholung;
   keine unbehandelten Browserfehler. Testharness begrenzt Vite-Scan auf die Testseite.
 - Nicht gepusht/deployed. Echte Firebase-Konten und physisches Handy nicht geprüft.
+
+## 2026-10-30 — Shared editor ownership
+
+Plan owns program composition and the mobile editor used by Coach. Added
+ProgramEditor, program/draft adapters, injectable draft persistence and migrated
+program/version/assignment store. Legacy template references remain readable;
+newly edited programs store exercise snapshots directly. Program publication is
+transactional and draft saves reject stale working copies. Client-local draft
+keys remain compatible; program drafts use a separate namespace.

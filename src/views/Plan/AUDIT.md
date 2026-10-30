@@ -232,3 +232,10 @@ ungültiger Geräte, authentifizierte Geräte-Abnahme des Pushs.
 - Grenzen: lokale Entwürfe sind gerätegebunden; gleichzeitiges Bearbeiten erfordert
   nach einem Konflikt bewusstes Übernehmen der Änderungen. Kein PDF-Parsing,
   Drive-/E-Mail-Import oder Deployment Bestandteil dieser Änderung.
+
+## Shared program editor
+
+`ProgramEditor` and `lib/programStore` now own the Coach program authoring path.
+Template-only programs are resolved on opening; saving captures editable exercises.
+Published program versions and client assignments remain immutable snapshots.
+Coach must pin a complete Plan commit and scan its source for Tailwind classes.

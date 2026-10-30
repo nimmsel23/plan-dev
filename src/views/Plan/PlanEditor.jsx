@@ -15,8 +15,8 @@ const newDay = (label) => ({ id: id(), label, exercises: [], weekdays: [], targe
 const editable = (plan) => clone({ name: plan.name || '', description: plan.description || '', totalWeeks: plan.totalWeeks || 10, routines: plan.routines || [] });
 
 // Separate composition surface; only the final atomic save touches the remote working copy.
-export default function PlanEditor({ plan, uid, templates = [], apiClient, onClose, onSaved }) {
-  const key = `plan-composer:v1:${getUid()}:${uid}:${plan.id}`;
+export default function PlanEditor({ plan, uid, templates = [], apiClient, onClose, onSaved, saveDraft, draftNamespace = 'client' }) {
+  const key = `plan-composer:v1:${draftNamespace === 'client' ? '' : `${draftNamespace}:`}${getUid()}:${uid}:${plan.id}`;
   const [draft, setDraft] = useState(() => editable(plan));
   const [base, setBase] = useState(plan.updatedAt || null);
   const [recovery, setRecovery] = useState(null);
@@ -69,7 +69,8 @@ export default function PlanEditor({ plan, uid, templates = [], apiClient, onClo
     if (!draft.name.trim() || draft.routines.some((r) => !r.label.trim())) { setError('Bitte Plan und alle Trainingstage benennen.'); return; }
     saving.current = true; setBusy(true); setError('');
     try {
-      const result = await updateMacrocycle(uid, plan.id, { ...draft, expectedUpdatedAt: base });
+      const patch = { ...draft, expectedUpdatedAt: base };
+      const result = saveDraft ? await saveDraft(patch) : await updateMacrocycle(uid, plan.id, patch);
       if (!result) throw new Error('Entwurf konnte nicht gespeichert werden.');
       setBase(result.updatedAt); setSaved(true);
       try { localStorage.removeItem(key); } catch { /* Remote save succeeded. */ }

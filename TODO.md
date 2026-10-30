@@ -87,3 +87,9 @@ Produktziel: `INSPIRATION.md`. Bedienung: `docs/PLAN-WORKFLOW.md`.
 - [x] Atomare Speicherung, Konfliktschutz und vorhandene Freigabe/Logger verbinden.
 - [x] Klientenbereich mit Pläne/Vorlagen/Ergebnisse integrieren.
 - [ ] Authentifizierte Abnahme mit echten Coach-/Klientenkonten auf Firebase.
+
+## 2026-10-30 — Plan owns the editor consumed by Coach
+
+- [x] Expose mobile PlanEditor with host persistence and isolated program drafts.
+- [x] Move program/version/assignment ownership to Plan; support legacy programs.
+- [x] Add ProgramEditor for Coach consumption through a pinned Git submodule.
