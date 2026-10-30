@@ -32,7 +32,8 @@ export async function saveCoachProgram(uid, value) {
     tx.update(ref, record);
   });
   else await setDoc(ref, { ...record, createdAt: now, headVersion: 0 });
-  return { ...value, id: ref.id, ...record };
+  const { expectedUpdatedAt: _expected, ...previous } = value;
+  return { ...previous, id: ref.id, ...record };
 }
 
 export async function publishCoachProgram(uid, program) {

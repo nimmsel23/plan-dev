@@ -57,4 +57,8 @@ test('legacy programs hydrate once; inline edits survive publication and assignm
   const assigned = await store.assignCoachProgram({ coachUid: 'coach', clientUid: 'inline-client', program: { ...saved, headVersion: 1 } });
   assert.equal((await macros.getMacrocycle('inline-client', assigned)).macrocycle.published.name, 'Legacy');
   await assert.rejects(store.saveCoachProgram('coach', { ...saved, expectedUpdatedAt: 'stale' }), /inzwischen/);
+  const edited = await store.saveCoachProgram('coach', { ...saved, expectedUpdatedAt: saved.updatedAt, description: 'Edited' });
+  assert.equal('expectedUpdatedAt' in edited, false);
+  await store.saveCoachProgram('coach', edited);
+  assert.equal((await store.publishCoachProgram('coach', edited)).number, 2);
 });
