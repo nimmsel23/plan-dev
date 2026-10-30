@@ -93,3 +93,7 @@ Produktziel: `INSPIRATION.md`. Bedienung: `docs/PLAN-WORKFLOW.md`.
 - [x] Expose mobile PlanEditor with host persistence and isolated program drafts.
 - [x] Move program/version/assignment ownership to Plan; support legacy programs.
 - [x] Add ProgramEditor for Coach consumption through a pinned Git submodule.
+
+## 2026-10-30 — Plan-/Coach-Dokumentation
+
+- [x] Gemeinsame Plan-/Coach-Zuständigkeiten, Datenvertrag, Editor-Schnittstellen und Pointer-/Veröffentlichungsfolge dokumentiert; veraltete Integrationshinweise korrigiert.

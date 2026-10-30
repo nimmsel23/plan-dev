@@ -1460,3 +1460,8 @@ program/version/assignment store. Legacy template references remain readable;
 newly edited programs store exercise snapshots directly. Program publication is
 transactional and draft saves reject stale working copies. Client-local draft
 keys remain compatible; program drafts use a separate namespace.
+
+## 2026-10-30 — Plan-/Coach-Dokumentation
+
+Gemeinsame Plan-/Coach-Zuständigkeiten, Datenvertrag, Editor-Schnittstellen und Pointer-/Veröffentlichungsfolge dokumentiert; veraltete Integrationshinweise korrigiert.
+Nur Dokumentation; keine Quell-/Daten-/Pointer-Änderung und kein Deployment.

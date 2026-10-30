@@ -1,7 +1,20 @@
 # Plan verwenden
 
-Stand: 2026-10-16. Dieser Ablauf beschreibt den neuen Entwicklungsstand;
+Stand: 2026-10-30. Dieser Ablauf beschreibt den neuen Entwicklungsstand;
 Veröffentlichung und authentifizierte Firebase-Abnahme sind separate Schritte.
+
+## Zuständigkeit und Coach-Einbindung
+
+Plan besitzt den gemeinsamen Editor und die Planlogik. Coach verwendet sie aus
+seinem gepinnten Submodul `modules/plan`; ein Pointer-Update erfolgt bewusst nach
+Prüfung des gewünschten Plan-Commits. Architektur, Datenvertrag und Übernahmefolge:
+[Plan und seine Verbraucher](PLAN-COACH-INTEGRATION.md).
+
+In Coach führt **Klient → Programm auswählen → Neues Programm** zum selben
+Planeditor. Nach dem Sichern wird eine Programmversion veröffentlicht und gezielt
+zugewiesen. **Individuellen Plan gestalten** bearbeitet direkte Klientenpläne.
+Die nachfolgenden Schritte unter „Als Coach“ beschreiben den Zugang innerhalb
+der eigenständigen Plan-App.
 
 ## Eigenes Training
 
