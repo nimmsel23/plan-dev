@@ -1473,3 +1473,6 @@ Planablage mit atomaren Writes, Versionssnapshots und Konfliktschutz ergänzt.
 ClientForge-Import und Markdown-Export erhalten bestehende Quellen; Auslieferung
 verwendet ausdrücklich die lokale Freigabe, niemals den ungesicherten Entwurf.
 Isolierte Python-/Programmtests und ESLint erfolgreich.
+
+Lokale Auslieferung zusätzlich isoliert auf Idempotenz, unveränderte Versions-
+snapshots und Schutz fremder Zielpläne geprüft (`runtime/test_plan_delivery.py`).
