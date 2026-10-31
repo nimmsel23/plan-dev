@@ -103,3 +103,7 @@ Produktziel: `INSPIRATION.md`. Bedienung: `docs/PLAN-WORKFLOW.md`.
 - [x] 2026-10-31: Fehlende Vorgaben beim Testimport als offen erhalten, ohne Standardwerte zu ergänzen.
 
 - [x] 2026-10-31: Echte Trainingsplan-Ansicht mit Tabellen, mobilen Übungskarten und A4-Druck statt Textvorschau ergänzen.
+
+## 2026-10-31 — Lokales Produkt unter /opt
+
+- [x] Geerbtes Fitness-deploy.sh gesperrt: Plan darf niemals /opt/fitness überschreiben oder Fitness-Dienste umkonfigurieren. Plan wird vom Verbraucher gebündelt.

@@ -1492,3 +1492,9 @@ PlanDocument mit strukturierten Tagesblättern, Satz-/Wiederholungs-/Gewichts-/
 Pausenspalten, getrenntem Warm-up und Finisher ergänzt. Mobil responsive
 Übungskarten; Drucken/PDF über isoliertes A4-Dokument. PlanEditor-Vorschau
 verwendet dieselbe Darstellung. Tests für Satzgruppen und unbekannte Werte.
+
+## 2026-10-31 — Schlankes lokales Deployment
+
+Geerbtes Fitness-deploy.sh gesperrt: Plan darf niemals /opt/fitness überschreiben oder Fitness-Dienste umkonfigurieren. Plan wird vom Verbraucher gebündelt.
+
+Bash-Syntax und Ablehnung vor jeder Mutation geprüft; keine Änderungen an Plan-Editor/anderen laufenden Arbeiten.
