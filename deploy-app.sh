@@ -5,7 +5,7 @@ set -euo pipefail
 # `vos`: release the standalone Plan app through the VitalOS release workflow.
 
 PLAN_REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-FITNESS_REPO="${FITNESS_DEV_REPO:-$HOME/fitness-dev}"
+FITNESS_REPO="${FITNESS_DEV_REPO:-$HOME/dev/fitness-dev}"
 MODE="${1:-fitness}"
 OLD_PLAN_SHA=""
 PIN_UPDATED=false
@@ -22,7 +22,7 @@ if [[ "$MODE" == "vos" ]]; then
   exec "$VOS_RELEASE" plan
 elif [[ "$MODE" == "fitness" ]]; then
   # Seit 2026-10-29 trägt Fitness Plan nicht mehr als Gitlink: der Fitness-Build löst Plan über den
-  # Nachbar-Checkout auf (~/plan-dev bzw. plan-app im vitalos-Workspace). Release = vos-release plan.
+  # Nachbar-Checkout auf (~/dev/plan-dev bzw. plan-app im vitalos-Workspace). Release = vos-release plan.
   echo "deploy:fitness: Fitness pinnt Plan nicht mehr (kein Gitlink). Nutze '$0 vos' bzw. 'vos-release plan'." >&2
   exit 1
 else

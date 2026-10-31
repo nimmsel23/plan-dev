@@ -1480,3 +1480,8 @@ snapshots und Schutz fremder Zielpläne geprüft (`runtime/test_plan_delivery.py
 2026-10-31: Testimport alter Pläne unterstützt explizit unvollständige Übungs-
 vorgaben ohne erfundene Standard-Sätze. Anzeige „Vorgaben offen“ und lokale
 Freigabesicherung bis zur Ergänzung; Pausenbereiche bleiben als Text sichtbar.
+
+
+## 2026-10-31 — Dev-Projekte unter ~/dev
+
+Lokale Entwicklungspfade und betroffene Verknüpfungen auf `~/dev/*-dev` umgestellt. Runtime-Daten, Branches und Release-Checkouts behalten ihre Zuständigkeit. Keine Pushes oder Releases. Gesamter Umzug und Prüfungen: `~/RESULTS.md`.

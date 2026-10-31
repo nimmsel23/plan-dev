@@ -25,7 +25,7 @@ function siblingDir(devName, appName) {
 // SSOT für Cross-App-Aliase (@relax, @learn + interne Cross-DB-Exports)
 // ist @vos/cross-app-aliases (~/vitalos/packages/cross-app-aliases) —
 // nur erreichbar, wenn dieses Repo als vitalos-Submodule genestet ist (npm
-// Workspace-Symlink). Standalone-Checkout (~/fitness-dev ohne vitalos-Parent)
+// Workspace-Symlink). Standalone-Checkout (~/dev/fitness-dev ohne vitalos-Parent)
 // fällt auf die alte siblingDir()-Auflösung zurück.
 async function resolveCrossAppAliases() {
   try {

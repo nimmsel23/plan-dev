@@ -44,7 +44,7 @@ else
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")" && pwd)"
-DEV_SOURCE="${HOME}/fitness-dev"
+DEV_SOURCE="${HOME}/dev/fitness-dev"
 STAGING_SOURCE="${HOME}/.local/fitness"
 
 msg() { printf '\033[1;32m%s\033[0m\n' "$*"; }
@@ -202,7 +202,7 @@ RSYNC_EXCLUDES=(
   --exclude "fitness/catalog/state"
   --exclude "fitness/catalog/kb"
   # free-exercise-db liegt manuell unter $DEST (~/.local/fitness), existiert aber
-  # nicht in $SOURCE (~/fitness-dev) — ohne diesen Exclude loescht --delete
+  # nicht in $SOURCE (~/dev/fitness-dev) — ohne diesen Exclude loescht --delete
   # bei jedem Staging-Deploy den kompletten Klon bis auf .git leer (Root
   # Cause fuer den "yuhonas-Repo wird nach dem Import geleert"-Bug,
   # 2026-08-15 gefunden). Siehe fitness/catalog/CLAUDE.md.
@@ -249,7 +249,7 @@ require_file "$DEST/dist/index.html" "built frontend dist"
 # poetry-core (Wheel-Build-Backend) läuft beim Packagen in fitness/catalog/
 # hinein und crasht hart (ValueError in relative_to_project_root()), sobald
 # es dort auf einen Symlink trifft, dessen Ziel außerhalb des Projekt-Roots
-# liegt (~/fitness-dev statt ~/.local/fitness) - das pyproject.toml-exclude greift
+# liegt (~/dev/fitness-dev statt ~/.local/fitness) - das pyproject.toml-exclude greift
 # dabei zu spät, der Fehler passiert schon beim Datei-Discovery davor. Bis
 # zum pip-install-Schritt existiert kb/ hier also noch gar nicht (rsync hat
 # es ja ausgeschlossen) - kein Konflikt.
