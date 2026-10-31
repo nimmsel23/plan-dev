@@ -1476,3 +1476,7 @@ Isolierte Python-/Programmtests und ESLint erfolgreich.
 
 Lokale Auslieferung zusätzlich isoliert auf Idempotenz, unveränderte Versions-
 snapshots und Schutz fremder Zielpläne geprüft (`runtime/test_plan_delivery.py`).
+
+2026-10-31: Testimport alter Pläne unterstützt explizit unvollständige Übungs-
+vorgaben ohne erfundene Standard-Sätze. Anzeige „Vorgaben offen“ und lokale
+Freigabesicherung bis zur Ergänzung; Pausenbereiche bleiben als Text sichtbar.

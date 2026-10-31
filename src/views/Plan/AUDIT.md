@@ -250,3 +250,7 @@ immutable local versions, stale-write protection and Markdown export.
 runtime/plan_delivery.py publishes only an explicitly released snapshot; Coach
 supplies registry location, HTTP endpoints and optional server credentials.
 ClientForge conversion is an explicit import and never overwrites its source file.
+
+2026-10-31: Testimport alter Pläne unterstützt explizit unvollständige Übungs-
+vorgaben ohne erfundene Standard-Sätze. Anzeige „Vorgaben offen“ und lokale
+Freigabesicherung bis zur Ergänzung; Pausenbereiche bleiben als Text sichtbar.

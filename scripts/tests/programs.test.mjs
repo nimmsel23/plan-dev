@@ -77,3 +77,9 @@ test('ClientForge import preserves seconds, minutes, zero rests and original sou
   assert.equal(exercises[2].templateSets[0].targetWeight, 12.5);
   assert.equal(JSON.stringify(source), before);
 });
+
+const { ensureTemplateSets } = await import('../../src/views/Plan/lib/templateSets.js');
+test('incomplete source prescriptions never acquire default sets or repetitions', () => {
+  assert.deepEqual(ensureTemplateSets({ prescriptionIncomplete: true, target_reps: '15–20' }), []);
+  assert.equal(ensureTemplateSets({ target_sets: 5, target_reps: '5' }).length, 5);
+});

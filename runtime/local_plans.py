@@ -58,6 +58,7 @@ def validate(body, complete=False):
         for ex in day['exercises']:
             if not isinstance(ex, dict) or not isinstance(ex.get('id'), str) or ex['id'] in exids or not ex.get('name'): raise PlanError('Übungen brauchen eindeutige IDs und Namen.')
             exids.add(ex['id'])
+            if complete and ex.get('prescriptionIncomplete'): raise PlanError('Unvollständige Übungsvorgaben zuerst prüfen und ergänzen.')
         if complete and not day['exercises']: raise PlanError('Jeder Trainingstag braucht Übungen.')
     if complete and not routines: raise PlanError('Mindestens ein Trainingstag erforderlich.')
     return {'name': name, 'description': str(body.get('description') or '')[:2000], 'totalWeeks': weeks, 'routines': routines}

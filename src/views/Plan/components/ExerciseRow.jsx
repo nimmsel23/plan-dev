@@ -19,7 +19,7 @@ export default function ExerciseRow({ ex, onPatch, onDelete }) {
     opacity: isDragging ? 0.5 : 1,
   };
   const templateSets = ensureTemplateSets(ex);
-  const leadSet = templateSets[0] || {};
+  const leadSet = templateSets[0] || { targetReps: ex.target_reps ?? '' };
 
   return (
     <div ref={setNodeRef} style={style} className="rounded-xl bg-fit-card border border-fit-line overflow-hidden">
@@ -43,7 +43,7 @@ export default function ExerciseRow({ ex, onPatch, onDelete }) {
           {templateSets.some((set) => set.setType === "failure") && <span className="text-xs px-1.5 py-0.5 rounded bg-red-500/15 text-red-400 font-medium">Failure</span>}
           {templateSets.some((set) => set.setType === "drop") ? <span className="text-xs px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-400 font-medium">Drop</span> : null}
           <span className="font-mono text-xs text-fit-muted">
-            {templateSets.length}×{(ex.trackingType || "weight_reps") === "duration" ? (leadSet.targetDuration ?? "10s") : (leadSet.targetReps ?? "8-12")}
+            {ex.prescriptionIncomplete ? 'Vorgaben offen' : <>{templateSets.length}×{(ex.trackingType || "weight_reps") === "duration" ? (leadSet.targetDuration ?? "10s") : (leadSet.targetReps ?? "8-12")}</>}
           </span>
           <button aria-label={`${ex.name}: Satzvorgaben bearbeiten`} aria-expanded={open} onClick={() => setOpen((v) => !v)} className="p-1.5 rounded-lg text-fit-muted hover:text-fit-ink transition-colors">
             {open ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -58,7 +58,7 @@ export default function ExerciseRow({ ex, onPatch, onDelete }) {
         <div className="px-4 pb-4 pt-1 border-t border-fit-line/50 grid grid-cols-2 gap-3">
           <label className="flex flex-col gap-1">
             <span className="text-xs text-fit-muted font-medium">Ziel-Sätze</span>
-            <input type="number" min="1" value={templateSets.length}
+            <input type="number" min="1" placeholder="offen" value={ex.prescriptionIncomplete ? '' : templateSets.length}
               onChange={(e) => onPatch("templateSets", Array.from({ length: Math.max(1, Number(e.target.value) || 1) }, (_, index) => ({
                 ...(templateSets[index] || leadSet || {}),
                 setIndex: index + 1,

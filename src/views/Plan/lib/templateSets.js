@@ -5,6 +5,7 @@
 // synchron beim Editieren (Legacy-Felder bleiben für Alt-Konsumenten
 // gültig, siehe _derive_legacy_routine_fields in workouts.py).
 export function ensureTemplateSets(ex) {
+  if (ex.prescriptionIncomplete) return Array.isArray(ex.templateSets) ? ex.templateSets : [];
   if (Array.isArray(ex.templateSets) && ex.templateSets.length > 0) return ex.templateSets;
   return Array.from({ length: Math.max(1, Number(ex.target_sets) || 3) }, (_, index) => ({
     setIndex: index + 1,
