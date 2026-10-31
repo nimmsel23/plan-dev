@@ -254,3 +254,13 @@ ClientForge conversion is an explicit import and never overwrites its source fil
 2026-10-31: Testimport alter Pläne unterstützt explizit unvollständige Übungs-
 vorgaben ohne erfundene Standard-Sätze. Anzeige „Vorgaben offen“ und lokale
 Freigabesicherung bis zur Ergänzung; Pausenbereiche bleiben als Text sichtbar.
+
+## 2026-10-31 — Training-plan document
+
+PlanDocument is the shared read-only plan surface. It renders real prescriptions
+in per-day tables, with warm-up, training and finisher blocks. Mobile screens
+stack table data into exercise cards; desktop and A4 retain table columns.
+Unknown prescriptions remain marked; no template defaults are manufactured.
+The print-only body portal isolates the document from app chrome. Program/source
+notes are a disclosure outside the printable sheets. PlanEditor preview uses
+the same document; consumers should expose it directly beside editing.

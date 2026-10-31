@@ -101,3 +101,5 @@ Produktziel: `INSPIRATION.md`. Bedienung: `docs/PLAN-WORKFLOW.md`.
 - [x] 2026-10-31: Gemeinsamen Editor ohne Firebase betreibbar machen; lokale Pläne/Versionen/Export und explizite Auslieferung als Plan-eigene Module ergänzen.
 
 - [x] 2026-10-31: Fehlende Vorgaben beim Testimport als offen erhalten, ohne Standardwerte zu ergänzen.
+
+- [x] 2026-10-31: Echte Trainingsplan-Ansicht mit Tabellen, mobilen Übungskarten und A4-Druck statt Textvorschau ergänzen.

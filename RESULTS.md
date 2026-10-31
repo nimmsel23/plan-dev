@@ -1485,3 +1485,10 @@ Freigabesicherung bis zur Ergänzung; Pausenbereiche bleiben als Text sichtbar.
 ## 2026-10-31 — Dev-Projekte unter ~/dev
 
 Lokale Entwicklungspfade und betroffene Verknüpfungen auf `~/dev/*-dev` umgestellt. Runtime-Daten, Branches und Release-Checkouts behalten ihre Zuständigkeit. Keine Pushes oder Releases. Gesamter Umzug und Prüfungen: `~/RESULTS.md`.
+
+## 2026-10-31 — Trainingsplan als Dokument
+
+PlanDocument mit strukturierten Tagesblättern, Satz-/Wiederholungs-/Gewichts-/
+Pausenspalten, getrenntem Warm-up und Finisher ergänzt. Mobil responsive
+Übungskarten; Drucken/PDF über isoliertes A4-Dokument. PlanEditor-Vorschau
+verwendet dieselbe Darstellung. Tests für Satzgruppen und unbekannte Werte.

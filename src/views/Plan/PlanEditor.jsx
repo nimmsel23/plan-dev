@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { DndContext, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, arrayMove, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import PlanDocument from './PlanDocument.jsx';
 import ExerciseSearch from './components/ExerciseSearch.jsx';
 import ExerciseRow from './components/ExerciseRow.jsx';
 import { patchTemplateSets, ensureTemplateSets } from './lib/templateSets.js';
@@ -14,7 +15,7 @@ const newDay = (label) => ({ id: id(), label, exercises: [], weekdays: [], targe
 const editable = (plan) => clone({ name: plan.name || '', description: plan.description || '', totalWeeks: plan.totalWeeks || 10, routines: plan.routines || [] });
 
 // Separate composition surface; only the final atomic save touches the remote working copy.
-export default function PlanEditor({ plan, uid, templates = [], apiClient, onClose, onSaved, saveDraft, actorUid = uid, catalogSearch, draftNamespace = 'client' }) {
+export default function PlanEditor({ plan, uid, templates = [], apiClient, onClose, onSaved, saveDraft, actorUid = uid, catalogSearch, clientName, draftNamespace = 'client' }) {
   const key = `plan-composer:v1:${draftNamespace === 'client' ? '' : `${draftNamespace}:`}${actorUid}:${uid}:${plan.id}`;
   const [draft, setDraft] = useState(() => editable(plan));
   const [base, setBase] = useState(plan.updatedAt || null);
@@ -85,12 +86,12 @@ export default function PlanEditor({ plan, uid, templates = [], apiClient, onClo
       <button className={button} disabled={!!recovery || busy} onClick={() => setPreview(!preview)}>{preview ? 'Weiter bearbeiten' : 'Klientenvorschau'}</button>
       <button className={`${button} bg-fit-accent text-fit-bg`} disabled={busy || !!recovery} onClick={save}>{busy ? 'Speichert…' : 'Entwurf sichern'}</button>
     </header>
-    <div><h2 className="text-xl font-semibold">{preview ? draft.name : 'Trainingsplan gestalten'}</h2><p role="status" className="mt-1 text-xs text-fit-muted">{saved ? 'Entwurf gesichert. Zurück zum Plan, um ihn freizugeben.' : 'Änderungen bleiben bis zur Freigabe privat. Entwurf wird auf diesem Gerät automatisch gespeichert.'}</p></div>
+    <div hidden={preview}><h2 className="text-xl font-semibold">{preview ? draft.name : 'Trainingsplan gestalten'}</h2><p role="status" className="mt-1 text-xs text-fit-muted">{saved ? 'Entwurf gesichert. Zurück zum Plan, um ihn freizugeben.' : 'Änderungen bleiben bis zur Freigabe privat. Entwurf wird auf diesem Gerät automatisch gespeichert.'}</p></div>
     {error && <p role="alert" className="text-sm text-fit-red">{error}</p>}
     {storageError && <p role="alert" className="text-sm text-fit-red">{storageError}</p>}
     {recovery && <div className="rounded-xl border border-fit-accent p-3"><p>Auf diesem Gerät liegt ein ungesicherter Entwurf vor.</p>{recovery.base !== (plan.updatedAt || null) && <p className="mt-2 text-sm">Der Plan wurde inzwischen geändert. Dieser Entwurf kann nicht über den neueren Stand gespeichert werden. Verwirf ihn, um den aktuellen Stand zu bearbeiten.</p>}<div className="mt-3 flex flex-wrap gap-2"><button className={button} onClick={() => { setDraft(recovery.draft); setBase(recovery.base); setActive(recovery.draft.routines[0]?.id || ''); setRecovery(null); }}>Entwurf wieder aufnehmen</button><button className={button} onClick={() => { try { localStorage.removeItem(key); setRecovery(null); } catch { setStorageError('Entwurf konnte nicht entfernt werden.'); } }}>Lokalen Entwurf verwerfen</button></div></div>}
     <fieldset disabled={busy || !!recovery} className="min-w-0 space-y-4 disabled:opacity-60">
-      {preview ? <><p className="whitespace-pre-wrap text-sm">{draft.description}</p><p className="text-xs text-fit-muted">{draft.totalWeeks} Wochen · {draft.routines.length} Trainingstage</p>{draft.routines.map((r) => <article key={r.id} className="rounded-xl border border-fit-line p-3"><h3 className="font-semibold">{r.label}</h3><p className="text-xs text-fit-muted">{r.weekdays?.length ? r.weekdays.map((d) => WEEKDAY_LABELS[d]).join(' · ') : 'Flexibler Trainingstag'}</p><ol className="mt-3 space-y-3">{r.exercises.map((ex) => <li key={ex.id}><strong>{ex.name}</strong><ul className="text-sm text-fit-muted">{ex.prescriptionIncomplete && <li>Vorgaben im Original unvollständig — siehe Hinweis.</li>}{ensureTemplateSets(ex).map((s, i) => <li key={i}>Satz {i + 1}: {s.targetDuration ? `${s.targetDuration} s` : `${s.targetReps} Wdh.`}{s.targetWeight != null ? ` · ${s.targetWeight} kg` : ''}</li>)}</ul><p className="text-xs text-fit-muted">Pause: {ex.restLabel || (ex.rest_seconds === '' || ex.rest_seconds == null ? 'offen' : `${ex.rest_seconds} s`)}{ex.rir != null ? ` · RIR ${ex.rir}` : ''}</p>{ex.notes && <p className="whitespace-pre-wrap text-sm">{ex.notes}</p>}</li>)}</ol>{!r.exercises.length && <p className="text-sm text-fit-muted">Noch keine Übungen.</p>}</article>)}</> : <>
+      {preview ? <PlanDocument plan={{ ...plan, ...draft }} clientName={clientName} /> : <>
         <label className="block text-sm">Planname<input className={input} maxLength={80} value={draft.name} onChange={(e) => change((d) => ({ ...d, name: e.target.value }))} /></label>
         <label className="block text-sm">Ziel und Hinweise<textarea className={input} rows={3} maxLength={2000} value={draft.description} onChange={(e) => change((d) => ({ ...d, description: e.target.value }))} /></label>
         <label className="block text-sm">Dauer in Wochen<input className={input} type="number" min="1" max="104" value={draft.totalWeeks} onChange={(e) => change((d) => ({ ...d, totalWeeks: Math.max(1, Math.min(104, Number(e.target.value) || 1)) }))} /></label>
