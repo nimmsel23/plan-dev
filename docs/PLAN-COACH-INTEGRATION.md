@@ -23,8 +23,10 @@ Coach-Frontend soll keinen zweiten Planeditor entwickeln.
 ## Öffentliche Bausteine
 
 - `src/views/Plan/PlanEditor.jsx`: Trainingstage und Übungen, Satzvorgaben,
-  Duplizieren/Sortieren, lokale Entwürfe, Klientenvorschau. Optionaler `saveDraft`-
-  Callback bindet die Persistenz des Hosts an; der Standard sichert einen Klientenplan.
+  Duplizieren/Sortieren, lokale Entwürfe, Klientenvorschau. Ein expliziter `saveDraft`-
+  Callback bindet die Persistenz des Hosts an; PlanCard liefert die bestehende
+  Klientenplan-Speicherung. `actorUid` und `catalogSearch` ermöglichen lokale
+  Nutzung ohne Firebase-Abhängigkeit.
 - `ProgramEditor.jsx`: derselbe Editor für die Coach-Programmbibliothek.
 - `lib/programDraft.js`: lädt ältere Programme mit Vorlagenverweisen und wandelt
   Planentwürfe zurück in Programme mit eigenen Übungssnapshots.
@@ -85,3 +87,11 @@ Schritte; ein Coach-Bump aktualisiert sie nicht automatisch.
 Bedienung: [Plan verwenden](PLAN-WORKFLOW.md). Die vollständige Coach-Einbindung
 und deren Tests sind in `coach-dev/docs/COACH-PLAN-WORKFLOW.md` dokumentiert.
 Isolierte Tests/Builds ersetzen keine authentifizierte Cloud- oder Geräteabnahme.
+
+## Lokaler Laptop-Einstieg
+
+Coach stellt unter `http://127.0.0.1:9150/coach/local.html` denselben Editor ohne
+Firebase-Anmeldung bereit. `runtime/local_plans.py` besitzt lokale Entwürfe und
+Versionen; `runtime/plan_delivery.py` überträgt ausdrücklich freigegebene
+Snapshots. Die bestehende Klientenwurzel kommt aus klienten-python. Details:
+`coach-dev/docs/LOCAL-PLANNING.md`.

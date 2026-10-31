@@ -104,3 +104,12 @@ Filter helfen nach Name, Muskel oder Equipment. Eine Übung öffnet Bildpaar und
 Originalanleitung. **Trainiert** zeigt persönliche Historie und Rekorde.
 Der Link in den Übungsdetails öffnet die eigenständige VOS-Atlas-App in einem
 neuen Tab; Plan bleibt geöffnet. Gerätespeicher beider Apps ist getrennt.
+
+## Auf dem Laptop ohne Firebase-Anmeldung
+
+`http://127.0.0.1:9150/coach/local.html` öffnen oder
+`~/coach-dev/bin/coach-server open` ausführen. Klient wählen, Plan gestalten und
+Entwurf lokal sichern. Lokale Versionen und Exporte benötigen keinen Cloud-Zugriff.
+Erst **An Klienten senden** überträgt eine freigegebene Version serverseitig.
+Vorhandene ClientForge-Pläne können ausdrücklich übernommen werden; Originale
+bleiben unverändert.
