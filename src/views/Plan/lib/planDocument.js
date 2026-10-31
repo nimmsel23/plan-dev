@@ -20,3 +20,8 @@ export function frequencyLabel(routines) {
     ? `${routines.reduce((n, r) => n + r.targetCount, 0)} Einheiten / Woche`
     : `${routines.length} Trainingstage`;
 }
+
+export function repetitionLabel(group) {
+  if (group.duration != null) return `${group.duration} s`;
+  return typeof group.reps === 'string' && /muskelversagen|bis zum versagen/i.test(group.reps) ? 'bis Versagen' : group.reps;
+}

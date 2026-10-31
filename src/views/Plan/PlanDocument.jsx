@@ -1,6 +1,6 @@
 import { createPortal } from 'react-dom';
 import { Printer } from 'lucide-react';
-import { prescriptionGroups, pauseLabel, frequencyLabel } from './lib/planDocument.js';
+import { prescriptionGroups, pauseLabel, frequencyLabel, repetitionLabel } from './lib/planDocument.js';
 import { WEEKDAY_LABELS } from './lib/weekSchedule.js';
 import './PlanDocument.css';
 
@@ -21,7 +21,7 @@ function Sheets({ plan, clientName }) {
         {(day.exercises || []).map((ex, i) => { const groups = prescriptionGroups(ex); return <tbody key={ex.id || i} className="plan-exercise-group">
           {groups.map((group, n) => <tr key={n} className={n ? 'plan-extra-set' : undefined}>
             {n === 0 && <><td rowSpan={groups.length} className="plan-exercise-number">{String(i + 1).padStart(2, '0')}</td><th rowSpan={groups.length} scope="row" className="plan-exercise-name">{ex.name}{ex.optional && <span className="plan-exercise-tag">optional</span>}{ex.prescriptionIncomplete && <span className="plan-exercise-tag plan-tag-open">Vorgaben prüfen</span>}{ex.rir != null && <small>RIR {ex.rir}</small>}</th></>}
-            <td className="plan-value plan-sets" data-label="Sätze"><Target value={group.count} /></td><td className="plan-value plan-reps" data-label="Wdh. / Zeit"><Target value={group.duration ?? group.reps} suffix={group.duration != null ? ' s' : ''} />{group.type === 'warmup' && <small>Aufwärmsatz</small>}{group.type === 'failure' && <small>Intensivierung</small>}{group.type === 'drop' && <small>Drop-Satz</small>}</td><td className="plan-value plan-weight" data-label="Gewicht">{group.weight == null || group.weight === '' ? <span className="plan-unset-weight">—</span> : `${group.weight} kg`}</td><td className="plan-value plan-rest" data-label="Pause"><Target value={pauseLabel(ex)} /></td>
+            <td className="plan-value plan-sets" data-label="Sätze"><Target value={group.count} /></td><td className="plan-value plan-reps" data-label="Wdh. / Zeit"><span title={group.reps || undefined}><Target value={repetitionLabel(group)} /></span>{group.type === 'warmup' && <small>Aufwärmsatz</small>}{group.type === 'failure' && <small>Intensivierung</small>}{group.type === 'drop' && <small>Drop-Satz</small>}</td><td className="plan-value plan-weight" data-label="Gewicht">{group.weight == null || group.weight === '' ? <span className="plan-unset-weight">—</span> : `${group.weight} kg`}</td><td className="plan-value plan-rest" data-label="Pause"><Target value={pauseLabel(ex)} /></td>
           </tr>)}
           {ex.notes && <tr className="plan-exercise-note"><td /><td colSpan={5}><span>Hinweis</span> {ex.notes}</td></tr>}
         </tbody>; })}
