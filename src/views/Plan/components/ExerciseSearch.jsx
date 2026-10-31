@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { Search, X, Info } from 'lucide-react';
-import { api } from '../api.js';
+const defaultSearch = async (q) => (await import('../api.js')).api.get(`/exercises?q=${encodeURIComponent(q)}&limit=80`);
 import { muskelDe } from '../../../lib/kb/muscles.js';
 import ExercisePhotoStrip from '../../../components/ExercisePhotoStrip.jsx';
 import CatalogDetail from './CatalogDetail.jsx';
 
-export default function ExerciseSearch({ onAdd, exclude = [] }) {
+export default function ExerciseSearch({ onAdd, exclude = [], searchExercises = defaultSearch }) {
   const [q, setQ] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -20,13 +20,13 @@ export default function ExerciseSearch({ onAdd, exclude = [] }) {
     setLoading(true);
     const timer = setTimeout(async () => {
       try {
-        const d = await api.get(`/exercises?q=${encodeURIComponent(q)}&limit=80`);
+        const d = await searchExercises(q);
         if (alive) { setResults(d.results.filter((ex) => !exclude.includes(ex.id)).slice(0, 20)); setError(''); }
       } catch (err) { if (alive) setError(err.message); }
       finally { if (alive) setLoading(false); }
     }, 180);
     return () => { alive = false; clearTimeout(timer); };
-  }, [q, excludeKey]);
+  }, [q, excludeKey, searchExercises]);
   useEffect(() => {
     const outside = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
     document.addEventListener('mousedown', outside);

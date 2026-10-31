@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { DndContext, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, arrayMove, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { updateMacrocycle, getUid } from '@db';
 import ExerciseSearch from './components/ExerciseSearch.jsx';
 import ExerciseRow from './components/ExerciseRow.jsx';
 import { patchTemplateSets, ensureTemplateSets } from './lib/templateSets.js';
@@ -15,8 +14,8 @@ const newDay = (label) => ({ id: id(), label, exercises: [], weekdays: [], targe
 const editable = (plan) => clone({ name: plan.name || '', description: plan.description || '', totalWeeks: plan.totalWeeks || 10, routines: plan.routines || [] });
 
 // Separate composition surface; only the final atomic save touches the remote working copy.
-export default function PlanEditor({ plan, uid, templates = [], apiClient, onClose, onSaved, saveDraft, draftNamespace = 'client' }) {
-  const key = `plan-composer:v1:${draftNamespace === 'client' ? '' : `${draftNamespace}:`}${getUid()}:${uid}:${plan.id}`;
+export default function PlanEditor({ plan, uid, templates = [], apiClient, onClose, onSaved, saveDraft, actorUid = uid, catalogSearch, draftNamespace = 'client' }) {
+  const key = `plan-composer:v1:${draftNamespace === 'client' ? '' : `${draftNamespace}:`}${actorUid}:${uid}:${plan.id}`;
   const [draft, setDraft] = useState(() => editable(plan));
   const [base, setBase] = useState(plan.updatedAt || null);
   const [recovery, setRecovery] = useState(null);
@@ -70,7 +69,8 @@ export default function PlanEditor({ plan, uid, templates = [], apiClient, onClo
     saving.current = true; setBusy(true); setError('');
     try {
       const patch = { ...draft, expectedUpdatedAt: base };
-      const result = saveDraft ? await saveDraft(patch) : await updateMacrocycle(uid, plan.id, patch);
+      if (!saveDraft) throw new Error('Speicheranbindung fehlt.');
+      const result = await saveDraft(patch);
       if (!result) throw new Error('Entwurf konnte nicht gespeichert werden.');
       setBase(result.updatedAt); setSaved(true);
       try { localStorage.removeItem(key); } catch { /* Remote save succeeded. */ }
@@ -102,7 +102,7 @@ export default function PlanEditor({ plan, uid, templates = [], apiClient, onClo
           <div className="flex flex-wrap gap-2"><button className={button} onClick={() => addDay({ ...clone(day), id: id(), label: `${day.label} (Kopie)`, exercises: day.exercises.map((ex) => ({ ...clone(ex), id: id() })) })}>Tag duplizieren</button>{[-1, 1].map((step) => { const i = draft.routines.findIndex((r) => r.id === day.id); return <button key={step} className={button} disabled={i + step < 0 || i + step >= draft.routines.length} onClick={() => change((d) => ({ ...d, routines: arrayMove(d.routines, i, i + step) }))}>{step < 0 ? 'Tag nach vorne' : 'Tag nach hinten'}</button>; })}<button className={button} onClick={() => { if (!confirm('Trainingstag aus dem Entwurf entfernen?')) return; change((d) => ({ ...d, routines: d.routines.filter((r) => r.id !== day.id) })); setActive(draft.routines.find((r) => r.id !== day.id)?.id || ''); }}>Tag entfernen</button></div>
           <div role="group" aria-label="Geplante Wochentage" className="grid grid-cols-7 gap-1">{WEEKDAY_LABELS.map((label, i) => <button key={i} aria-pressed={day.weekdays?.includes(i) || false} className={`min-h-[44px] rounded-lg border text-xs ${day.weekdays?.includes(i) ? 'border-fit-accent text-fit-accent' : 'border-fit-line'}`} onClick={() => patchDay(day.id, (r) => ({ ...r, weekdays: toggleWeekday(r.weekdays, i) }))}>{label}</button>)}</div>
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={({ active: a, over }) => { if (!over || a.id === over.id) return; patchDay(day.id, (r) => ({ ...r, exercises: arrayMove(r.exercises, r.exercises.findIndex((ex) => ex.id === a.id), r.exercises.findIndex((ex) => ex.id === over.id)) })); }}><SortableContext items={day.exercises.map((ex) => ex.id)} strategy={verticalListSortingStrategy}><div className="space-y-3">{day.exercises.map((ex) => <ExerciseRow key={ex.id} ex={ex} onDelete={() => patchDay(day.id, (r) => ({ ...r, exercises: r.exercises.filter((x) => x.id !== ex.id) }))} onPatch={(field, value) => patchDay(day.id, (r) => ({ ...r, exercises: r.exercises.map((x) => x.id !== ex.id ? x : field === 'templateSets' ? patchTemplateSets(x, () => value) : { ...x, [field]: value }) }))} />)}</div></SortableContext></DndContext>
-          <ExerciseSearch onAdd={(ex) => patchDay(day.id, (r) => ({ ...r, exercises: [...r.exercises, patchTemplateSets({ ...clone(ex), id: id(), exercise_id: ex.id, rest_seconds: 90, notes: '', rir: null }, (sets) => sets)] }))} />
+          <ExerciseSearch searchExercises={catalogSearch} onAdd={(ex) => patchDay(day.id, (r) => ({ ...r, exercises: [...r.exercises, patchTemplateSets({ ...clone(ex), id: id(), exercise_id: ex.id, rest_seconds: 90, notes: '', rir: null }, (sets) => sets)] }))} />
         </section>}
       </>}
     </fieldset>

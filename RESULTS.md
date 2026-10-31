@@ -1465,3 +1465,11 @@ keys remain compatible; program drafts use a separate namespace.
 
 Gemeinsame Plan-/Coach-Zuständigkeiten, Datenvertrag, Editor-Schnittstellen und Pointer-/Veröffentlichungsfolge dokumentiert; veraltete Integrationshinweise korrigiert.
 Nur Dokumentation; keine Quell-/Daten-/Pointer-Änderung und kein Deployment.
+
+## 2026-10-31 — Lokale Planarbeit
+
+Editor von Firebase entkoppelt (Speicher- und Suchanbindung injiziert), lokale
+Planablage mit atomaren Writes, Versionssnapshots und Konfliktschutz ergänzt.
+ClientForge-Import und Markdown-Export erhalten bestehende Quellen; Auslieferung
+verwendet ausdrücklich die lokale Freigabe, niemals den ungesicherten Entwurf.
+Isolierte Python-/Programmtests und ESLint erfolgreich.

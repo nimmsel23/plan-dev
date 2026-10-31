@@ -239,3 +239,14 @@ ungültiger Geräte, authentifizierte Geräte-Abnahme des Pushs.
 Template-only programs are resolved on opening; saving captures editable exercises.
 Published program versions and client assignments remain immutable snapshots.
 Coach must pin a complete Plan commit and scan its source for Tailwind classes.
+
+## 2026-10-31 — Local authoring boundary
+
+PlanEditor now requires an explicit saveDraft callback and accepts actorUid and
+catalogSearch. It no longer imports auth or Firestore; PlanCard supplies its
+existing persistence and ExerciseSearch lazily loads the cloud adapter only when
+no catalog search is injected. runtime/local_plans.py owns atomic client drafts,
+immutable local versions, stale-write protection and Markdown export.
+runtime/plan_delivery.py publishes only an explicitly released snapshot; Coach
+supplies registry location, HTTP endpoints and optional server credentials.
+ClientForge conversion is an explicit import and never overwrites its source file.

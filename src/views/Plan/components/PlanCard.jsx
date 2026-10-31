@@ -82,7 +82,7 @@ export default function PlanCard({ plan, templates, workouts, clientUid, clients
     setCopied(clients.find(([id]) => id === toUid)?.[1] || toUid);
   }
   if (!detail) return <div className="rounded-2xl border border-fit-line p-4 text-sm text-fit-muted">{error ? <p role="alert">{error}<button onClick={load} className="ml-2 underline">Erneut versuchen</button></p> : 'Trainingsplan lädt…'}</div>;
-  if (editing) return <PlanEditor key={`${uid}:${plan.id}`} plan={detail} uid={uid} templates={templates} apiClient={createPlanApi(clientUid)} onClose={() => setEditing(false)} onSaved={() => { setEditing(false); load(); onReload?.(); }} />;
+  if (editing) return <PlanEditor key={`${uid}:${plan.id}`} plan={detail} uid={uid} actorUid={getUid()} saveDraft={(patch) => updateMacrocycle(uid, plan.id, patch)} templates={templates} apiClient={createPlanApi(clientUid)} onClose={() => setEditing(false)} onSaved={() => { setEditing(false); load(); onReload?.(); }} />;
   const view = canEdit ? detail : clientView(detail);
   const routines = view.routines || [];
   const next = pickNextPlanRoutine(routines, workouts);

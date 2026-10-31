@@ -97,3 +97,5 @@ Produktziel: `INSPIRATION.md`. Bedienung: `docs/PLAN-WORKFLOW.md`.
 ## 2026-10-30 — Plan-/Coach-Dokumentation
 
 - [x] Gemeinsame Plan-/Coach-Zuständigkeiten, Datenvertrag, Editor-Schnittstellen und Pointer-/Veröffentlichungsfolge dokumentiert; veraltete Integrationshinweise korrigiert.
+
+- [x] 2026-10-31: Gemeinsamen Editor ohne Firebase betreibbar machen; lokale Pläne/Versionen/Export und explizite Auslieferung als Plan-eigene Module ergänzen.

@@ -221,3 +221,14 @@ isolated between program and client editing. Coach supplies identity/navigation
 and consumes this code via its pinned `plan` submodule. `lib/programStore` owns
 program persistence, transactional versions and client assignments. Existing
 Firestore paths remain unchanged.
+
+## 2026-10-31 — Local authoring boundary
+
+PlanEditor now requires an explicit saveDraft callback and accepts actorUid and
+catalogSearch. It no longer imports auth or Firestore; PlanCard supplies its
+existing persistence and ExerciseSearch lazily loads the cloud adapter only when
+no catalog search is injected. runtime/local_plans.py owns atomic client drafts,
+immutable local versions, stale-write protection and Markdown export.
+runtime/plan_delivery.py publishes only an explicitly released snapshot; Coach
+supplies registry location, HTTP endpoints and optional server credentials.
+ClientForge conversion is an explicit import and never overwrites its source file.
