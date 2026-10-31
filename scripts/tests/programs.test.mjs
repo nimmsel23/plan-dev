@@ -62,3 +62,18 @@ test('legacy programs hydrate once; inline edits survive publication and assignm
   await store.saveCoachProgram('coach', edited);
   assert.equal((await store.publishCoachProgram('coach', edited)).number, 2);
 });
+
+const { importClientForge } = await import('../../src/views/Plan/lib/legacyPlan.js');
+test('ClientForge import preserves seconds, minutes, zero rests and original source', () => {
+  const source = { einheiten: [{ name: 'A', abschnitte: [{ übungen: [
+    { name: 'One', pause: '60s', gewicht: '', sätze: 2, wdh: '10–12' },
+    { name: 'Two', pause: '1,5min', gewicht: 'BW', sätze: 1 },
+    { name: 'Three', pause: 0, gewicht: '12,5', sätze: 1 },
+  ] }] }] };
+  const before = JSON.stringify(source);
+  const exercises = importClientForge(source).routines[0].exercises;
+  assert.deepEqual(exercises.map((ex) => ex.rest_seconds), [60,90,0]);
+  assert.equal(exercises[0].templateSets[0].targetWeight, null);
+  assert.equal(exercises[2].templateSets[0].targetWeight, 12.5);
+  assert.equal(JSON.stringify(source), before);
+});
