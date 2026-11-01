@@ -259,3 +259,5 @@ Die Körperkarte verwendet den vorhandenen KB-Adapter für die grobe Darstellung
 sie behauptet keine gemessene Belastung. Fehlende Metadaten werden angezeigt.
 Der Druck rendert weiterhin Trainingsblätter ohne interaktive Körperkarten.
 Die lokale und Cloud-Host-App liefern Identität, Speicher und Navigation.
+
+Lokale Freigabe: `planReadiness.js` nennt offene Übungen vorab. Leere Satzlisten werden nicht durch eine beliebige Feldänderung als vollständig markiert; der Python-Runtime prüft dieselben Zielvorgaben und nennt die betroffene Übung.

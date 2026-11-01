@@ -120,3 +120,5 @@ Produktziel: `INSPIRATION.md`. Bedienung: `docs/PLAN-WORKFLOW.md`.
 
 Workout-Muskeln erklären, Übungsdetails beim Anklicken zeigen, gleiche
 Interaktion in der Klientenvorschau und dem Plan-Dokument bereitstellen.
+
+- [x] Lokale Freigabe: offene Übungen vorab nennen, leere Satzlisten korrekt behandeln.

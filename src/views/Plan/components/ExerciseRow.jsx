@@ -57,7 +57,7 @@ export default function ExerciseRow({ ex, onPatch, onDelete, onInspect }) {
       {open && (
         <div className="px-4 pb-4 pt-1 border-t border-fit-line/50 grid grid-cols-2 gap-3">
           <label className="flex flex-col gap-1">
-            <span className="text-xs text-fit-muted font-medium">Ziel-Sätze</span>
+            <span className="text-xs text-fit-muted font-medium">Ziel-Sätze{ex.prescriptionIncomplete ? ' · zuerst ergänzen' : ''}</span>
             <input type="number" min="1" placeholder="offen" value={ex.prescriptionIncomplete ? '' : templateSets.length}
               onChange={(e) => onPatch("templateSets", Array.from({ length: Math.max(1, Number(e.target.value) || 1) }, (_, index) => ({
                 ...(templateSets[index] || leadSet || {}),

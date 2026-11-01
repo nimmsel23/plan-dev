@@ -1523,3 +1523,9 @@ Muskelrollen und Ausführung in Editor, Katalogdetails und Klientenvorschau
 integriert. Gleiche Interaktion im Trainingsplan-Dokument, PDF-Druck bleibt
 separat. Vorhandene Muskel-/Katalogadapter wiederverwendet; keine neuen
 Abhängigkeiten, keine Muskelzuordnung aus Übungsnamen erfunden.
+
+## 2026-11-01 — Lokale Freigabe offener Vorgaben
+
+Gemeinsame Freigabe-Vorprüfung nennt betroffene Trainingstage/Übungen. Leere
+Satzlisten bleiben unvollständig; lokale Runtime meldet konkrete Übung statt
+generischem Fehler. Keine Vorgaben oder Klientendaten automatisch ergänzt.
