@@ -115,3 +115,8 @@ Produktziel: `INSPIRATION.md`. Bedienung: `docs/PLAN-WORKFLOW.md`.
 - [ ] Plan-Code, Coach-Pin, zentrale Rules und Verbraucher über die vorgesehenen Releases veröffentlichen.
 - [ ] Danach den vollständigen Ablauf auf echten Coach-/Klientengeräten abnehmen.
 - [x] Historische Plan-Rückmeldungen im Versionsverlauf öffnen und offene Rückmeldungen im Coach zusammenfassen.
+
+## [x] ClientForge: Planstudio und Muskelansicht (2026-11-01)
+
+Workout-Muskeln erklären, Übungsdetails beim Anklicken zeigen, gleiche
+Interaktion in der Klientenvorschau und dem Plan-Dokument bereitstellen.

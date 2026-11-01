@@ -1514,3 +1514,12 @@ Gemeinsame PlanDeliveryOverview ergänzt: bereitgestellte Pläne, Entwürfe, aus
 ## 2026-11-01 — Splash blockiert nicht mehr auf Service-Worker-Update
 
 Die vendorte Mini-App-Shell mit der aktuellen VitalOS-Quelle synchronisiert. Ein langsamer Netzwerk-/Service-Worker-Updatecheck hält den Splash nicht mehr offen; er verschwindet nach dem App-Start (mindestens 200 ms, maximal 12 s nur falls der App-Root gar nicht bereit wird).
+
+## 2026-11-01 — ClientForge Planstudio und Muskel-Erklärung
+
+Gemeinsamen Editor mit gegliederten Planfeldern und Trainingstag-Navigation
+aufgewertet. Workout-Highlighter (Vorder-/Rückseite), anklickbare Übungen mit
+Muskelrollen und Ausführung in Editor, Katalogdetails und Klientenvorschau
+integriert. Gleiche Interaktion im Trainingsplan-Dokument, PDF-Druck bleibt
+separat. Vorhandene Muskel-/Katalogadapter wiederverwendet; keine neuen
+Abhängigkeiten, keine Muskelzuordnung aus Übungsnamen erfunden.
