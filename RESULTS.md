@@ -1510,3 +1510,7 @@ Gemeinsamen PlanFeedback-Baustein, Host-Firebase-Adapter und versiongebundene pl
 ## 2026-11-01 — Planbetreuung als Übersicht
 
 Gemeinsame PlanDeliveryOverview ergänzt: bereitgestellte Pläne, Entwürfe, ausdrücklicher Empfang und offener Antwortbedarf. Der Store kann für diese Übersicht nur den letzten Eintrag laden und wartet vor Statusaussagen auf beide Listener. Cache-/Fehlerzustände bleiben sichtbar. Coach verwendet die Übersicht in Liste und Workspace sowie einen historischen Plan-/Feedback-Viewer. Kein neuer Dienst, keine Rules-Änderung und kein Deployment.
+
+## 2026-11-01 — Splash blockiert nicht mehr auf Service-Worker-Update
+
+Die vendorte Mini-App-Shell mit der aktuellen VitalOS-Quelle synchronisiert. Ein langsamer Netzwerk-/Service-Worker-Updatecheck hält den Splash nicht mehr offen; er verschwindet nach dem App-Start (mindestens 200 ms, maximal 12 s nur falls der App-Root gar nicht bereit wird).
