@@ -107,3 +107,11 @@ Produktziel: `INSPIRATION.md`. Bedienung: `docs/PLAN-WORKFLOW.md`.
 ## 2026-10-31 — Lokales Produkt unter /opt
 
 - [x] Geerbtes Fitness-deploy.sh gesperrt: Plan darf niemals /opt/fitness überschreiben oder Fitness-Dienste umkonfigurieren. Plan wird vom Verbraucher gebündelt.
+
+## 2026-11-01 — Planbereitstellung und Feedback priorisieren
+
+- [x] Gemeinsamen Plan-Feedbackbereich mit expliziter Empfangsbestätigung und Versionsbindung implementieren.
+- [x] Coach-Planansicht und Klienten-Plankarte anbinden.
+- [ ] Plan-Code, Coach-Pin, zentrale Rules und Verbraucher über die vorgesehenen Releases veröffentlichen.
+- [ ] Danach den vollständigen Ablauf auf echten Coach-/Klientengeräten abnehmen.
+- [ ] Historische Plan-Rückmeldungen im Versionsverlauf öffnen und offene Rückmeldungen im Coach zusammenfassen.

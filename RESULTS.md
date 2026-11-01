@@ -1502,3 +1502,7 @@ Bash-Syntax und Ablehnung vor jeder Mutation geprüft; keine Änderungen an Plan
 ## 2026-10-31 — Dependabot
 
 Enabled Dependabot alerts and security updates. Configured weekly GitHub Actions and npm/pnpm updates plus Python dependency updates; version updates target `dev`. Minor/patch updates are grouped; vendored mini-app-shell copies stay maintained at their source. Validated YAML, repository manifest paths and update targets.
+
+## 2026-11-01 — Rückmeldung direkt am bereitgestellten Plan
+
+Gemeinsamen PlanFeedback-Baustein, Host-Firebase-Adapter und versiongebundene planResponses ergänzt. Klient bestätigt den Empfang ausdrücklich und kann Vorgaben hinterfragen; Coach antwortet am selben Plan. Separate, unveränderliche Bestätigung mit Serverzeit, keine Bestätigung durch Coach. PlanCard bindet Cloud-Feedback ein; lokale Laptop-Entwürfe bleiben unveröffentlicht. Regeln im Plan-Fragment und VitalOS-Feature-Worktree vorbereitet. Bedienung, Vertrag und Grenzen in docs/PLAN-FEEDBACK.md. Mobile Demo-Fixture und acht Rules-Fälle bestanden; noch kein Push oder Deployment.

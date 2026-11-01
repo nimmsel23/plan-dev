@@ -22,6 +22,10 @@ Coach-Frontend soll keinen zweiten Planeditor entwickeln.
 
 ## Öffentliche Bausteine
 
+- `components/PlanFeedback.jsx`: gemeinsame Empfangsbestätigung und Rückmeldungen
+  zu einer veröffentlichten Klientenplan-Version. Vertrag und Bedienung:
+  [PLAN-FEEDBACK.md](PLAN-FEEDBACK.md).
+
 - `src/views/Plan/PlanEditor.jsx`: Trainingstage und Übungen, Satzvorgaben,
   Duplizieren/Sortieren, lokale Entwürfe, Klientenvorschau. Ein expliziter `saveDraft`-
   Callback bindet die Persistenz des Hosts an; PlanCard liefert die bestehende

@@ -242,3 +242,7 @@ Unknown prescriptions remain marked; no template defaults are manufactured.
 The print-only body portal isolates the document from app chrome. Program/source
 notes are a disclosure outside the printable sheets. PlanEditor preview uses
 the same document; consumers should expose it directly beside editing.
+
+## 2026-11-01 — Planbezogene Rückmeldungen
+
+`components/PlanFeedback.jsx` zeigt explizite Empfangsbestätigung, Fragen und Coach-Antworten je freigegebener Version. `lib/planResponseStore.js` erhält Firebase-Instanz/Identität vom Host; `lib/planResponses.js` bindet dessen Cloud-Alias an. PlanCard lädt den Bereich ausschließlich in Cloud-Modi für Coach-Pläne. Isolierter Pfad `planResponses/{uid}/plans/{id}/versions/vN` mit unveränderlicher Bestätigung und `entries`; Rules-Fragment gehört Plan, Veröffentlichung VitalOS. Älterer automatischer Gesehen-Status bleibt separat. Details und Grenzen: [PLAN-FEEDBACK.md](../../../docs/PLAN-FEEDBACK.md).

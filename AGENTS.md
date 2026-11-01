@@ -36,3 +36,5 @@ Plan owns the shared training-plan editor, program composition, versioning and a
 Coach consumes the code through its pinned `modules/plan` Git submodule. Change the source here,
 commit it, then deliberately advance Coach's pointer; do not maintain a second editor in Coach.
 Publish Plan commits before pushing a Coach pointer referencing them.
+
+Planbezogene Empfangsbestätigung und Feedback gehören ebenfalls Plan. Gemeinsamer Baustein: `src/views/Plan/components/PlanFeedback.jsx`; Daten-/Releasevertrag: [docs/PLAN-FEEDBACK.md](docs/PLAN-FEEDBACK.md). Zentralen Rules-Owner beibehalten.
