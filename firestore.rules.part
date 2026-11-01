@@ -27,3 +27,32 @@
         allow write: if owner(uid);
       }
     }
+
+    // Plan-owned, version-bound feedback and explicit receipt. Isolated from legacy fitness writes.
+    match /planResponses/{uid}/plans/{planId}/versions/{versionId} {
+      function participant() { return owner(uid) || isCoach(); }
+      function releasedVersion() {
+        return versionId.matches('v[1-9][0-9]*')
+          && exists(/databases/$(database)/documents/fitness/$(uid)/macrocycles/$(planId)/versions/$(versionId));
+      }
+      allow read: if participant();
+      allow create: if owner(uid) && releasedVersion()
+        && request.resource.data.keys().hasAll(['readerUid', 'readAt'])
+        && request.resource.data.keys().hasOnly(['readerUid', 'readAt'])
+        && request.resource.data.readerUid == request.auth.uid
+        && request.resource.data.readAt == request.time;
+      allow update, delete: if false;
+      match /entries/{entryId} {
+        allow read: if participant();
+        allow create: if participant() && releasedVersion()
+          && request.resource.data.keys().hasAll(['body', 'senderUid', 'senderRole', 'createdAt'])
+          && request.resource.data.keys().hasOnly(['body', 'senderUid', 'senderRole', 'createdAt'])
+          && request.resource.data.body is string
+          && request.resource.data.body.size() > 0 && request.resource.data.body.size() <= 2000
+          && request.resource.data.senderUid == request.auth.uid
+          && ((request.resource.data.senderRole == 'coach' && isCoach())
+            || (request.resource.data.senderRole == 'client' && owner(uid)))
+          && request.resource.data.createdAt == request.time;
+        allow update, delete: if false;
+      }
+    }

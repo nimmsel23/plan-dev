@@ -50,3 +50,11 @@ außerhalb des Meta-Workspaces nicht auflösen → `ERR_PNPM_OUTDATED_LOCKFILE`.
 3. `git diff origin/master origin/dev -- package.json pnpm-lock.yaml` ansehen: Dependency-Änderungen
    lösen im Meta-Repo einen Lockfile-Sync aus (der erste Live-Deploy kann einmal rot sein, siehe
    `~/vitalos/docs/DEPLOYMENT.md`).
+
+## Keine verschachtelten Repos (2026-11-01)
+
+`plan-dev` hat **keine Submodule** mehr. Die Gitlinks `coach-dev` (`dbf9b88`) und `6pack-dev` (`b208e32`)
+samt `.gitmodules` sind entfernt; beide sind eigene Repos und liegen bei Bedarf als **Nachbar-Checkouts**
+neben `plan-dev` (`~/dev/coach-dev`, `~/dev/6pack-dev`). Nicht wieder als Submodul einhängen — ein
+verschachtelter Klon veraltet unbemerkt und verfälscht Builds. `6pack/` (Daten/Build-Skripte) ist ein
+normaler Ordner im Repo und bleibt.
