@@ -1498,3 +1498,7 @@ verwendet dieselbe Darstellung. Tests für Satzgruppen und unbekannte Werte.
 Geerbtes Fitness-deploy.sh gesperrt: Plan darf niemals /opt/fitness überschreiben oder Fitness-Dienste umkonfigurieren. Plan wird vom Verbraucher gebündelt.
 
 Bash-Syntax und Ablehnung vor jeder Mutation geprüft; keine Änderungen an Plan-Editor/anderen laufenden Arbeiten.
+
+## 2026-10-31 — Dependabot
+
+Enabled Dependabot alerts and security updates. Configured weekly GitHub Actions and npm/pnpm updates plus Python dependency updates; version updates target `dev`. Minor/patch updates are grouped; vendored mini-app-shell copies stay maintained at their source. Validated YAML, repository manifest paths and update targets.
