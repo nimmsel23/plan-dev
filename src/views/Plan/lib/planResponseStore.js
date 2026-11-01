@@ -11,18 +11,28 @@ export function responsePath(uid, plan) {
 // The host supplies its own authenticated Firebase instance; no sibling app imports.
 export function createPlanResponseStore({ db, getActor }) {
   return {
-    watch(uid, plan, onChange, onError) {
+    watchPlans(uid, onChange, onError) {
+      return onSnapshot(collection(db, 'fitness', segment(uid), 'macrocycles'), { includeMetadataChanges: true }, (snap) => {
+        onChange({ plans: snap.docs.map((item) => ({ id: item.id, ...item.data() })), fromCache: snap.metadata.fromCache });
+      }, onError);
+    },
+    watch(uid, plan, onChange, onError, { latestOnly = false } = {}) {
       const path = responsePath(uid, plan);
       let active = true;
       let state = { receipt: null, entries: [], loading: true, fromCache: true };
-      const emit = () => { if (active) onChange({ ...state }); };
+      let receiptLoaded = false;
+      let entriesLoaded = false;
+      let receiptCached = true;
+      let entriesCached = true;
+      const emit = () => { if (active) onChange({ ...state, loading: !receiptLoaded || !entriesLoaded, fromCache: receiptCached || entriesCached }); };
       const receipt = onSnapshot(doc(db, ...path), { includeMetadataChanges: true }, (snap) => {
         state.receipt = snap.exists() ? { ...snap.data({ serverTimestamps: 'estimate' }), pending: snap.metadata.hasPendingWrites } : null;
+        receiptLoaded = true; receiptCached = snap.metadata.fromCache;
         emit();
       }, onError);
-      const entries = onSnapshot(query(collection(db, ...path, 'entries'), orderBy('createdAt', 'desc'), limit(50)), { includeMetadataChanges: true }, (snap) => {
+      const entries = onSnapshot(query(collection(db, ...path, 'entries'), orderBy('createdAt', 'desc'), limit(latestOnly ? 1 : 50)), { includeMetadataChanges: true }, (snap) => {
         state.entries = snap.docs.map((item) => ({ id: item.id, ...item.data({ serverTimestamps: 'estimate' }), pending: item.metadata.hasPendingWrites })).reverse();
-        state.loading = false; state.fromCache = snap.metadata.fromCache; emit();
+        entriesLoaded = true; entriesCached = snap.metadata.fromCache; emit();
       }, onError);
       return () => { active = false; receipt(); entries(); };
     },

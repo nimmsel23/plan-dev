@@ -1506,3 +1506,7 @@ Enabled Dependabot alerts and security updates. Configured weekly GitHub Actions
 ## 2026-11-01 — Rückmeldung direkt am bereitgestellten Plan
 
 Gemeinsamen PlanFeedback-Baustein, Host-Firebase-Adapter und versiongebundene planResponses ergänzt. Klient bestätigt den Empfang ausdrücklich und kann Vorgaben hinterfragen; Coach antwortet am selben Plan. Separate, unveränderliche Bestätigung mit Serverzeit, keine Bestätigung durch Coach. PlanCard bindet Cloud-Feedback ein; lokale Laptop-Entwürfe bleiben unveröffentlicht. Regeln im Plan-Fragment und VitalOS-Feature-Worktree vorbereitet. Bedienung, Vertrag und Grenzen in docs/PLAN-FEEDBACK.md. Mobile Demo-Fixture und acht Rules-Fälle bestanden; noch kein Push oder Deployment.
+
+## 2026-11-01 — Planbetreuung als Übersicht
+
+Gemeinsame PlanDeliveryOverview ergänzt: bereitgestellte Pläne, Entwürfe, ausdrücklicher Empfang und offener Antwortbedarf. Der Store kann für diese Übersicht nur den letzten Eintrag laden und wartet vor Statusaussagen auf beide Listener. Cache-/Fehlerzustände bleiben sichtbar. Coach verwendet die Übersicht in Liste und Workspace sowie einen historischen Plan-/Feedback-Viewer. Kein neuer Dienst, keine Rules-Änderung und kein Deployment.

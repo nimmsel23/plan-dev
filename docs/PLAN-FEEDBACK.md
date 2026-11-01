@@ -56,8 +56,14 @@ Fitness-Owner-Regel. Keine Nachrichten-Pushes oder Hintergrunddienste nötig.
 - Aktuell werden die letzten 50 Rückmeldungen einer Version angezeigt. Kein
   Such-, Bearbeitungs-, Anhangs- oder Push-Workflow. Texteingaben sind bis zum
   Speichern Komponenten-State; bei Navigation gehen ungesicherte Eingaben verloren.
-- Die Oberfläche öffnet zunächst die aktuelle Version. Ein eigener historischer
-  Feedback-Viewer und eine Übersicht offener Rückmeldungen sind nächste Schritte.
+- Die Oberfläche öffnet zunächst die aktuelle Version. Coach kann im Versionsselektor
+  frühere Stände einschließlich Rückmeldungen öffnen; eine Suche über alle Versionen bleibt offen.
 - Mobile Browser-Fixture und Zugriffsschutz wurden gegen ein isoliertes
   Demo-Projekt geprüft. Echte Geräte und die veröffentlichte Coach-/Klienten-
   Kombination sind nach Release separat abzunehmen.
+
+## Betreuungsübersicht (2026-11-01)
+
+`PlanDeliveryOverview` zeigt bereitgestellte Pläne und Entwürfe sowie pro freigegebener Version Empfangsstatus und Antwortbedarf. Es werden nur Bestätigung und letzter Feedback-Eintrag abonniert. „Klient wartet auf Antwort“ bedeutet: letzter gespeicherter Eintrag stammt vom Klienten; es ist kein Unread-Zähler. Cache-/Lade-/Fehlerzustände behaupten keine fehlende Bestätigung. Der Coach verwendet den Baustein in seiner Klientenliste und im Trainingsplanbereich.
+
+In „Plan ansehen“ kann der Coach alle vorhandenen Planversionen auswählen und die jeweiligen historischen Rückmeldungen lesen/beantworten. Aktueller Stand und frühere Version sind erkennbar. Eine eigene Suche über die komplette Historie bleibt offen.

@@ -114,4 +114,4 @@ Produktziel: `INSPIRATION.md`. Bedienung: `docs/PLAN-WORKFLOW.md`.
 - [x] Coach-Planansicht und Klienten-Plankarte anbinden.
 - [ ] Plan-Code, Coach-Pin, zentrale Rules und Verbraucher über die vorgesehenen Releases veröffentlichen.
 - [ ] Danach den vollständigen Ablauf auf echten Coach-/Klientengeräten abnehmen.
-- [ ] Historische Plan-Rückmeldungen im Versionsverlauf öffnen und offene Rückmeldungen im Coach zusammenfassen.
+- [x] Historische Plan-Rückmeldungen im Versionsverlauf öffnen und offene Rückmeldungen im Coach zusammenfassen.
