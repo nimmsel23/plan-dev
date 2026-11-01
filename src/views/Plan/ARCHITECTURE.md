@@ -188,3 +188,57 @@ Erledigt = im ±1-Tag-Fenster abgeschlossen; ein Abschluss belegt höchstens ein
 **Taskwarrior (Stufe 1, lesend/einseitig):** `fitness/plan_tasks.py` (typer + tasklib) spiegelt die Vorkommen aus dem *lokalen* Runtime-Stand (`~/.aos/fitness/users/<uid>/macrocycles` + `workouts.json`) in eine eigene Taskwarrior-DB je Klient: `~/.aos/fitness/users/<uid>/taskwarrior/` (eigenes `taskrc`, UDAs `occkey`/`planid`/`routineid`/`workoutid`). `scheduled` = Vortag 00:00, `due` = Plantag 23:59, erledigt = `task done`; nicht mehr veröffentlichte Pläne löschen ihre offenen Tasks; idempotent über `occkey = Plan:Einheit:Datum`. Aufruf: `python -m fitness.plan_tasks sync <uid>` / `pending <uid>`, API `POST /fitness/coach/macrocycles/taskwarrior/<uid>/sync` und `GET …/<uid>/pending`. Die Python-Logik spiegelt `occurrences.js` (Tests: `test_plan_tasks.py`).
 
 **Offen (Stufe 2):** Firestore ist die Quelle der Wahrheit für die Web-App; das lokale Backend sieht Firestore-Pläne/Workouts noch nicht. Nötig: Sync Firestore → lokaler Runtime-Stand (z. B. der bestehende `fitness-firestore-daemon`) und optional Rückrichtung (`task done` → Workout/Abschluss), Auslöser (Timer/Daemon statt manuell).
+
+## Mobiler Planeditor (2026-10-30)
+
+`PlanEditor.jsx` ist eine eigene Kompositionsoberfläche für vollständige Pläne.
+`TrainingPlans` erstellt einen privaten Plan und öffnet ihn unmittelbar über
+`PlanCard`. Trainingstage enthalten ihre eigenen Übungs-Snapshots; vorgelagerte
+Workout-Vorlagen sind optional. Tage lassen sich duplizieren und umordnen,
+Übungen per Katalog hinzufügen und mit `ExerciseRow` einschließlich Satzvorgaben,
+Tracking, RIR, Pause und Notizen bearbeiten. Sortierung unterstützt Pointer und
+Tastatur. Die Vorschau zeigt den noch unveröffentlichten Stand.
+
+Lokale Entwürfe sind nach angemeldetem Bearbeiter, Klient und Plan isoliert.
+Beim erneuten Öffnen entscheidet der Nutzer über Wiederaufnahme oder Verwerfen.
+Ein atomarer `updateMacrocycle` schreibt Name, Hinweise, Dauer und komplette
+Trainingstage, ohne den veröffentlichten Snapshot zu verändern. Beide Adapter
+prüfen `expectedUpdatedAt` und verweigern veraltete Entwürfe; diese bleiben lokal
+verfügbar. `Entwurf sichern` führt zurück zur vorhandenen Versionsfreigabe.
+Lokales Speichern ist kein geräteübergreifender Sync; dafür muss gesichert werden.
+
+`CoachWorkspace` trennt Pläne, optionale Vorlagen und Ergebnisse über eine
+Bereichsnavigation. Pläne sind der Einstieg nach der Klientenauswahl. `StrongApp`
+zeigt Coaches einen hervorgehobenen Zugang mit Zweckbeschreibung.
+
+## Shared Coach editor contract (2026-10-30)
+
+Plan is the source owner for plan and program authoring. `ProgramEditor` adapts
+legacy template-based programs to `PlanEditor`; `lib/programDraft` translates
+between programs and plan drafts. Inline exercise snapshots become authoritative
+after editing. `PlanEditor.saveDraft` accepts host persistence; local caches are
+isolated between program and client editing. Coach supplies identity/navigation
+and consumes this code via its pinned `plan` submodule. `lib/programStore` owns
+program persistence, transactional versions and client assignments. Existing
+Firestore paths remain unchanged.
+
+## 2026-10-31 — Local authoring boundary
+
+PlanEditor now requires an explicit saveDraft callback and accepts actorUid and
+catalogSearch. It no longer imports auth or Firestore; PlanCard supplies its
+existing persistence and ExerciseSearch lazily loads the cloud adapter only when
+no catalog search is injected. runtime/local_plans.py owns atomic client drafts,
+immutable local versions, stale-write protection and Markdown export.
+runtime/plan_delivery.py publishes only an explicitly released snapshot; Coach
+supplies registry location, HTTP endpoints and optional server credentials.
+ClientForge conversion is an explicit import and never overwrites its source file.
+
+## 2026-10-31 — Training-plan document
+
+PlanDocument is the shared read-only plan surface. It renders real prescriptions
+in per-day tables, with warm-up, training and finisher blocks. Mobile screens
+stack table data into exercise cards; desktop and A4 retain table columns.
+Unknown prescriptions remain marked; no template defaults are manufactured.
+The print-only body portal isolates the document from app chrome. Program/source
+notes are a disclosure outside the printable sheets. PlanEditor preview uses
+the same document; consumers should expose it directly beside editing.

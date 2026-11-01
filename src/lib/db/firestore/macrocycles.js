@@ -231,7 +231,16 @@ export async function updateMacrocycle(clientUid, cycleId, patch = {}) {
   const name = typeof patch.name === 'string' ? patch.name.trim() : null;
   if (name === '') throw new Error('Name erforderlich.');
   return mutate(clientUid, cycleId, async (m, tx) => {
+    if ('expectedUpdatedAt' in patch && patch.expectedUpdatedAt !== (m.updatedAt || null)) throw new Error('Der Plan wurde inzwischen geändert. Bitte aktuellen Stand neu öffnen; dein lokaler Entwurf bleibt erhalten.');
     const fields = {};
+    if ('totalWeeks' in patch) {
+      if (!Number.isInteger(patch.totalWeeks) || patch.totalWeeks < 1 || patch.totalWeeks > 104) throw new Error('Ungültige Plandauer.');
+      fields.totalWeeks = patch.totalWeeks;
+    }
+    if ('routines' in patch) {
+      if (!Array.isArray(patch.routines) || patch.routines.some((r) => !r.id || !r.label?.trim() || !Array.isArray(r.exercises)) || new Set(patch.routines.map((r) => r.id)).size !== patch.routines.length) throw new Error('Ungültige Trainingstage.');
+      fields.routines = clone(patch.routines);
+    }
     if (name !== null) fields.name = name;
     if (typeof patch.description === 'string') fields.description = patch.description.trim().slice(0, 2000);
     if (patch.status === 'draft') fields.status = 'draft';

@@ -1,10 +1,11 @@
 # Plan development and Fitness integration
 
 - `~/plan-dev` on `dev` is the canonical working checkout and source repository for the Plan mini-app.
-- When Plan view files under `src/views/Plan/` are pushed from `plan-dev/dev`, its pre-push hook calls `fitness-dev/scripts/publish-mini-app-to-fitness.mjs`. The publisher copies those files into `fitness-dev/src/views/Plan/`, builds the Fitness bundle, commits the integrated view, and pushes `fitness-dev/dev`; Fitness CI then deploys the preview.
-- `fitness-dev/src/views/Plan/` is the integrated Fitness copy. The old `fitness-dev/plan` submodule is not part of the current integration and must not be treated as the Plan development checkout.
-- Fitness production follows `fitness-dev/dev` -> `~/vitalos/fitness-app` branch `vitalos` -> the `fitness-app` Gitlink in `~/vitalos` branch `master`. Fitness CI deploys standalone Fitness production; VitalOS CI deploys the shell with its pinned app sources.
-- The Plan app deployed from `~/vitalos/plan-app` is a separate standalone shell app. Keep that release target distinct from Plan's Fitness-view sync.
+- Plan owns the shared training-plan/program editor and plan logic; Coach consumes the pinned `modules/plan` Git submodule.
+- Fitness resolves Plan through `vite-miniapp-submodules.mjs`: sibling `plan-app`/`plan-dev` first, then the historical nested `plan` path. Do not infer a current Fitness gitlink from old docs or copy editor fixes there.
+- Plan's pre-push hook validates exports/builds; it does not automatically update Coach's pointer or publish Fitness.
+- Standalone Plan, Coach, Fitness and VitalOS Shell release targets remain separate.
+- Ownership, data contracts and pointer updates: `docs/PLAN-COACH-INTEGRATION.md`.
 
 <!-- release-weg:start -->
 ## Release-Weg und Branches (Plan)
@@ -28,3 +29,10 @@ Stand 2026-10-29. Ausführlich: `~/vitalos/docs/DEPLOYMENT.md` (GitHub: nimmsel2
   (`git worktree add .worktrees/<name> <branch>`).
 - Default-Branch des Repos ist `master`; die `.github/workflows/*.yml` auf `master` bestimmen das Live-Verhalten.
 <!-- release-weg:end -->
+
+## Plan ownership and Coach consumption (2026-10-30)
+
+Plan owns the shared training-plan editor, program composition, versioning and assignment logic.
+Coach consumes the code through its pinned `modules/plan` Git submodule. Change the source here,
+commit it, then deliberately advance Coach's pointer; do not maintain a second editor in Coach.
+Publish Plan commits before pushing a Coach pointer referencing them.

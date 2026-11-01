@@ -1435,6 +1435,70 @@ wurden nach dem erfolgreichen Durchlauf beendet.
 ## 2026-10-17 — Offline-Cache bei Updates
 Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öffentlicher API-Cache mit Migration, Asset-Precache standardmäßig aktiv, fehlgeschlagene Installation ersetzt bestehenden Worker nicht. IndexedDB/localStorage bleiben unverändert. Geprüft: 13 Shell-/Update-Tests, Private-Request-Test, Vendor-Parität. Kein Push/Release; kein physischer Geräte-Test.
 
+## 2026-10-30 — Trainingspläne direkt am Handy erstellen
+
+- Eigenständigen Planeditor ergänzt: Name, Ziel/Hinweise, Dauer, eigene Trainingstage,
+  optionale Vorlagenübernahme, Übungssuche, Satzvorgaben, RIR, Pausen und Notizen.
+- Tage duplizieren/umordnen, Übungen per Pointer oder Tastatur sortieren,
+  Klientenvorschau und lokale Entwürfe mit Wiederaufnahme/Verwerfen.
+- Atomare Speicherung in Python/Firestore mit Prüfung des Ausgangsstands;
+  veröffentlichter Plan und Trainingshistorie bleiben eigene Snapshots.
+- Neue Pläne öffnen direkt den Editor. Klientenbereich in Pläne/Vorlagen/Ergebnisse
+  gegliedert; hervorgehobener Zugang im Training. Workflow/Architektur/Audit aktualisiert.
+- Verifiziert: ESLint, vollständige `npm run test:plan`-Suite einschließlich neuer
+  Backend-/Firestore-Konflikt- und Snapshotprüfungen, Plan-Produktionsbuild.
+- Isolierter Chromium-Durchlauf bei 390 px: direkt erstellter Plan → lokale
+  Wiederaufnahme → Vorschau → Freigabe → Klientenlogger → Abschluss/Verlauf/Wiederholung;
+  keine unbehandelten Browserfehler. Testharness begrenzt Vite-Scan auf die Testseite.
+- Nicht gepusht/deployed. Echte Firebase-Konten und physisches Handy nicht geprüft.
+
+## 2026-10-30 — Shared editor ownership
+
+Plan owns program composition and the mobile editor used by Coach. Added
+ProgramEditor, program/draft adapters, injectable draft persistence and migrated
+program/version/assignment store. Legacy template references remain readable;
+newly edited programs store exercise snapshots directly. Program publication is
+transactional and draft saves reject stale working copies. Client-local draft
+keys remain compatible; program drafts use a separate namespace.
+
+## 2026-10-30 — Plan-/Coach-Dokumentation
+
+Gemeinsame Plan-/Coach-Zuständigkeiten, Datenvertrag, Editor-Schnittstellen und Pointer-/Veröffentlichungsfolge dokumentiert; veraltete Integrationshinweise korrigiert.
+Nur Dokumentation; keine Quell-/Daten-/Pointer-Änderung und kein Deployment.
+
+## 2026-10-31 — Lokale Planarbeit
+
+Editor von Firebase entkoppelt (Speicher- und Suchanbindung injiziert), lokale
+Planablage mit atomaren Writes, Versionssnapshots und Konfliktschutz ergänzt.
+ClientForge-Import und Markdown-Export erhalten bestehende Quellen; Auslieferung
+verwendet ausdrücklich die lokale Freigabe, niemals den ungesicherten Entwurf.
+Isolierte Python-/Programmtests und ESLint erfolgreich.
+
+Lokale Auslieferung zusätzlich isoliert auf Idempotenz, unveränderte Versions-
+snapshots und Schutz fremder Zielpläne geprüft (`runtime/test_plan_delivery.py`).
+
+2026-10-31: Testimport alter Pläne unterstützt explizit unvollständige Übungs-
+vorgaben ohne erfundene Standard-Sätze. Anzeige „Vorgaben offen“ und lokale
+Freigabesicherung bis zur Ergänzung; Pausenbereiche bleiben als Text sichtbar.
+
+
+## 2026-10-31 — Dev-Projekte unter ~/dev
+
+Lokale Entwicklungspfade und betroffene Verknüpfungen auf `~/dev/*-dev` umgestellt. Runtime-Daten, Branches und Release-Checkouts behalten ihre Zuständigkeit. Keine Pushes oder Releases. Gesamter Umzug und Prüfungen: `~/RESULTS.md`.
+
+## 2026-10-31 — Trainingsplan als Dokument
+
+PlanDocument mit strukturierten Tagesblättern, Satz-/Wiederholungs-/Gewichts-/
+Pausenspalten, getrenntem Warm-up und Finisher ergänzt. Mobil responsive
+Übungskarten; Drucken/PDF über isoliertes A4-Dokument. PlanEditor-Vorschau
+verwendet dieselbe Darstellung. Tests für Satzgruppen und unbekannte Werte.
+
+## 2026-10-31 — Schlankes lokales Deployment
+
+Geerbtes Fitness-deploy.sh gesperrt: Plan darf niemals /opt/fitness überschreiben oder Fitness-Dienste umkonfigurieren. Plan wird vom Verbraucher gebündelt.
+
+Bash-Syntax und Ablehnung vor jeder Mutation geprüft; keine Änderungen an Plan-Editor/anderen laufenden Arbeiten.
+
 ## 2026-10-31 — Dependabot
 
 Enabled Dependabot alerts and security updates. Configured weekly GitHub Actions and npm/pnpm updates plus Python dependency updates; version updates target `dev`. Minor/patch updates are grouped; vendored mini-app-shell copies stay maintained at their source. Validated YAML, repository manifest paths and update targets.

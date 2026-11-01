@@ -341,6 +341,21 @@ async def update_macrocycle(client_uid: str, cycle_id: str, request: Request):
             raise HTTPException(400, detail="name erforderlich")
     with _lock:
         m = _load(client_uid, cycle_id)
+        if "expectedUpdatedAt" in body and body["expectedUpdatedAt"] != m.get("updatedAt"):
+            raise HTTPException(409, detail="Der Plan wurde inzwischen geändert. Bitte aktuellen Stand neu öffnen.")
+        if "totalWeeks" in body:
+            weeks = body["totalWeeks"]
+            if type(weeks) is not int or not 1 <= weeks <= 104:
+                raise HTTPException(422, detail="Ungültige Plandauer")
+            m["totalWeeks"] = weeks
+        if "routines" in body:
+            routines = body["routines"]
+            if (not isinstance(routines, list)
+                or any(not isinstance(r, dict) or not isinstance(r.get("id"), str) or not r["id"]
+                       or not _text(r.get("label")) or not isinstance(r.get("exercises"), list) for r in routines)
+                or len({r["id"] for r in routines}) != len(routines)):
+                raise HTTPException(422, detail="Ungültige Trainingstage")
+            m["routines"] = routines
         # Name/Hinweis zuerst anwenden, damit der Snapshot sie schon enthält.
         if name is not None:
             m["name"] = name

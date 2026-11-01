@@ -219,3 +219,48 @@ startbar, ihr bisheriger Hakenfortschritt wird nicht als Leistung umgeschrieben.
 Neu: Klienten-Übersicht, Plan-Hinweis, Zurückziehen, Kopieren, Wochenplan,
 Neu-Banner und Push (`onPlanPublished`). Details: `ARCHITECTURE.md`. Versionierung, atomares Kopieren und Rules-Härtung (Patch) sind umgesetzt (`ARCHITECTURE.md`). Offen: Push-Token-Bereinigung
 ungültiger Geräte, authentifizierte Geräte-Abnahme des Pushs.
+
+## 2026-10-30: Planeditor und Integration
+
+- `PlanEditor.jsx`: vollständige Plan-Komposition am Handy, lokale Wiederaufnahme,
+  Klientenvorschau, atomarer Entwurf und Schutz vor veralteten Schreibständen.
+- `TrainingPlans` / `PlanCard`: benanntes Formular statt Browser-Prompt; direkter
+  Editorzugang für neue und bestehende bearbeitbare Pläne.
+- `CoachWorkspace`: Pläne/Vorlagen/Ergebnisse statt einer langen Formularliste.
+- Firestore und Python akzeptieren komplette Trainingstage und Dauer im Patch;
+  Veröffentlichungen und Trainingsprotokolle behalten ihre eigenen Snapshots.
+- Grenzen: lokale Entwürfe sind gerätegebunden; gleichzeitiges Bearbeiten erfordert
+  nach einem Konflikt bewusstes Übernehmen der Änderungen. Kein PDF-Parsing,
+  Drive-/E-Mail-Import oder Deployment Bestandteil dieser Änderung.
+
+## Shared program editor
+
+`ProgramEditor` and `lib/programStore` now own the Coach program authoring path.
+Template-only programs are resolved on opening; saving captures editable exercises.
+Published program versions and client assignments remain immutable snapshots.
+Coach must pin a complete Plan commit and scan its source for Tailwind classes.
+
+## 2026-10-31 — Local authoring boundary
+
+PlanEditor now requires an explicit saveDraft callback and accepts actorUid and
+catalogSearch. It no longer imports auth or Firestore; PlanCard supplies its
+existing persistence and ExerciseSearch lazily loads the cloud adapter only when
+no catalog search is injected. runtime/local_plans.py owns atomic client drafts,
+immutable local versions, stale-write protection and Markdown export.
+runtime/plan_delivery.py publishes only an explicitly released snapshot; Coach
+supplies registry location, HTTP endpoints and optional server credentials.
+ClientForge conversion is an explicit import and never overwrites its source file.
+
+2026-10-31: Testimport alter Pläne unterstützt explizit unvollständige Übungs-
+vorgaben ohne erfundene Standard-Sätze. Anzeige „Vorgaben offen“ und lokale
+Freigabesicherung bis zur Ergänzung; Pausenbereiche bleiben als Text sichtbar.
+
+## 2026-10-31 — Training-plan document
+
+PlanDocument is the shared read-only plan surface. It renders real prescriptions
+in per-day tables, with warm-up, training and finisher blocks. Mobile screens
+stack table data into exercise cards; desktop and A4 retain table columns.
+Unknown prescriptions remain marked; no template defaults are manufactured.
+The print-only body portal isolates the document from app chrome. Program/source
+notes are a disclosure outside the printable sheets. PlanEditor preview uses
+the same document; consumers should expose it directly beside editing.

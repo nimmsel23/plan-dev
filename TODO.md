@@ -79,3 +79,31 @@ Coach-Trainingspläne im selben Logger für Klienten nutzbar machen.
 Produktziel: `INSPIRATION.md`. Bedienung: `docs/PLAN-WORKFLOW.md`.
 
 - [x] Offline-Cache über App-Updates erhalten: gemeinsame SW-Strategie, API-Migration, vollständiges Asset-Precache und sichere Installation.
+
+## 2026-10-30: Mobiler Trainingsplan-Editor
+
+- [x] Eigenständigen Editor für komplette Pläne mit Tagen und Übungsvorgaben bauen.
+- [x] Lokale Entwürfe, Wiederaufnahme, Duplizieren, Sortieren und Vorschau ergänzen.
+- [x] Atomare Speicherung, Konfliktschutz und vorhandene Freigabe/Logger verbinden.
+- [x] Klientenbereich mit Pläne/Vorlagen/Ergebnisse integrieren.
+- [ ] Authentifizierte Abnahme mit echten Coach-/Klientenkonten auf Firebase.
+
+## 2026-10-30 — Plan owns the editor consumed by Coach
+
+- [x] Expose mobile PlanEditor with host persistence and isolated program drafts.
+- [x] Move program/version/assignment ownership to Plan; support legacy programs.
+- [x] Add ProgramEditor for Coach consumption through a pinned Git submodule.
+
+## 2026-10-30 — Plan-/Coach-Dokumentation
+
+- [x] Gemeinsame Plan-/Coach-Zuständigkeiten, Datenvertrag, Editor-Schnittstellen und Pointer-/Veröffentlichungsfolge dokumentiert; veraltete Integrationshinweise korrigiert.
+
+- [x] 2026-10-31: Gemeinsamen Editor ohne Firebase betreibbar machen; lokale Pläne/Versionen/Export und explizite Auslieferung als Plan-eigene Module ergänzen.
+
+- [x] 2026-10-31: Fehlende Vorgaben beim Testimport als offen erhalten, ohne Standardwerte zu ergänzen.
+
+- [x] 2026-10-31: Echte Trainingsplan-Ansicht mit Tabellen, mobilen Übungskarten und A4-Druck statt Textvorschau ergänzen.
+
+## 2026-10-31 — Lokales Produkt unter /opt
+
+- [x] Geerbtes Fitness-deploy.sh gesperrt: Plan darf niemals /opt/fitness überschreiben oder Fitness-Dienste umkonfigurieren. Plan wird vom Verbraucher gebündelt.

@@ -1,7 +1,20 @@
 # Plan verwenden
 
-Stand: 2026-10-16. Dieser Ablauf beschreibt den neuen Entwicklungsstand;
+Stand: 2026-10-30. Dieser Ablauf beschreibt den neuen Entwicklungsstand;
 Veröffentlichung und authentifizierte Firebase-Abnahme sind separate Schritte.
+
+## Zuständigkeit und Coach-Einbindung
+
+Plan besitzt den gemeinsamen Editor und die Planlogik. Coach verwendet sie aus
+seinem gepinnten Submodul `modules/plan`; ein Pointer-Update erfolgt bewusst nach
+Prüfung des gewünschten Plan-Commits. Architektur, Datenvertrag und Übernahmefolge:
+[Plan und seine Verbraucher](PLAN-COACH-INTEGRATION.md).
+
+In Coach führt **Klient → Programm auswählen → Neues Programm** zum selben
+Planeditor. Nach dem Sichern wird eine Programmversion veröffentlicht und gezielt
+zugewiesen. **Individuellen Plan gestalten** bearbeitet direkte Klientenpläne.
+Die nachfolgenden Schritte unter „Als Coach“ beschreiben den Zugang innerhalb
+der eigenständigen Plan-App.
 
 ## Eigenes Training
 
@@ -28,14 +41,21 @@ derselben Einheit verwenden: eine Konfliktauflösung ist noch nicht umgesetzt.
 
 1. Mit einem berechtigten Coach-Konto anmelden.
 2. In **Training → Trainingspläne für Klienten** den Klienten auswählen.
-3. Unter **Workout-Vorlagen** z. B. „Push A“ erstellen und im normalen
-   Vorlageneditor Übungen, Satzvorgaben, Pausen und Hinweise festlegen.
-   Diese Vorlagen liegen direkt beim Klienten und sind für ihn verfügbar.
-4. **Neuer Trainingsplan** legt den gebündelten Plan als Entwurf an.
-5. **Workout-Vorlage hinzufügen** wählen und Häufigkeit/Zeitraum festlegen.
-   Der Plan übernimmt die aktuelle Übungsliste als eigenständigen Snapshot.
+3. Im Bereich **Pläne → Neuer Trainingsplan** einen Namen eingeben und
+   **Plan gestalten** öffnen. Es sind keine vorbereiteten Workout-Vorlagen nötig.
+4. **Trainingstag** hinzufügen, benennen und Übungen suchen. Auf einer Übung
+   die Satzvorgaben öffnen: Sätze, Wiederholungen/Dauer, Gewicht, Pause, RIR,
+   Tracking und Hinweise festlegen. Tage können dupliziert und verschoben werden;
+   die Übungsreihenfolge lässt sich per Griff oder Tastatur ändern.
+5. Optional Wochentage und Plandauer setzen. **Klientenvorschau** zeigt den Stand.
+   Änderungen werden automatisch auf diesem Gerät gesichert. Beim Wiederöffnen
+   den lokalen Entwurf wieder aufnehmen oder verwerfen. **Entwurf sichern**
+   speichert ihn beim Klienten und führt zurück zum Plan. Bei einem zwischenzeitlich
+   geänderten Plan wird das Überschreiben verhindert; der lokale Entwurf bleibt.
 6. Sobald alle Einheiten Übungen enthalten: **Trainingsplan für Klienten
-   bereitstellen**. Der Klient findet ihn unter **Training → Trainingspläne**.
+   bereitstellen**. Spätere Änderungen über **Trainingstage und Übungen bearbeiten**
+   ändern den Arbeitsstand; sichtbar werden sie erst mit einer neuen Freigabe.
+   Der Bereich **Vorlagen** bleibt für wiederverwendbare einzelne Workouts verfügbar.
 7. Der Klient startet dort eine Einheit und nutzt denselben Workout-Logger.
    Seine tatsächlichen Sätze erscheinen im Coach-Workspace unter
    **Absolvierte Workouts**. Fortschritt entsteht durch abgeschlossene Workouts.
@@ -70,8 +90,8 @@ immer nur die letzte Version; Bearbeiten danach bleibt unsichtbar. Der Plan zeig
 **Als Arbeitsstand wiederherstellen** holt eine ältere Version zurück (danach neu veröffentlichen).
 
 Änderungen an einer Vorlage aktualisieren bestehende Plan-Snapshots nicht
-stillschweigend. Für einen geänderten Plan die betreffende Einheit neu aus der
-aktualisierten Vorlage hinzufügen. Veröffentlichte Planänderungen werden erst mit der nächsten Version sichtbar. Laufende und vergangene
+stillschweigend. Einheiten können direkt im Planeditor angepasst oder dort als neuer Tag aus einer
+Vorlage übernommen werden. Veröffentlichte Planänderungen werden erst mit der nächsten Version sichtbar. Laufende und vergangene
 Workouts bleiben eigenständige Snapshots.
 
 Ältere Coach-Zuweisungen sind ebenfalls als normales Workout startbar. Ihre
@@ -84,3 +104,12 @@ Filter helfen nach Name, Muskel oder Equipment. Eine Übung öffnet Bildpaar und
 Originalanleitung. **Trainiert** zeigt persönliche Historie und Rekorde.
 Der Link in den Übungsdetails öffnet die eigenständige VOS-Atlas-App in einem
 neuen Tab; Plan bleibt geöffnet. Gerätespeicher beider Apps ist getrennt.
+
+## Auf dem Laptop ohne Firebase-Anmeldung
+
+`http://127.0.0.1:9150/coach/local.html` öffnen oder
+`~/coach-dev/bin/coach-server open` ausführen. Klient wählen, Plan gestalten und
+Entwurf lokal sichern. Lokale Versionen und Exporte benötigen keinen Cloud-Zugriff.
+Erst **An Klienten senden** überträgt eine freigegebene Version serverseitig.
+Vorhandene ClientForge-Pläne können ausdrücklich übernommen werden; Originale
+bleiben unverändert.

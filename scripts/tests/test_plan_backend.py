@@ -65,6 +65,20 @@ class PlanBackendTest(unittest.TestCase):
                 base = "/fitness/coach/macrocycles/client"
                 plan = client.post(base, json={"name": "PPL", "coachUid": "coach", "status": "draft"}).json()["macrocycle"]
                 url = f'{base}/{plan["id"]}'
+                composed = client.post(base, json={"name": "Mobile", "coachUid": "coach"}).json()["macrocycle"]
+                compose_url = f'{base}/{composed["id"]}'
+                day = {"id": "day-a", "label": "A", "exercises": routine["exercises"], "weekdays": [0]}
+                saved = client.patch(compose_url, json={"expectedUpdatedAt": composed["updatedAt"], "routines": [day], "totalWeeks": 8}).json()["macrocycle"]
+                self.assertEqual(saved["totalWeeks"], 8)
+                self.assertEqual(saved["routines"][0]["id"], "day-a")
+                self.assertEqual(client.patch(compose_url, json={"expectedUpdatedAt": composed["updatedAt"], "routines": []}).status_code, 409)
+                self.assertEqual(client.patch(compose_url, json={"routines": [day, day]}).status_code, 422)
+                self.assertEqual(client.patch(compose_url, json={"totalWeeks": 0}).status_code, 422)
+                client.patch(compose_url, json={"status": "published"})
+                client.patch(compose_url, json={"routines": [{**day, "label": "B"}]})
+                current = client.get(compose_url).json()["macrocycle"]
+                self.assertEqual(current["published"]["routines"][0]["label"], "A")
+                self.assertEqual(current["routines"][0]["label"], "B")
                 self.assertEqual(client.patch(url, json={"status": "published"}).status_code, 422)
                 added = client.post(f"{url}/routines", json={"label": "Push", "sourceTemplateId": routine_id, "exercises": routine["exercises"]}).json()["macrocycle"]
                 self.assertEqual(client.patch("/api" + url, json={"status": "published"}).json()["macrocycle"]["status"], "published")

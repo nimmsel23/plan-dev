@@ -12,7 +12,7 @@ from loguru import logger
 _HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(_HERE.parent))  # adds fitness/ to path (gives db/, firestore/, catalog/)
 
-_FUEL_DEV = Path.home() / "fuel-dev"
+_FUEL_DEV = Path.home() / "dev" / "fuel-dev"
 if _FUEL_DEV.exists():
     sys.path.insert(0, str(_FUEL_DEV))
 

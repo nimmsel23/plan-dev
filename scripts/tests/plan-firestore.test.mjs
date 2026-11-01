@@ -186,3 +186,20 @@ test('copyPlan failure leaves no half-copied plan', async () => {
   assert.deepEqual([...fake.records.keys()].filter((k) => k.startsWith('fitness/dst2/')), []);
   await assert.rejects(copyPlanToClient({ fromUid: 'src2', planId: 'missing', toUid: 'dst2', coachUid: 'coach' }), /Quellplan/);
 });
+
+
+test('composer saves atomically, preserves published snapshot, rejects stale drafts', async () => {
+  const created = await macros.createMacrocycle('composer-client', { name: 'Mobile', coachUid: 'coach' });
+  const day = { id: 'day-a', label: 'A', weekdays: [0], exercises: [{ id: 'ex-a', exercise_id: 'bench', name: 'Bench', templateSets: [{ targetReps: '8', targetWeight: 60 }] }] };
+  const saved = await macros.updateMacrocycle('composer-client', created.id, { expectedUpdatedAt: created.updatedAt, routines: [day], totalWeeks: 8 });
+  assert.equal(saved.routines[0].id, 'day-a');
+  assert.equal(saved.totalWeeks, 8);
+  const published = await macros.publishMacrocycle('composer-client', created.id);
+  await macros.updateMacrocycle('composer-client', created.id, { expectedUpdatedAt: published.updatedAt, routines: [{ ...day, label: 'B' }] });
+  const current = (await macros.getMacrocycle('composer-client', created.id)).macrocycle;
+  assert.equal(current.published.routines[0].label, 'A');
+  assert.equal(current.routines[0].label, 'B');
+  await assert.rejects(macros.updateMacrocycle('composer-client', created.id, { expectedUpdatedAt: 'stale', routines: [] }), /inzwischen/);
+  await assert.rejects(macros.updateMacrocycle('composer-client', created.id, { routines: [day, day] }), /Trainingstage/);
+  assert.equal((await macros.getMacrocycle('composer-client', created.id)).macrocycle.routines[0].label, 'B');
+});
