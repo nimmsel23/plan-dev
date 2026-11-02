@@ -9,7 +9,7 @@ import { ensureTemplateSets } from "../lib/templateSets.js";
 // Eine Übungszeile im RoutineBuilder: Drag-Handle (dnd-kit sortable),
 // Kopfzeile mit Zusammenfassung, aufklappbares Detail-Formular
 // (Ziel-Sätze/Reps/Gewicht/Tracking/Satz-Typ/RIR/Tempo/Progression/Notiz).
-export default function ExerciseRow({ ex, onPatch, onDelete }) {
+export default function ExerciseRow({ ex, onPatch, onDelete, onInspect }) {
   const [open, setOpen] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: ex.id });
 
@@ -29,7 +29,7 @@ export default function ExerciseRow({ ex, onPatch, onDelete }) {
           <GripVertical size={16} />
         </button>
         <div className="flex-1 min-w-0">
-          <div className="text-sm font-semibold text-fit-ink truncate">{ex.name}</div>
+          <button type="button" onClick={onInspect || (() => setOpen((v) => !v))} className="min-h-[44px] text-left text-sm font-semibold text-fit-ink" aria-label={`${ex.name}: Muskeln und Ausführung ansehen`}>{ex.name}</button>
           <div className="flex flex-wrap gap-1 mt-1">
             {dedupeMuskeln(ex.primaryMuscles).slice(0, 3).map((m) => (
               <span key={m} className="text-xs px-1.5 py-0.5 rounded font-medium"
@@ -57,7 +57,7 @@ export default function ExerciseRow({ ex, onPatch, onDelete }) {
       {open && (
         <div className="px-4 pb-4 pt-1 border-t border-fit-line/50 grid grid-cols-2 gap-3">
           <label className="flex flex-col gap-1">
-            <span className="text-xs text-fit-muted font-medium">Ziel-Sätze</span>
+            <span className="text-xs text-fit-muted font-medium">Ziel-Sätze{ex.prescriptionIncomplete ? ' · zuerst ergänzen' : ''}</span>
             <input type="number" min="1" placeholder="offen" value={ex.prescriptionIncomplete ? '' : templateSets.length}
               onChange={(e) => onPatch("templateSets", Array.from({ length: Math.max(1, Number(e.target.value) || 1) }, (_, index) => ({
                 ...(templateSets[index] || leadSet || {}),

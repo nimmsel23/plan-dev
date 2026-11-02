@@ -41,6 +41,23 @@ def atomic(path, value):
 def snapshot(plan):
     return {key: plan[key] for key in ('name', 'description', 'totalWeeks', 'routines')}
 
+def complete_prescription(ex):
+    sets = ex.get('templateSets')
+    if sets is None: return True  # Legacy records without explicit sets remain compatible.
+    if not isinstance(sets, list) or not sets: return False
+    def positive(value):
+        try: return float(value) > 0
+        except (ValueError, TypeError): return False
+    for item in sets:
+        if not isinstance(item, dict): return False
+        tracking = ex.get('trackingType')
+        if tracking == 'duration':
+            if not positive(item.get('targetDuration')): return False
+        elif tracking == 'distance_time':
+            if not (positive(item.get('targetDistance')) or positive(item.get('targetDuration'))): return False
+        elif not str(item.get('targetReps') or '').strip() or str(item.get('targetReps')).strip().lower() == 'offen': return False
+    return True
+
 def validate(body, complete=False):
     if not isinstance(body, dict): raise PlanError('Plan muss ein Objekt sein.')
     name = str(body.get('name') or '').strip()
@@ -58,7 +75,7 @@ def validate(body, complete=False):
         for ex in day['exercises']:
             if not isinstance(ex, dict) or not isinstance(ex.get('id'), str) or ex['id'] in exids or not ex.get('name'): raise PlanError('Übungen brauchen eindeutige IDs und Namen.')
             exids.add(ex['id'])
-            if complete and ex.get('prescriptionIncomplete'): raise PlanError('Unvollständige Übungsvorgaben zuerst prüfen und ergänzen.')
+            if complete and (ex.get('prescriptionIncomplete') or not complete_prescription(ex)): raise PlanError(f"{day['label']} · {ex['name']}: Satzvorgaben zuerst ergänzen.")
         if complete and not day['exercises']: raise PlanError('Jeder Trainingstag braucht Übungen.')
     if complete and not routines: raise PlanError('Mindestens ein Trainingstag erforderlich.')
     return {'name': name, 'description': str(body.get('description') or '')[:2000], 'totalWeeks': weeks, 'routines': routines}

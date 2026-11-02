@@ -1510,3 +1510,36 @@ Gemeinsamen PlanFeedback-Baustein, Host-Firebase-Adapter und versiongebundene pl
 ## 2026-11-01 — Planbetreuung als Übersicht
 
 Gemeinsame PlanDeliveryOverview ergänzt: bereitgestellte Pläne, Entwürfe, ausdrücklicher Empfang und offener Antwortbedarf. Der Store kann für diese Übersicht nur den letzten Eintrag laden und wartet vor Statusaussagen auf beide Listener. Cache-/Fehlerzustände bleiben sichtbar. Coach verwendet die Übersicht in Liste und Workspace sowie einen historischen Plan-/Feedback-Viewer. Kein neuer Dienst, keine Rules-Änderung und kein Deployment.
+
+## 2026-11-01 — Splash blockiert nicht mehr auf Service-Worker-Update
+
+Die vendorte Mini-App-Shell mit der aktuellen VitalOS-Quelle synchronisiert. Ein langsamer Netzwerk-/Service-Worker-Updatecheck hält den Splash nicht mehr offen; er verschwindet nach dem App-Start (mindestens 200 ms, maximal 12 s nur falls der App-Root gar nicht bereit wird).
+
+## 2026-11-01 — ClientForge Planstudio und Muskel-Erklärung
+
+Gemeinsamen Editor mit gegliederten Planfeldern und Trainingstag-Navigation
+aufgewertet. Workout-Highlighter (Vorder-/Rückseite), anklickbare Übungen mit
+Muskelrollen und Ausführung in Editor, Katalogdetails und Klientenvorschau
+integriert. Gleiche Interaktion im Trainingsplan-Dokument, PDF-Druck bleibt
+separat. Vorhandene Muskel-/Katalogadapter wiederverwendet; keine neuen
+Abhängigkeiten, keine Muskelzuordnung aus Übungsnamen erfunden.
+
+## 2026-11-01 — Lokale Freigabe offener Vorgaben
+
+Gemeinsame Freigabe-Vorprüfung nennt betroffene Trainingstage/Übungen. Leere
+Satzlisten bleiben unvollständig; lokale Runtime meldet konkrete Übung statt
+generischem Fehler. Keine Vorgaben oder Klientendaten automatisch ergänzt.
+
+## 2026-11-02 — Lokales Plan-Tracking in der Klienten-Taskwarrior-DB
+
+Die lokale Coach-Konsole kann einen Plan mit festen Wochentagen ausdrücklich in
+`<Klienten-Workspace>/tw-data` abgleichen. Sie erzeugt Tasks für den gesamten
+Planzeitraum, erhält vorhandene Klienten-Tasks und begrenzt Änderungen beim
+Sync auf den gewählten Plan. Tasks lassen sich im Coach als erledigt markieren;
+die Daten bleiben lokal und werden nicht nach Firestore geschrieben. Bestehende
+Runtime-Taskwarrior-DBs bleiben bis zu einer verlustfreien Einzelmigration
+unverändert. Tasklib-/Taskwarrior-Verhalten wurde auf einer `/tmp`-Kopie geprüft.
+Pilot für Jakob: 30 Termine aus dem lokal gespeicherten PPL-Entwurf wurden in die
+vorhandene `tw-data`-DB geschrieben. Der unabhängige Bestand blieb erhalten; die
+vorherige DB wurde als `tw-data.pre-ppl-pilot-20261102` gesichert. Keine
+Firestore-Schreibvorgänge.

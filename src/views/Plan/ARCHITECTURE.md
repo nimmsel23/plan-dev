@@ -248,3 +248,16 @@ the same document; consumers should expose it directly beside editing.
 `components/PlanFeedback.jsx` zeigt explizite Empfangsbestätigung, Fragen und Coach-Antworten je freigegebener Version. `lib/planResponseStore.js` erhält Firebase-Instanz/Identität vom Host; `lib/planResponses.js` bindet dessen Cloud-Alias an. PlanCard lädt den Bereich ausschließlich in Cloud-Modi für Coach-Pläne. Isolierter Pfad `planResponses/{uid}/plans/{id}/versions/vN` mit unveränderlicher Bestätigung und `entries`; Rules-Fragment gehört Plan, Veröffentlichung VitalOS. Älterer automatischer Gesehen-Status bleibt separat. Details und Grenzen: [PLAN-FEEDBACK.md](../../../docs/PLAN-FEEDBACK.md).
 
 `components/PlanDeliveryOverview.jsx` ist der gemeinsame Statusbaustein für Coach-Klientenliste und Planübersicht. Optional bereits geladene Pläne verhindern erneute Listenabfragen im Workspace; die Klientenliste beobachtet Zuweisungen live und zeigt neue Pläne ohne Reload. Pro Planversion werden Receipt und genau ein letzter Eintrag abonniert; Bereinigung bei Klienten-/Versionswechsel. Antwortbedarf ergibt sich aus der Senderrolle des letzten Eintrags, nicht aus einem Lesemarker.
+
+## ClientForge: Workout- und Übungs-Muskelansicht (2026-11-01)
+
+`TrainingMuscleExplorer` ist der gemeinsame Baustein in PlanEditor,
+CatalogDetail und interaktiver PlanDocument-Ansicht. Der ausgewählte
+Trainingstag liefert die Workout-Zuordnung; Übungsklicks wechseln auf eine
+Übung mit exakten Muskel-Labels, Haupt-/Nebenrollen, Anleitung und Notizen.
+Die Körperkarte verwendet den vorhandenen KB-Adapter für die grobe Darstellung;
+sie behauptet keine gemessene Belastung. Fehlende Metadaten werden angezeigt.
+Der Druck rendert weiterhin Trainingsblätter ohne interaktive Körperkarten.
+Die lokale und Cloud-Host-App liefern Identität, Speicher und Navigation.
+
+Lokale Freigabe: `planReadiness.js` nennt offene Übungen vorab. Leere Satzlisten werden nicht durch eine beliebige Feldänderung als vollständig markiert; der Python-Runtime prüft dieselben Zielvorgaben und nennt die betroffene Übung.

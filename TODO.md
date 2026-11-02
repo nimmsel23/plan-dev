@@ -2,6 +2,11 @@
 # [NEW] Coach Office 
 Beispielfeature: Trainingsplanbesprechung zwischen Klient und Coach. Social Media Style. Comment-feed per Exercise
 
+# [x] 2026-11-02 — Lokales Plan-Tracking in Klienten-Taskwarrior
+- Coach kann einen im Klienten-Workspace gespeicherten Plan ausdrücklich in `tw-data` abgleichen.
+- Bestehende Runtime-Taskwarrior-DBs bleiben bis zu einer inventarisierten Migration getrennt.
+- [ ] Vor breitem Rollout Runtime-DBs und `tw-data` pro Klient prüfen und verlustfrei zusammenführen.
+
 # [ ] Coach-Tab stabilisieren / Inbox als verlässlichen Review-Workflow fertigstellen
 - Coach-Tab war wiederholt Problemfläche: Firestore-Inbox, lokale Catalog-Inbox,
   Runtime-Watcher und Expert-Approve liefen nicht als ein klarer, durchgehender
@@ -115,3 +120,10 @@ Produktziel: `INSPIRATION.md`. Bedienung: `docs/PLAN-WORKFLOW.md`.
 - [ ] Plan-Code, Coach-Pin, zentrale Rules und Verbraucher über die vorgesehenen Releases veröffentlichen.
 - [ ] Danach den vollständigen Ablauf auf echten Coach-/Klientengeräten abnehmen.
 - [x] Historische Plan-Rückmeldungen im Versionsverlauf öffnen und offene Rückmeldungen im Coach zusammenfassen.
+
+## [x] ClientForge: Planstudio und Muskelansicht (2026-11-01)
+
+Workout-Muskeln erklären, Übungsdetails beim Anklicken zeigen, gleiche
+Interaktion in der Klientenvorschau und dem Plan-Dokument bereitstellen.
+
+- [x] Lokale Freigabe: offene Übungen vorab nennen, leere Satzlisten korrekt behandeln.

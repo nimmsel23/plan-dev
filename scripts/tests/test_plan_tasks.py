@@ -73,6 +73,82 @@ class PlanTasksTest(unittest.TestCase):
         self.assertEqual(pt.pending("c2", self.tmp), [])
         self.assertTrue((self.tmp / "users" / "c1" / "taskwarrior" / "data").exists())
 
+    def test_local_workspace_completion_uses_only_currently_delivered_plan_workouts(self):
+        workspace = self.tmp / "client"
+        workspace.mkdir()
+        now = local(2026, 10, 19)
+        local_plan = {
+            "id": "local-plan", "name": "Coach PPL", "headVersion": 2,
+            "createdAt": local(2026, 10, 18).isoformat(), "totalWeeks": 1,
+            "routines": [{"id": "draft-routine", "label": "Draft", "weekdays": [1]}],
+            "published": {"name": "Coach PPL", "totalWeeks": 2, "routines": [{"id": "routine-a", "label": "Push", "weekdays": [0]}]},
+            "delivery": {"remotePlanId": "local-local-plan", "localVersion": 2},
+        }
+        workout = {
+            "id": "workout-monday", "sourcePlanId": "local-local-plan",
+            "sourcePlanRoutineId": "routine-a", "finished_at": local(2026, 10, 19, 18).isoformat(),
+            "sessionState": "completed",
+        }
+        other_plan_workout = {**workout, "id": "unrelated", "sourcePlanId": "different-plan"}
+
+        self.assertEqual(pt.sync_workspace_plan(workspace, local_plan, now, [other_plan_workout])["created"], 2)
+        self.assertTrue(all(task["status"] == "pending" for task in pt.workspace_tasks(workspace)))
+        report = pt.sync_workspace_plan(workspace, local_plan, now, [other_plan_workout, workout])
+        self.assertEqual(report["completed"], 1)
+        tasks = pt.workspace_tasks(workspace)
+        self.assertEqual(len(tasks), 2)
+        completed = next(task for task in tasks if task["occkey"].endswith("2026-10-19"))
+        self.assertEqual(completed["status"], "completed")
+        self.assertEqual(completed["workoutid"], "workout-monday")
+
+        stale_delivery = {**local_plan, "headVersion": 3}
+        next_workspace = self.tmp / "another-client"
+        next_workspace.mkdir()
+        pt.sync_workspace_plan(next_workspace, stale_delivery, now, [workout])
+        self.assertTrue(all(task["status"] == "pending" for task in pt.workspace_tasks(next_workspace)))
+
+        manual_workspace = self.tmp / "manual-first"
+        manual_workspace.mkdir()
+        pt.sync_workspace_plan(manual_workspace, local_plan, now, [])
+        self.assertTrue(pt.complete_workspace_occurrence(manual_workspace, "local-plan:routine-a:2026-10-19"))
+        linked = pt.sync_workspace_plan(manual_workspace, local_plan, now, [workout])
+        self.assertEqual((linked["completed"], linked["updated"]), (0, 1))
+        completed_manually_then_linked = next(
+            task for task in pt.workspace_tasks(manual_workspace)
+            if task["occkey"].endswith("2026-10-19")
+        )
+        self.assertEqual(completed_manually_then_linked["status"], "completed")
+        self.assertEqual(completed_manually_then_linked["workoutid"], "workout-monday")
+
+    def test_workspace_records_every_completed_workout_once_without_plan_duplicates(self):
+        workspace = self.tmp / "workout-workspace"
+        workspace.mkdir()
+        plan_module = pt._workspace_taskwarrior(workspace)
+        from tasklib import Task
+        planned = Task(plan_module, description="Push · PPL", project=pt.PROJECT, tags=pt.TAGS)
+        planned["occkey"] = "p1:A:2026-10-19"
+        planned["planid"] = "p1"
+        planned["routineid"] = "A"
+        planned["workoutid"] = "planned-workout"
+        planned.save()
+        planned.done()
+        workouts = [
+            {"id": "planned-workout", "name": "Push", "finished_at": local(2026, 10, 19, 18).isoformat()},
+            {"id": "core-workout", "name": "Core Training", "finished_at": local(2026, 10, 20, 8).isoformat(), "sessionState": "completed"},
+            {"id": "in-progress", "name": "Interrupted", "finished_at": local(2026, 10, 20, 9).isoformat(), "sessionState": "work"},
+        ]
+        first = pt.sync_workspace_workouts(workspace, workouts)
+        self.assertEqual(first, {"created": 1, "skipped": 1})
+        second = pt.sync_workspace_workouts(workspace, workouts)
+        self.assertEqual(second["created"], 0)
+        tasks = pt.workspace_tasks(workspace)
+        self.assertEqual(len(tasks), 2)
+        self.assertEqual({task["workoutid"] for task in tasks}, {"planned-workout", "core-workout"})
+        core = next(task for task in tasks if task["workoutid"] == "core-workout")
+        self.assertEqual(core["status"], "completed")
+        self.assertEqual(core["project"], pt.WORKOUT_PROJECT)
+        self.assertEqual(core["end"], local(2026, 10, 20, 8).isoformat())
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -264,3 +264,16 @@ Unknown prescriptions remain marked; no template defaults are manufactured.
 The print-only body portal isolates the document from app chrome. Program/source
 notes are a disclosure outside the printable sheets. PlanEditor preview uses
 the same document; consumers should expose it directly beside editing.
+
+## ClientForge: Workout- und Übungs-Muskelansicht (2026-11-01)
+
+`TrainingMuscleExplorer` ist der gemeinsame Baustein in PlanEditor,
+CatalogDetail und interaktiver PlanDocument-Ansicht. Der ausgewählte
+Trainingstag liefert die Workout-Zuordnung; Übungsklicks wechseln auf eine
+Übung mit exakten Muskel-Labels, Haupt-/Nebenrollen, Anleitung und Notizen.
+Die Körperkarte verwendet den vorhandenen KB-Adapter für die grobe Darstellung;
+sie behauptet keine gemessene Belastung. Fehlende Metadaten werden angezeigt.
+Der Druck rendert weiterhin Trainingsblätter ohne interaktive Körperkarten.
+Die lokale und Cloud-Host-App liefern Identität, Speicher und Navigation.
+
+Lokale Freigabe: `planReadiness.js` nennt offene Übungen vorab. Leere Satzlisten werden nicht durch eine beliebige Feldänderung als vollständig markiert; der Python-Runtime prüft dieselben Zielvorgaben und nennt die betroffene Übung.
