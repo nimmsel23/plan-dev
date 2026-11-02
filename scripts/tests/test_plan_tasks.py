@@ -73,6 +73,40 @@ class PlanTasksTest(unittest.TestCase):
         self.assertEqual(pt.pending("c2", self.tmp), [])
         self.assertTrue((self.tmp / "users" / "c1" / "taskwarrior" / "data").exists())
 
+    def test_local_workspace_completion_uses_only_currently_delivered_plan_workouts(self):
+        workspace = self.tmp / "client"
+        workspace.mkdir()
+        now = local(2026, 10, 19)
+        local_plan = {
+            "id": "local-plan", "name": "Coach PPL", "headVersion": 2,
+            "createdAt": local(2026, 10, 18).isoformat(), "totalWeeks": 2,
+            "routines": [{"id": "draft-routine", "label": "Draft", "weekdays": [1]}],
+            "published": {"name": "Coach PPL", "routines": [{"id": "routine-a", "label": "Push", "weekdays": [0]}]},
+            "delivery": {"remotePlanId": "local-local-plan", "localVersion": 2},
+        }
+        workout = {
+            "id": "workout-monday", "sourcePlanId": "local-local-plan",
+            "sourcePlanRoutineId": "routine-a", "finished_at": local(2026, 10, 19, 18).isoformat(),
+            "sessionState": "completed",
+        }
+        other_plan_workout = {**workout, "id": "unrelated", "sourcePlanId": "different-plan"}
+
+        self.assertEqual(pt.sync_workspace_plan(workspace, local_plan, now, [other_plan_workout])["created"], 2)
+        self.assertTrue(all(task["status"] == "pending" for task in pt.workspace_tasks(workspace)))
+        report = pt.sync_workspace_plan(workspace, local_plan, now, [other_plan_workout, workout])
+        self.assertEqual(report["completed"], 1)
+        tasks = pt.workspace_tasks(workspace)
+        self.assertEqual(len(tasks), 2)
+        completed = next(task for task in tasks if task["occkey"].endswith("2026-10-19"))
+        self.assertEqual(completed["status"], "completed")
+        self.assertEqual(completed["workoutid"], "workout-monday")
+
+        stale_delivery = {**local_plan, "headVersion": 3}
+        next_workspace = self.tmp / "another-client"
+        next_workspace.mkdir()
+        pt.sync_workspace_plan(next_workspace, stale_delivery, now, [workout])
+        self.assertTrue(all(task["status"] == "pending" for task in pt.workspace_tasks(next_workspace)))
+
 
 if __name__ == "__main__":
     unittest.main()

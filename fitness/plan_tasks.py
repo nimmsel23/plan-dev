@@ -193,7 +193,8 @@ def sync(uid: str, runtime: Path, now: datetime | None = None) -> dict[str, int]
     return report
 
 
-def sync_workspace_plan(workspace: Path, plan: dict[str, Any], now: datetime | None = None) -> dict[str, int]:
+def sync_workspace_plan(workspace: Path, plan: dict[str, Any], now: datetime | None = None,
+                       workouts: list[dict[str, Any]] | None = None) -> dict[str, int]:
     """Gleicht Vorkommen eines lokalen Coach-Plans ab, ohne Firebase-I/O."""
     today = (now or datetime.now().astimezone()).astimezone().date()
     plan_id = str(plan.get("id") or "").strip()
@@ -212,8 +213,17 @@ def sync_workspace_plan(workspace: Path, plan: dict[str, Any], now: datetime | N
     if not 1 <= weeks <= 104:
         raise ValueError("Die Planlänge muss zwischen 1 und 104 Wochen liegen.")
     end = start + timedelta(weeks=weeks) - timedelta(days=1)
-    routines = [r for r in plan.get("routines") or [] if r.get("weekdays")]
-    items = occurrences(routines, [], today, since=start, until=end)
+    released_snapshot = plan.get("published") if isinstance(plan.get("published"), dict) else plan
+    routines = [r for r in released_snapshot.get("routines") or [] if r.get("weekdays")]
+    delivery = plan.get("delivery") if isinstance(plan.get("delivery"), dict) else {}
+    remote_plan_id = delivery.get("remotePlanId")
+    delivered_current = delivery.get("localVersion") == plan.get("headVersion")
+    matching_workouts = [
+        workout for workout in (workouts or [])
+        if delivered_current and remote_plan_id and isinstance(workout, dict)
+        and workout.get("sourcePlanId") == remote_plan_id
+    ]
+    items = occurrences(routines, matching_workouts, today, since=start, until=end)
     want: dict[str, dict[str, Any]] = {}
     for item in items:
         routine = item["routine"]
@@ -222,7 +232,7 @@ def sync_workspace_plan(workspace: Path, plan: dict[str, Any], now: datetime | N
             **item,
             "key": key,
             "planId": plan_id,
-            "planName": plan.get("name") or "Trainingsplan",
+            "planName": released_snapshot.get("name") or plan.get("name") or "Trainingsplan",
             "version": plan.get("headVersion"),
         }
     return _sync_want(want, _workspace_taskwarrior(workspace), today, plan_scope=plan_id)
@@ -244,6 +254,7 @@ def workspace_tasks(workspace: Path) -> list[dict[str, Any]]:
             "end": task["end"].isoformat() if task["end"] else None,
             "occkey": task["occkey"],
             "planid": task["planid"],
+            "workoutid": task["workoutid"],
         })
     return sorted(result, key=lambda task: (task["status"] != "pending", task["due"] or "", task["description"]))
 
