@@ -79,9 +79,9 @@ class PlanTasksTest(unittest.TestCase):
         now = local(2026, 10, 19)
         local_plan = {
             "id": "local-plan", "name": "Coach PPL", "headVersion": 2,
-            "createdAt": local(2026, 10, 18).isoformat(), "totalWeeks": 2,
+            "createdAt": local(2026, 10, 18).isoformat(), "totalWeeks": 1,
             "routines": [{"id": "draft-routine", "label": "Draft", "weekdays": [1]}],
-            "published": {"name": "Coach PPL", "routines": [{"id": "routine-a", "label": "Push", "weekdays": [0]}]},
+            "published": {"name": "Coach PPL", "totalWeeks": 2, "routines": [{"id": "routine-a", "label": "Push", "weekdays": [0]}]},
             "delivery": {"remotePlanId": "local-local-plan", "localVersion": 2},
         }
         workout = {

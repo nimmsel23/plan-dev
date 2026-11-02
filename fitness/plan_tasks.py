@@ -206,14 +206,14 @@ def sync_workspace_plan(workspace: Path, plan: dict[str, Any], now: datetime | N
             start = _local_day(plan["createdAt"])
         except (TypeError, ValueError):
             pass
+    released_snapshot = plan.get("published") if isinstance(plan.get("published"), dict) else plan
     try:
-        weeks = int(plan.get("totalWeeks") or 10)
+        weeks = int(released_snapshot.get("totalWeeks") or plan.get("totalWeeks") or 10)
     except (TypeError, ValueError):
         weeks = 10
     if not 1 <= weeks <= 104:
         raise ValueError("Die Planlänge muss zwischen 1 und 104 Wochen liegen.")
     end = start + timedelta(weeks=weeks) - timedelta(days=1)
-    released_snapshot = plan.get("published") if isinstance(plan.get("published"), dict) else plan
     routines = [r for r in released_snapshot.get("routines") or [] if r.get("weekdays")]
     delivery = plan.get("delivery") if isinstance(plan.get("delivery"), dict) else {}
     remote_plan_id = delivery.get("remotePlanId")
