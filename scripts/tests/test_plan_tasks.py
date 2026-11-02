@@ -120,6 +120,35 @@ class PlanTasksTest(unittest.TestCase):
         self.assertEqual(completed_manually_then_linked["status"], "completed")
         self.assertEqual(completed_manually_then_linked["workoutid"], "workout-monday")
 
+    def test_workspace_records_every_completed_workout_once_without_plan_duplicates(self):
+        workspace = self.tmp / "workout-workspace"
+        workspace.mkdir()
+        plan_module = pt._workspace_taskwarrior(workspace)
+        from tasklib import Task
+        planned = Task(plan_module, description="Push · PPL", project=pt.PROJECT, tags=pt.TAGS)
+        planned["occkey"] = "p1:A:2026-10-19"
+        planned["planid"] = "p1"
+        planned["routineid"] = "A"
+        planned["workoutid"] = "planned-workout"
+        planned.save()
+        planned.done()
+        workouts = [
+            {"id": "planned-workout", "name": "Push", "finished_at": local(2026, 10, 19, 18).isoformat()},
+            {"id": "core-workout", "name": "Core Training", "finished_at": local(2026, 10, 20, 8).isoformat(), "sessionState": "completed"},
+            {"id": "in-progress", "name": "Interrupted", "finished_at": local(2026, 10, 20, 9).isoformat(), "sessionState": "work"},
+        ]
+        first = pt.sync_workspace_workouts(workspace, workouts)
+        self.assertEqual(first, {"created": 1, "skipped": 1})
+        second = pt.sync_workspace_workouts(workspace, workouts)
+        self.assertEqual(second["created"], 0)
+        tasks = pt.workspace_tasks(workspace)
+        self.assertEqual(len(tasks), 2)
+        self.assertEqual({task["workoutid"] for task in tasks}, {"planned-workout", "core-workout"})
+        core = next(task for task in tasks if task["workoutid"] == "core-workout")
+        self.assertEqual(core["status"], "completed")
+        self.assertEqual(core["project"], pt.WORKOUT_PROJECT)
+        self.assertEqual(core["end"], local(2026, 10, 20, 8).isoformat())
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -23,6 +23,7 @@ from loguru import logger
 WINDOW = 1
 BACKLOG_DAYS = 28
 PROJECT = "fitness.plan"
+WORKOUT_PROJECT = "fitness.workout"
 TAGS = {"fitness", "plan"}
 
 app = typer.Typer(help="Plan-Einheiten eines Klienten nach Taskwarrior synchronisieren.")
@@ -246,24 +247,69 @@ def sync_workspace_plan(workspace: Path, plan: dict[str, Any], now: datetime | N
     return _sync_want(want, _workspace_taskwarrior(workspace), today, plan_scope=plan_id)
 
 
+def sync_workspace_workouts(workspace: Path, workouts: list[dict[str, Any]] | None = None) -> dict[str, int]:
+    """Record each completed Fitness log unless a scheduled task already links it."""
+    from tasklib import Task
+
+    tw = _workspace_taskwarrior(workspace)
+    linked = {
+        str(task["workoutid"])
+        for task in tw.tasks.all()
+        if task["workoutid"] and task["status"] != "deleted"
+    }
+    report = {"created": 0, "skipped": 0}
+    for workout in workouts or []:
+        if not isinstance(workout, dict):
+            report["skipped"] += 1
+            continue
+        workout_id = str(workout.get("id") or "").strip()
+        finished_at = workout.get("finished_at")
+        if not workout_id or not finished_at or workout.get("sessionState") == "work":
+            report["skipped"] += 1
+            continue
+        if workout_id in linked:
+            continue
+        name = " ".join(str(workout.get("name") or "Trainingseinheit").split())[:180]
+        task = Task(tw, description=f"Workout · {name}", project=WORKOUT_PROJECT,
+                    tags={"fitness", "workout"})
+        task["workoutid"] = workout_id
+        if workout.get("sourcePlanId"):
+            task["planid"] = str(workout["sourcePlanId"])
+        if workout.get("sourcePlanRoutineId"):
+            task["routineid"] = str(workout["sourcePlanRoutineId"])
+        task.save()
+        task.done()
+        try:
+            finished = datetime.fromisoformat(str(finished_at).replace("Z", "+00:00"))
+            task["end"] = finished.astimezone() if finished.tzinfo else finished.astimezone()
+            task.save()
+        except (TypeError, ValueError, OverflowError):
+            pass  # Taskwarrior's completion time is a valid fallback for malformed source time.
+        linked.add(workout_id)
+        report["created"] += 1
+    return report
+
+
 def workspace_tasks(workspace: Path) -> list[dict[str, Any]]:
-    """Tasks aus dem gemeinsamen Klienten-Taskwarrior, begrenzt auf Plan-Tasks."""
+    """Tasks aus dem gemeinsamen Klienten-Taskwarrior für Pläne und Workouts."""
     if not (workspace / "tw-data" / "taskrc").is_file():
         return []
     tw = _workspace_taskwarrior(workspace)
     result = []
-    for task in tw.tasks.filter(project=PROJECT):
-        result.append({
-            "uuid": str(task["uuid"]),
-            "description": task["description"],
-            "status": task["status"],
-            "due": task["due"].isoformat() if task["due"] else None,
-            "scheduled": task["scheduled"].isoformat() if task["scheduled"] else None,
-            "end": task["end"].isoformat() if task["end"] else None,
-            "occkey": task["occkey"],
-            "planid": task["planid"],
-            "workoutid": task["workoutid"],
-        })
+    for project in (PROJECT, WORKOUT_PROJECT):
+        for task in tw.tasks.filter(project=project):
+            result.append({
+                "uuid": str(task["uuid"]),
+                "description": task["description"],
+                "status": task["status"],
+                "project": task["project"],
+                "due": task["due"].isoformat() if task["due"] else None,
+                "scheduled": task["scheduled"].isoformat() if task["scheduled"] else None,
+                "end": task["end"].isoformat() if task["end"] else None,
+                "occkey": task["occkey"],
+                "planid": task["planid"],
+                "workoutid": task["workoutid"],
+            })
     return sorted(result, key=lambda task: (task["status"] != "pending", task["due"] or "", task["description"]))
 
 
