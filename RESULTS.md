@@ -1529,3 +1529,17 @@ Abhängigkeiten, keine Muskelzuordnung aus Übungsnamen erfunden.
 Gemeinsame Freigabe-Vorprüfung nennt betroffene Trainingstage/Übungen. Leere
 Satzlisten bleiben unvollständig; lokale Runtime meldet konkrete Übung statt
 generischem Fehler. Keine Vorgaben oder Klientendaten automatisch ergänzt.
+
+## 2026-11-02 — Lokales Plan-Tracking in der Klienten-Taskwarrior-DB
+
+Die lokale Coach-Konsole kann einen Plan mit festen Wochentagen ausdrücklich in
+`<Klienten-Workspace>/tw-data` abgleichen. Sie erzeugt Tasks für den gesamten
+Planzeitraum, erhält vorhandene Klienten-Tasks und begrenzt Änderungen beim
+Sync auf den gewählten Plan. Tasks lassen sich im Coach als erledigt markieren;
+die Daten bleiben lokal und werden nicht nach Firestore geschrieben. Bestehende
+Runtime-Taskwarrior-DBs bleiben bis zu einer verlustfreien Einzelmigration
+unverändert. Tasklib-/Taskwarrior-Verhalten wurde auf einer `/tmp`-Kopie geprüft.
+Pilot für Jakob: 30 Termine aus dem lokal gespeicherten PPL-Entwurf wurden in die
+vorhandene `tw-data`-DB geschrieben. Der unabhängige Bestand blieb erhalten; die
+vorherige DB wurde als `tw-data.pre-ppl-pilot-20261102` gesichert. Keine
+Firestore-Schreibvorgänge.
