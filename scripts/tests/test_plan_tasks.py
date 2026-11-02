@@ -107,6 +107,19 @@ class PlanTasksTest(unittest.TestCase):
         pt.sync_workspace_plan(next_workspace, stale_delivery, now, [workout])
         self.assertTrue(all(task["status"] == "pending" for task in pt.workspace_tasks(next_workspace)))
 
+        manual_workspace = self.tmp / "manual-first"
+        manual_workspace.mkdir()
+        pt.sync_workspace_plan(manual_workspace, local_plan, now, [])
+        self.assertTrue(pt.complete_workspace_occurrence(manual_workspace, "local-plan:routine-a:2026-10-19"))
+        linked = pt.sync_workspace_plan(manual_workspace, local_plan, now, [workout])
+        self.assertEqual((linked["completed"], linked["updated"]), (0, 1))
+        completed_manually_then_linked = next(
+            task for task in pt.workspace_tasks(manual_workspace)
+            if task["occkey"].endswith("2026-10-19")
+        )
+        self.assertEqual(completed_manually_then_linked["status"], "completed")
+        self.assertEqual(completed_manually_then_linked["workoutid"], "workout-monday")
+
 
 if __name__ == "__main__":
     unittest.main()

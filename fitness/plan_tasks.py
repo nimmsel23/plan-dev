@@ -173,11 +173,19 @@ def _sync_want(want: dict[str, dict[str, Any]], tw, today: date, plan_scope: str
             task["description"] = desc
             task.save()
             report["updated"] += 1
-        if o["status"] == "done" and task["status"] == "pending":
-            task["workoutid"] = str(o.get("workoutId") or "")
-            task.save()
-            task.done()
-            report["completed"] += 1
+        if o["status"] == "done":
+            workout_id = str(o.get("workoutId") or "")
+            if task["status"] == "pending":
+                task["workoutid"] = workout_id
+                task.save()
+                task.done()
+                report["completed"] += 1
+            elif task["status"] == "completed" and workout_id and not task["workoutid"]:
+                # A coach may have checked the task manually before Fitness synced
+                # its session. Attach the later evidence without reopening the task.
+                task["workoutid"] = workout_id
+                task.save()
+                report["updated"] += 1
     for key, task in existing.items():
         if key not in want and task["status"] == "pending":
             task.delete()
