@@ -1,14 +1,12 @@
 import { useState } from "react";
-import { GripVertical, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { GripVertical, Trash2, ChevronDown, ChevronUp, Info } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { muskelDe, muskelColor, dedupeMuskeln } from "../../../lib/kb/muscles.js";
 import ExercisePhotoStrip from "../../../components/ExercisePhotoStrip.jsx";
 import { ensureTemplateSets } from "../lib/templateSets.js";
 
-// Eine Übungszeile im RoutineBuilder: Drag-Handle (dnd-kit sortable),
-// Kopfzeile mit Zusammenfassung, aufklappbares Detail-Formular
-// (Ziel-Sätze/Reps/Gewicht/Tracking/Satz-Typ/RIR/Tempo/Progression/Notiz).
+// Common prescriptions stay editable; photos and advanced settings are optional.
 export default function ExerciseRow({ ex, onPatch, onDelete, onInspect }) {
   const [open, setOpen] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: ex.id });
@@ -23,13 +21,12 @@ export default function ExerciseRow({ ex, onPatch, onDelete, onInspect }) {
 
   return (
     <div ref={setNodeRef} style={style} className="rounded-xl bg-fit-card border border-fit-line overflow-hidden">
-      <ExercisePhotoStrip ex={ex} className="h-32 m-2 mb-0" />
       <div className="flex items-center gap-2 px-3 py-3">
         <button {...attributes} {...listeners} aria-label={`${ex.name}: Reihenfolge ändern`} className="text-fit-muted hover:text-fit-ink cursor-grab active:cursor-grabbing p-1">
           <GripVertical size={16} />
         </button>
         <div className="flex-1 min-w-0">
-          <button type="button" onClick={onInspect || (() => setOpen((v) => !v))} className="min-h-[44px] text-left text-sm font-semibold text-fit-ink" aria-label={`${ex.name}: Muskeln und Ausführung ansehen`}>{ex.name}</button>
+          <button type="button" onClick={() => setOpen((v) => !v)} className="min-h-[44px] text-left text-sm font-semibold text-fit-ink" aria-label={`${ex.name}: Weitere Vorgaben`} aria-expanded={open}>{ex.name}</button>
           <div className="flex flex-wrap gap-1 mt-1">
             {dedupeMuskeln(ex.primaryMuscles).slice(0, 3).map((m) => (
               <span key={m} className="text-xs px-1.5 py-0.5 rounded font-medium"
@@ -39,27 +36,26 @@ export default function ExerciseRow({ ex, onPatch, onDelete, onInspect }) {
             ))}
           </div>
         </div>
-        <div className="flex items-center gap-1 flex-shrink-0">
+        <div className="flex flex-wrap items-center justify-end gap-1 shrink-0 max-w-[45%]">
           {templateSets.some((set) => set.setType === "failure") && <span className="text-xs px-1.5 py-0.5 rounded bg-red-500/15 text-red-400 font-medium">Failure</span>}
           {templateSets.some((set) => set.setType === "drop") ? <span className="text-xs px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-400 font-medium">Drop</span> : null}
           <span className="font-mono text-xs text-fit-muted">
-            {ex.prescriptionIncomplete ? 'Vorgaben offen' : <>{templateSets.length}×{(ex.trackingType || "weight_reps") === "duration" ? (leadSet.targetDuration ?? "10s") : (leadSet.targetReps ?? "8-12")}</>}
+            {ex.prescriptionIncomplete ? 'Vorgaben offen' : <>{templateSets.length}×{["duration", "distance_time"].includes(ex.trackingType) ? (leadSet.targetDuration ?? "10s") : (leadSet.targetReps ?? "8-12")}</>}
           </span>
-          <button aria-label={`${ex.name}: Satzvorgaben bearbeiten`} aria-expanded={open} onClick={() => setOpen((v) => !v)} className="p-1.5 rounded-lg text-fit-muted hover:text-fit-ink transition-colors">
+          <button aria-label={`${ex.name}: Satzvorgaben bearbeiten`} aria-expanded={open} onClick={() => setOpen((v) => !v)} className="min-h-[44px] min-w-[44px] rounded-lg text-fit-muted hover:text-fit-ink transition-colors">
             {open ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           </button>
-          <button onClick={onDelete} className="p-1.5 rounded-lg text-fit-muted hover:text-fit-red hover:bg-red-500/10 transition-all">
+          <button aria-label={`${ex.name}: Entfernen`} onClick={onDelete} className="min-h-[44px] min-w-[44px] rounded-lg text-fit-muted hover:text-fit-red hover:bg-red-500/10 transition-all">
             <Trash2 size={14} />
           </button>
         </div>
       </div>
 
-      {open && (
-        <div className="px-4 pb-4 pt-1 border-t border-fit-line/50 grid grid-cols-2 gap-3">
+      <div role="group" aria-label={`${ex.name}: Basisvorgaben`} className="px-3 pb-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
           <label className="flex flex-col gap-1">
             <span className="text-xs text-fit-muted font-medium">Ziel-Sätze{ex.prescriptionIncomplete ? ' · zuerst ergänzen' : ''}</span>
-            <input type="number" min="1" placeholder="offen" value={ex.prescriptionIncomplete ? '' : templateSets.length}
-              onChange={(e) => onPatch("templateSets", Array.from({ length: Math.max(1, Number(e.target.value) || 1) }, (_, index) => ({
+            <input type="number" min="1" max="100" placeholder="offen" value={ex.prescriptionIncomplete ? '' : templateSets.length}
+              onChange={(e) => onPatch("templateSets", Array.from({ length: Math.max(1, Math.min(100, Number(e.target.value) || 1)) }, (_, index) => ({
                 ...(templateSets[index] || leadSet || {}),
                 setIndex: index + 1,
                 setType: templateSets[index]?.setType || leadSet.setType || "normal",
@@ -69,39 +65,52 @@ export default function ExerciseRow({ ex, onPatch, onDelete, onInspect }) {
                 targetDuration: templateSets[index]?.targetDuration ?? leadSet.targetDuration ?? null,
                 progressionStage: templateSets[index]?.progressionStage ?? leadSet.progressionStage ?? ex.progressionStage ?? null,
               })))}
-              className="px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm font-mono focus:outline-none focus:border-fit-accent" />
+              className="min-h-[44px] min-w-0 w-full px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm font-mono focus:outline-none focus:border-fit-accent" />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-xs text-fit-muted font-medium">{(ex.trackingType || "weight_reps") === "duration" ? "Ziel-Sekunden" : "Ziel-Wdh"}</span>
-            <input value={(ex.trackingType || "weight_reps") === "duration" ? (leadSet.targetDuration ?? "") : (leadSet.targetReps ?? "")}
+            <span className="text-xs text-fit-muted font-medium">{["duration", "distance_time"].includes(ex.trackingType) ? "Ziel-Sekunden" : "Ziel-Wdh"}</span>
+            <input value={["duration", "distance_time"].includes(ex.trackingType) ? (leadSet.targetDuration ?? "") : (leadSet.targetReps ?? "")}
               onChange={(e) => onPatch("templateSets", templateSets.map((set) => (
-                (ex.trackingType || "weight_reps") === "duration"
+                ["duration", "distance_time"].includes(ex.trackingType)
                   ? { ...set, targetDuration: e.target.value === "" ? null : Number(e.target.value) }
                   : { ...set, targetReps: e.target.value }
               )))}
-              className="px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm font-mono focus:outline-none focus:border-fit-accent"
-              placeholder={(ex.trackingType || "weight_reps") === "duration" ? "10" : "8-12 / AMRAP"} />
+              className="min-h-[44px] min-w-0 w-full px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm font-mono focus:outline-none focus:border-fit-accent"
+              placeholder={["duration", "distance_time"].includes(ex.trackingType) ? "10" : "8-12 / AMRAP"} />
           </label>
           {(ex.trackingType || "weight_reps") === "weight_reps" && (
             <label className="flex flex-col gap-1">
               <span className="text-xs text-fit-muted font-medium">Ziel-Gewicht</span>
               <input type="number" min="0" value={leadSet.targetWeight ?? ""}
                 onChange={(e) => onPatch("templateSets", templateSets.map((set) => ({ ...set, targetWeight: e.target.value === "" ? null : Number(e.target.value) })))}
-                className="px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm font-mono focus:outline-none focus:border-fit-accent"
+                className="min-h-[44px] min-w-0 w-full px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm font-mono focus:outline-none focus:border-fit-accent"
                 placeholder="60" />
             </label>
           )}
+          {ex.trackingType === "distance_time" && <label className="flex flex-col gap-1">
+            <span className="text-xs text-fit-muted font-medium">Ziel-Distanz (m)</span>
+            <input type="number" min="0" value={leadSet.targetDistance ?? ""}
+              onChange={(e) => onPatch("templateSets", templateSets.map((set) => ({ ...set, targetDistance: e.target.value === "" ? null : Number(e.target.value) })))}
+              className="min-h-[44px] min-w-0 w-full px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm" />
+          </label>}
           <label className="flex flex-col gap-1">
             <span className="text-xs text-fit-muted font-medium">Pause (s)</span>
             <input type="number" min="0" value={ex.rest_seconds}
               onChange={(e) => onPatch("rest_seconds", Number(e.target.value))}
-              className="px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm font-mono focus:outline-none focus:border-fit-accent" />
+              className="min-h-[44px] min-w-0 w-full px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm font-mono focus:outline-none focus:border-fit-accent" />
           </label>
+      </div>
+      {open && (
+        <div className="px-4 pb-4 pt-3 border-t border-fit-line/50 grid grid-cols-2 gap-3">
+          <div className="col-span-2">
+            <ExercisePhotoStrip ex={ex} className="h-32" />
+            {onInspect && <button onClick={onInspect} className="min-h-[44px] inline-flex items-center gap-2 text-sm text-fit-accent"><Info size={16} />Muskeln und Ausführung ansehen</button>}
+          </div>
           <label className="flex flex-col gap-1">
             <span className="text-xs text-fit-muted font-medium">Tracking</span>
             <select value={ex.trackingType || "weight_reps"}
               onChange={(e) => onPatch("trackingType", e.target.value)}
-              className="px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm focus:outline-none focus:border-fit-accent">
+              className="min-h-[44px] min-w-0 w-full px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm focus:outline-none focus:border-fit-accent">
               <option value="weight_reps">Gewicht + Wdh</option>
               <option value="bodyweight_reps">Bodyweight + Wdh</option>
               <option value="duration">Dauer</option>
@@ -112,7 +121,7 @@ export default function ExerciseRow({ ex, onPatch, onDelete, onInspect }) {
             <span className="text-xs text-fit-muted font-medium">Satz-Typ</span>
             <select value={leadSet.setType || "normal"}
               onChange={(e) => onPatch("templateSets", templateSets.map((set) => ({ ...set, setType: e.target.value })))}
-              className="px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm focus:outline-none focus:border-fit-accent">
+              className="min-h-[44px] min-w-0 w-full px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm focus:outline-none focus:border-fit-accent">
               <option value="normal">Normal</option>
               <option value="warmup">Warm-up</option>
               <option value="drop">Drop</option>
@@ -123,28 +132,28 @@ export default function ExerciseRow({ ex, onPatch, onDelete, onInspect }) {
             <span className="text-xs text-fit-muted font-medium">RIR</span>
             <input type="number" min="0" max="5" value={ex.rir ?? ""}
               onChange={(e) => onPatch("rir", e.target.value === "" ? null : Number(e.target.value))}
-              className="px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm font-mono focus:outline-none focus:border-fit-accent"
+              className="min-h-[44px] min-w-0 w-full px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm font-mono focus:outline-none focus:border-fit-accent"
               placeholder="0–5" />
           </label>
           <label className="flex flex-col gap-1">
             <span className="text-xs text-fit-muted font-medium">Tempo</span>
             <input value={ex.tempo ?? ""}
               onChange={(e) => onPatch("tempo", e.target.value)}
-              className="px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm font-mono focus:outline-none focus:border-fit-accent"
+              className="min-h-[44px] min-w-0 w-full px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm font-mono focus:outline-none focus:border-fit-accent"
               placeholder="30X0" />
           </label>
           <label className="flex flex-col gap-1">
             <span className="text-xs text-fit-muted font-medium">Progression Stage</span>
             <input value={leadSet.progressionStage ?? ex.progressionStage ?? ""}
               onChange={(e) => onPatch("templateSets", templateSets.map((set) => ({ ...set, progressionStage: e.target.value || null })))}
-              className="px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm focus:outline-none focus:border-fit-accent"
+              className="min-h-[44px] min-w-0 w-full px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm focus:outline-none focus:border-fit-accent"
               placeholder="tuck / adv_tuck / full" />
           </label>
           <label className="flex flex-col gap-1 col-span-2">
             <span className="text-xs text-fit-muted font-medium">Notiz</span>
             <input value={ex.notes ?? ""}
               onChange={(e) => onPatch("notes", e.target.value)}
-              className="px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm focus:outline-none focus:border-fit-accent"
+              className="min-h-[44px] min-w-0 w-full px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm focus:outline-none focus:border-fit-accent"
               placeholder="Technik-Hinweis, Tempo, …" />
           </label>
         </div>
