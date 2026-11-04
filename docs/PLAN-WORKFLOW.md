@@ -113,3 +113,15 @@ Entwurf lokal sichern. Lokale Versionen und Exporte benötigen keinen Cloud-Zugr
 Erst **An Klienten senden** überträgt eine freigegebene Version serverseitig.
 Vorhandene ClientForge-Pläne können ausdrücklich übernommen werden; Originale
 bleiben unverändert.
+
+## Schnell Übungen zusammenstellen
+
+Die Übungssuche bleibt beim Hinzufügen geöffnet und behält den Suchbegriff.
+Bereits vorhandene Übungen sind markiert; mit **Fertig**, Escape oder einem Klick
+außerhalb wird die Trefferliste geschlossen. Im Planeditor steht sie oberhalb
+der Übungsliste.
+
+Sätze, Wiederholungen beziehungsweise Dauer, Gewicht und Pause sind direkt in
+der kompakten Übungszeile editierbar. Ein Klick auf den Übungsnamen oder den
+Pfeil öffnet Bilder und zusätzliche Vorgaben wie Tracking, Satztyp, RIR, Tempo
+und Notizen. Dort bleibt auch die Muskel-/Ausführungsansicht erreichbar.
