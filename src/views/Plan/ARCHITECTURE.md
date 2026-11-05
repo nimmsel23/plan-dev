@@ -339,3 +339,12 @@ ein ausdrücklicher Tipp (Autosave über `replaceSets`). Offen: Zuordnung per Ü
 neuer Schritt: Coach legt eine Phase an, speichert, Banner „Woche 1/1 · Basis“ + „Fortschritt je Phase“ erscheinen, kein horizontaler
 Überlauf bei Mobilbreite. Nicht im Harness abgedeckt: Session-Tab-Gate/Launcher/„Wie letztes Mal“ (liegen im Session-View, der
 Harness mountet nur `views/Plan`) – dort bleibt es bei Unit-Tests (`plan-session-draft`). Eine authentifizierte Firebase-Abnahme steht aus.
+
+## Browserabnahme Session-Gate (2026-11-05)
+
+`pnpm run test:session:browser` (`scripts/tests/session-harness.jsx`, `session-browser.mjs`, `run-session-browser.sh`): mountet das echte
+`Session/TodayPlan` mit einem Coach-Plan (Phasen Aufbau/Deload, Woche 2) im isolierten Harness auf 390 px Breite. Geprüft: Phasenbanner,
+phasen-angepasste Vorgabe (5→3 Sätze, RIR 2→4), freie Einheitenwahl, „Mit Vorbereitung loggen“ liefert den Entwurf (leere Ist-Werte),
+kein horizontaler Überlauf, keine Browserfehler. Weiter nur Unit-getestet: TemplateLauncher-Liste, „Wie letztes Mal übernehmen“ im
+`ExerciseCard`, Einfügen in eine bestehende Tages-Session (`useSession`) – dafür müsste der Harness den gesamten Session-Editor mit
+Session-Backend mounten.
