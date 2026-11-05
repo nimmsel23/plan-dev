@@ -332,3 +332,10 @@ Zuordnung über Übungs-ID statt Name, Phasen-Auswertung in der Coach-Shell.
 zeigt den Link „Wie letztes Mal übernehmen“ nur, wenn es etwas zu übernehmen gibt (`prev` = `prevMap[ex.name]`), die Übernahme ist
 ein ausdrücklicher Tipp (Autosave über `replaceSets`). Offen: Zuordnung per Übungs-ID statt Name, Übernahme inkl. Progression
 (+% aus Phase auf Vorgewicht), Phasen-Auswertung in der Coach-Shell (coach-dev, separates Repo).
+
+## Browserabnahme Drills 1–8 (2026-11-05)
+
+`pnpm run test:plan:browser` (isolierter Harness: temporäre Daten, eigene Ports, headless Thorium) läuft mit den Drills grün;
+neuer Schritt: Coach legt eine Phase an, speichert, Banner „Woche 1/1 · Basis“ + „Fortschritt je Phase“ erscheinen, kein horizontaler
+Überlauf bei Mobilbreite. Nicht im Harness abgedeckt: Session-Tab-Gate/Launcher/„Wie letztes Mal“ (liegen im Session-View, der
+Harness mountet nur `views/Plan`) – dort bleibt es bei Unit-Tests (`plan-session-draft`). Eine authentifizierte Firebase-Abnahme steht aus.
