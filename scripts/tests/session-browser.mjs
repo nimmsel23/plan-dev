@@ -73,6 +73,19 @@ try {
   await wait(has('Werte vom letzten Mal übernommen'));
   await wait(`![...document.querySelectorAll('button')].some((b) => b.textContent.trim() === 'Wie letztes Mal übernehmen')`);
   console.log('PASS: ExerciseCard adopts last performance into empty fields only, then hides the link.');
+  // Drill 4: Launcher listet die Vorlage und liefert nach Klick einen vorbereiteten Entwurf.
+  await wait(has('Einzelne Workouts (ohne Plan)'));
+  await wait(`!!document.querySelector('#launcher-root button')`);
+  await evaluate(`document.querySelector('#launcher-root button').click()`);
+  await wait(`document.getElementById('launched').textContent.length > 0`);
+  const launched = await evaluate(`document.getElementById('launched').textContent`);
+  assert.ok(!launched.startsWith('ERROR'), launched);
+  const d3 = JSON.parse(launched);
+  assert.match(d3.block, /^Push A$/);
+  assert.equal(d3.exercises[0].name, 'Bankdrücken');
+  assert.equal(d3.exercises[0].setsArray.length, 3);
+  assert.deepEqual(d3.exercises[0].setsArray[0], { reps: '', weight: '' });
+  console.log('PASS: TemplateLauncher lists a saved template and builds a prepared draft from it.');
   assert.deepEqual(errors, []);
   console.log('PASS: No uncaught browser exceptions.');
 } catch (err) {
