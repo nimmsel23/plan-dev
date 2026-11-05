@@ -305,3 +305,13 @@ absolvierte Einheiten (nur abgeschlossene Workouts mit `sourcePlanId` + `sourceP
 Zustand (past/current/upcoming). `components/PhaseProgress.jsx` zeigt das im Klientenpfad der `PlanCard` über dem `PhaseEditor`.
 Workouts ohne Phasenbezug (Altbestand, freies Training) zählen bewusst nicht mit. Offen: Auswertung in der Klientenliste/Coach-Shell,
 Soll-Ist je Übung (Gewichts-Ist vs. progressiertes Ziel), Entwurf an bestehende Tages-Session anhängen, Launcher ohne Plan.
+
+## Drill 6 — Entwurf in bestehende Session + Launcher im Editor (2026-11-05)
+
+`lib/sessionDraft.js::mergeDraftIntoExercises` fügt einen Entwurf in vorhandene Übungen ein (neue anhängen; gleiche `id` bekommt
+zusätzliche vorbereitete Sätze, Zielnotiz ohne Duplikat; erfasste Ist-Werte bleiben). Zwei Wege nutzen es:
+(1) `useSession`: ein `initialDraft` wird bei bereits bestehender Tages-Session einmalig eingefügt (`draftAppliedRef`) – vorher
+ging er dort verloren; (2) `SessionEditor` hat über der Übungsliste „Workout / Vorlage laden“ (`TemplateLauncher` →
+`exerciseOps.appendDraft` aus `useExerciseList`), damit auch Nutzer **ohne Plan** und mitten in einer Session Vorlagen laden können.
+Offen: letzte Leistung je Übung im Draft (Prefill-Vorschlag, erst nach Bestätigung gültig), Phasen-Auswertung in der Coach-Shell,
+Launcher lädt Vorlagenliste derzeit bei jedem Editor-Mount (lazy beim Öffnen wäre sparsamer).

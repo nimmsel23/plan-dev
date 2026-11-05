@@ -31,3 +31,19 @@ test('Entwurf mit Deload-Phase: weniger Sätze, mehr RIR, Phase im Blocknamen', 
 test('prescriptionText: ohne Vorgaben leer', () => {
   assert.equal(prescriptionText({ name: 'x', prescriptionIncomplete: true }), '');
 });
+
+test('mergeDraftIntoExercises: anhängen, gleiche Übung bekommt Sätze, Ist-Werte bleiben, keine Mutation', async () => {
+  const { mergeDraftIntoExercises } = await import('../../src/views/Plan/lib/sessionDraft.js');
+  const existing = [{ id: 'bench', name: 'Bankdrücken', note: 'x', setsArray: [{ reps: '8', weight: '60' }] }];
+  const draft = routineToSessionDraft(routine);
+  const out = mergeDraftIntoExercises(existing, draft);
+  assert.equal(out.length, 2);
+  assert.equal(out[0].setsArray.length, 6);
+  assert.deepEqual(out[0].setsArray[0], { reps: '8', weight: '60' });
+  assert.match(out[0].note, /^x\nZiel: 5×8/);
+  assert.equal(existing[0].setsArray.length, 1);
+  assert.equal(out[1].name, 'Dehnen');
+  // zweites Einfügen derselben Zielnotiz dupliziert sie nicht
+  assert.equal((mergeDraftIntoExercises(out, draft)[0].note.match(/Ziel:/g) || []).length, 1);
+  assert.deepEqual(mergeDraftIntoExercises(existing, null), existing);
+});

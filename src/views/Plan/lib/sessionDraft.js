@@ -40,3 +40,19 @@ export function routineToSessionDraft(routine, { phase = null, planName = '', we
   });
   return { block: `${routine.label}${tag}${planName ? ` · ${planName}` : ''}`, exercises };
 }
+
+// Drill 6: Entwurf in eine schon bestehende Session einfügen. Neue Übungen werden angehängt; kommt eine Übung
+// (gleiche id) schon vor, erhält sie die vorbereiteten Sätze zusätzlich und die Zielnotiz wird ergänzt.
+// Bereits erfasste Ist-Werte bleiben unangetastet (rein, ohne Mutation).
+export function mergeDraftIntoExercises(existing = [], draft = null) {
+  const incoming = draft?.exercises || [];
+  const out = existing.map((e) => ({ ...e }));
+  for (const ex of incoming) {
+    const i = out.findIndex((e) => e.id === ex.id);
+    if (i === -1) { out.push({ ...ex, setsArray: ex.setsArray.map((x) => ({ ...x })) }); continue; }
+    const cur = out[i];
+    const note = [cur.note, ex.note && !String(cur.note || '').includes(ex.note) ? ex.note : ''].filter(Boolean).join('\n');
+    out[i] = { ...cur, setsArray: [...(cur.setsArray || []), ...ex.setsArray.map((x) => ({ ...x }))], note };
+  }
+  return out;
+}
