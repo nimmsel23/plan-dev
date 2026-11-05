@@ -261,3 +261,14 @@ Der Druck rendert weiterhin Trainingsblätter ohne interaktive Körperkarten.
 Die lokale und Cloud-Host-App liefern Identität, Speicher und Navigation.
 
 Lokale Freigabe: `planReadiness.js` nennt offene Übungen vorab. Leere Satzlisten werden nicht durch eine beliebige Feldänderung als vollständig markiert; der Python-Runtime prüft dieselben Zielvorgaben und nennt die betroffene Übung.
+
+## Drill 1 — Mikrozyklen / Periodisierung (2026-11-05)
+
+Ein Makrozyklus hat optional `phases` (Mikrozyklen): aufeinanderfolgende Blöcke `{id, name, kind, weeks, volumePct, rirDelta, note}`
+mit `kind` ∈ base/build/peak/deload/test. Logik: `lib/microcycles.js` (`normalizePhases`, `phaseTimeline`, `phaseForWeek`,
+`planWeek`, `applyPhaseToRoutine`). Python-Spiegel: `macrocycles.py::_phases` (Änderungen immer an beiden Stellen).
+`phases` ist Teil des Versions-Snapshots, aber nur wenn nicht leer (Alt-Pläne behalten Snapshot-Gleichheit); `restore` setzt sie zurück.
+Beim Start einer Einheit aus dem Plan (PlanCard, CoachPlanToday) werden Satzzahl (Volumen-%) und RIR der aktuellen Phase auf den
+Übungs-Snapshot angewendet; das Workout speichert `sourcePlanPhase {id,name,week}`. UI: `components/PhaseEditor.jsx` (Coach, im Klientenpfad),
+Phasen-Banner in PlanCard/CoachPlanToday. Offen für Folge-Drills: Phase je Woche im Session-Tab (vos-training) anzeigen, Gewichtsprogression
+pro Woche, Wochen-Overrides einzelner Übungen. Tests: `scripts/tests/plan-microcycles.test.mjs`, `test_plan_backend.py::test_phases_*`.

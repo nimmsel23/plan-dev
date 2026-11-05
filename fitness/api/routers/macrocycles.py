@@ -105,10 +105,56 @@ def _versions_dir(client_uid: str, cycle_id: str) -> Path:
     return _dir(client_uid) / cycle_id / "versions"
 
 
+PHASE_KINDS = {"base": (100, 0), "build": (110, -1), "peak": (90, -2), "deload": (60, 2), "test": (70, 0)}
+MAX_PLAN_WEEKS = 104
+
+
+def _clamp(value: Any, lo: int, hi: int, default: int) -> int:
+    try:
+        n = round(float(value))
+    except (TypeError, ValueError):
+        return default
+    return min(hi, max(lo, n))
+
+
+def _phases(raw: Any) -> list[dict[str, Any]]:
+    """Spiegel von src/views/Plan/lib/microcycles.js::normalizePhases (Periodisierungs-Phasen)."""
+    if not isinstance(raw, list):
+        return []
+    out: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    total = 0
+    for item in raw:
+        if not isinstance(item, dict):
+            continue
+        kind = item.get("kind") if item.get("kind") in PHASE_KINDS else "base"
+        pid = _text(item.get("id"))[:40] or f"ph-{len(out) + 1}"
+        while pid in seen:
+            pid += "-x"
+        seen.add(pid)
+        weeks = min(_clamp(item.get("weeks"), 1, 52, 1), MAX_PLAN_WEEKS - total)
+        if weeks < 1:
+            break
+        total += weeks
+        vol, rir = PHASE_KINDS[kind]
+        out.append({
+            "id": pid,
+            "name": (_text(item.get("name")) or kind.capitalize())[:60],
+            "kind": kind,
+            "weeks": weeks,
+            "volumePct": _clamp(item.get("volumePct"), 30, 150, vol),
+            "rirDelta": _clamp(item.get("rirDelta"), -3, 3, rir),
+            "note": _text(item.get("note"))[:300],
+        })
+    return out
+
+
 def _snapshot(m: dict[str, Any]) -> dict[str, Any]:
     """Inhalt, der veröffentlicht wird (Git: Tree eines Commits)."""
     routines = [{**r, "weekdays": sorted(r.get("weekdays") or []), "exercises": r.get("exercises") or []} for r in m.get("routines") or []]
+    phases = _phases(m.get("phases"))
     return {
+        **({"phases": phases} if phases else {}),
         "name": m.get("name", ""),
         "description": m.get("description") or "",
         "totalWeeks": _weeks(m.get("totalWeeks")),
@@ -348,6 +394,10 @@ async def update_macrocycle(client_uid: str, cycle_id: str, request: Request):
             if type(weeks) is not int or not 1 <= weeks <= 104:
                 raise HTTPException(422, detail="Ungültige Plandauer")
             m["totalWeeks"] = weeks
+        if "phases" in body:
+            if not isinstance(body["phases"], list):
+                raise HTTPException(422, detail="Ungültige Phasen")
+            m["phases"] = _phases(body["phases"])
         if "routines" in body:
             routines = body["routines"]
             if (not isinstance(routines, list)
@@ -460,6 +510,7 @@ async def restore_version(client_uid: str, cycle_id: str, request: Request):
         raise HTTPException(404, detail="Version nicht gefunden")
     with _lock:
         m = _load(client_uid, cycle_id)
+        m.pop("phases", None)  # Snapshots ohne Phasen setzen den Arbeitsstand ebenfalls zurück
         m.update({k: v for k, v in version["snapshot"].items()})
         _save(client_uid, m)
     return {"ok": True, "macrocycle": m}

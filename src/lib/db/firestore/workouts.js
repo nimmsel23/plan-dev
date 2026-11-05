@@ -151,6 +151,7 @@ export async function createWorkout(body, uidOverride) {
     sourcePlanId: body.sourcePlanId || null,
     sourcePlanRoutineId: body.sourcePlanRoutineId || null,
     sourcePlanVersion: body.sourcePlanVersion || null,
+    sourcePlanPhase: body.sourcePlanPhase?.id ? { id: String(body.sourcePlanPhase.id).slice(0, 40), name: String(body.sourcePlanPhase.name || '').slice(0, 60), week: Number(body.sourcePlanPhase.week) || 1 } : null,
     sourceAssignmentId: body.sourceAssignmentId || null,
     name: name || `Workout ${new Date().toLocaleDateString("de-AT", { day: "2-digit", month: "2-digit" })}`,
     started_at: new Date().toISOString(),

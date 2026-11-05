@@ -1,5 +1,6 @@
 import { db } from '../../../firebase.js'
 import { snapshotOf, sameSnapshot } from '../../../views/Plan/lib/planVersions.js'
+import { normalizePhases } from '../../../views/Plan/lib/microcycles.js'
 import {
   doc,
   collection,
@@ -220,8 +221,8 @@ export async function restorePlanVersion(clientUid, cycleId, versionId) {
   return mutate(clientUid, cycleId, async (m, tx) => {
     const snap = await tx.get(doc(db, 'fitness', clientUid, 'macrocycles', cycleId, 'versions', String(versionId)));
     if (!snap.exists()) throw new Error('Version nicht gefunden.');
-    const { name, description, totalWeeks, routines } = clone(snap.data().snapshot);
-    return { name, description, totalWeeks, routines };
+    const { name, description, totalWeeks, routines, phases } = clone(snap.data().snapshot);
+    return { name, description, totalWeeks, routines, phases: phases || [] };
   });
 }
 
@@ -236,6 +237,10 @@ export async function updateMacrocycle(clientUid, cycleId, patch = {}) {
     if ('totalWeeks' in patch) {
       if (!Number.isInteger(patch.totalWeeks) || patch.totalWeeks < 1 || patch.totalWeeks > 104) throw new Error('Ungültige Plandauer.');
       fields.totalWeeks = patch.totalWeeks;
+    }
+    if ('phases' in patch) {
+      if (!Array.isArray(patch.phases)) throw new Error('Ungültige Phasen.');
+      fields.phases = normalizePhases(patch.phases);
     }
     if ('routines' in patch) {
       if (!Array.isArray(patch.routines) || patch.routines.some((r) => !r.id || !r.label?.trim() || !Array.isArray(r.exercises)) || new Set(patch.routines.map((r) => r.id)).size !== patch.routines.length) throw new Error('Ungültige Trainingstage.');

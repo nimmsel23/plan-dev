@@ -84,7 +84,7 @@ export default function StrongApp({ user, onSignOut }) {
           {tab === "history" && (
             <HistoryView onRepeat={async (workout) => {
               let id;
-              try { id = await startWorkout({ name: workout.name, routine_id: workout.routine_id, routine_snapshot: { name: workout.name, exercises: workoutTemplateExercises(workout) }, sourcePlanId: workout.sourcePlanId, sourcePlanRoutineId: workout.sourcePlanRoutineId, sourcePlanVersion: workout.sourcePlanVersion, sourceAssignmentId: workout.sourceAssignmentId }); }
+              try { id = await startWorkout({ name: workout.name, routine_id: workout.routine_id, routine_snapshot: { name: workout.name, exercises: workoutTemplateExercises(workout) }, sourcePlanId: workout.sourcePlanId, sourcePlanRoutineId: workout.sourcePlanRoutineId, sourcePlanVersion: workout.sourcePlanVersion, sourcePlanPhase: workout.sourcePlanPhase, sourceAssignmentId: workout.sourceAssignmentId }); }
               catch (err) { if (err.code !== 'ACTIVE_WORKOUT') throw err; if (!confirm(`„${err.active.name}“ läuft noch. Jetzt dorthin wechseln?`)) return; id = err.active.id; }
               setPlanRoute({ view: 'workout', id }); setCoachOpen(false); setTab('workout');
             }} onOpenExercise={(key) => { setExerciseKey(key); setTab("exercises"); }} />
