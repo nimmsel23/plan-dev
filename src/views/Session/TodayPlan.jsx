@@ -46,7 +46,7 @@ export default function TodayPlan({ cycle: rawCycle, nextRoutine: next, lastPerf
   const picked = routines.find(r => r.id === pickedId) || next
   const week = planWeek(cycle)
   const phase = phaseForWeek(cycle.phases, week)
-  const nextRoutine = applyPhaseToRoutine(picked, phase)
+  const nextRoutine = applyPhaseToRoutine(picked, phase, week)
 
   function lastFor(exerciseId) {
     return lastPerformance?.exercises?.find(e => e.exercise_id === exerciseId)

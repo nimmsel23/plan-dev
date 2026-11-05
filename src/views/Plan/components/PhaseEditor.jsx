@@ -27,6 +27,7 @@ export default function PhaseEditor({ phases, disabled, onSave }) {
         <label className="text-xs font-semibold text-fit-muted">Wochen<input type="number" inputMode="numeric" min="1" max="52" value={p.weeks} onChange={(e) => patch(i, { weeks: e.target.value })} className={field} /></label>
         <label className="text-xs font-semibold text-fit-muted">Volumen %<input type="number" inputMode="numeric" min="30" max="150" step="5" value={p.volumePct} onChange={(e) => patch(i, { volumePct: e.target.value })} className={field} /></label>
         <label className="text-xs font-semibold text-fit-muted">RIR ±<input type="number" inputMode="numeric" min="-3" max="3" value={p.rirDelta} onChange={(e) => patch(i, { rirDelta: e.target.value })} className={field} /></label>
+        <label className="col-span-2 text-xs font-semibold text-fit-muted">Gewicht +% pro Woche in der Phase<input type="number" inputMode="numeric" min="0" max="10" value={p.weeklyWeightPct ?? 0} onChange={(e) => patch(i, { weeklyWeightPct: e.target.value })} className={field} /></label>
       </div>
       <label className="mt-2 block text-xs font-semibold text-fit-muted">Hinweis<input maxLength={300} value={p.note} onChange={(e) => patch(i, { note: e.target.value })} className={field} /></label>
     </li>)}</ol>

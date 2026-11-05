@@ -224,6 +224,9 @@ class PlanBackendTest(unittest.TestCase):
                 self.assertEqual([(p["kind"], p["weeks"]) for p in out["phases"]], [("build", 3), ("deload", 1), ("base", 52)][:3])
                 self.assertEqual(out["phases"][1]["volumePct"], 150)
                 self.assertEqual(out["phases"][1]["rirDelta"], -3)
+                self.assertEqual(out["phases"][0]["weeklyWeightPct"], 0)
+                prog = client.patch(url, json={"phases": [{"id": "p1", "kind": "build", "weeks": 2, "weeklyWeightPct": 99}]}).json()["macrocycle"]
+                self.assertEqual(prog["phases"][0]["weeklyWeightPct"], 10)
                 self.assertEqual(sum(p["weeks"] for p in out["phases"]), 56)
                 client.patch(url, json={"phases": [{"id": "p1", "kind": "build", "weeks": 3}]})
                 v1 = client.patch(url, json={"status": "published"}).json()["macrocycle"]

@@ -21,7 +21,7 @@ export function prescriptionText(ex) {
 }
 
 export function routineToSessionDraft(routine, { phase = null, planName = '', week = null } = {}) {
-  const adjusted = applyPhaseToRoutine(routine, phase);
+  const adjusted = applyPhaseToRoutine(routine, phase, week);
   const tag = phase ? ` [${phase.name}${week ? `, W${week}` : ''}]` : '';
   const exercises = (adjusted.exercises || []).map((ex, i) => {
     const count = Math.max(1, ex.templateSets?.length || Number(ex.target_sets) || 1);

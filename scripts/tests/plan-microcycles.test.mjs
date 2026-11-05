@@ -63,3 +63,17 @@ test('planWeek: ab Veröffentlichung, nie unter 1', async () => {
   assert.equal(planWeek({ publishedAt: '2027-01-01T00:00:00Z' }, now), 1);
   assert.equal(planWeek({}, now), 1);
 });
+
+test('Gewichtsprogression: +% pro Woche in der Phase, 0,5-kg-Raster, Woche 1 unverändert', async () => {
+  const { progressedWeight, phaseForWeek: pfw, applyPhaseToExercise: ap } = await import('../../src/views/Plan/lib/microcycles.js');
+  const ph = [{ id: 'a', kind: 'build', weeks: 1 }, { id: 'b', kind: 'build', weeks: 3, volumePct: 100, rirDelta: 0, weeklyWeightPct: 5 }];
+  const phase = pfw(ph, 4); // Woche 3 der Phase b
+  assert.equal(progressedWeight(100, phase, 4), 110.5);
+  assert.equal(progressedWeight(100, pfw(ph, 2), 2), 100);
+  assert.equal(progressedWeight('', phase, 4), '');
+  assert.equal(progressedWeight(null, phase, 4), null);
+  const ex = ap({ target_weight: 40, templateSets: [{ targetWeight: 40 }, { targetReps: 5 }] }, phase, 4);
+  assert.equal(ex.templateSets[0].targetWeight, 44);
+  assert.equal(ex.templateSets[1].targetWeight, undefined);
+  assert.equal(ex.target_weight, 44);
+});

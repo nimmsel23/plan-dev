@@ -283,3 +283,10 @@ leer, Vorgabe als Notiz „Ziel: …“, Block = Einheit + Phase + Plan). `Sessi
 Die Habit-artige „erledigt“-Taste bleibt. Offen: Draft auch bei bereits bestehender Tages-Session anhängen, Plan-Workouts
 (`views/Plan/WorkoutSession`) und Session-Log zusammenführen, Vorlagen (Mikro-Workouts ohne Plan) im Gate wählbar machen.
 Tests: `scripts/tests/plan-session-draft.test.mjs`.
+
+## Drill 3 — Gewichtsprogression je Phasenwoche (2026-11-05)
+
+Phasen haben `weeklyWeightPct` (0–10, Default 0): ab Woche 2 einer Phase steigt jedes Zielgewicht um diesen Prozentsatz pro Woche
+(Zinseszins, gerundet auf 0,5 kg; leere Zielgewichte bleiben leer). `microcycles.js::progressedWeight`, durchgereicht über
+`applyPhaseToExercise/Routine(…, phase, week)` – damit wirken PlanCard-Start, CoachPlanToday, Session-Gate und Session-Draft einheitlich.
+Python-Spiegel `_phases` ergänzt. Offen: absolute Gewichtsstufen pro Woche, Wochen-Overrides einzelner Übungen, Auto-Progression aus dem Log (letzte Leistung).

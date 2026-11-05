@@ -19,7 +19,7 @@ const clampInt = (v, lo, hi, fallback) => {
 
 export function newPhase(kind = 'base', weeks = 1) {
   const k = PHASE_KINDS[kind] ? kind : 'base';
-  return { id: `ph-${Math.random().toString(36).slice(2, 8)}`, name: PHASE_KINDS[k].label, kind: k, weeks, volumePct: PHASE_KINDS[k].volumePct, rirDelta: PHASE_KINDS[k].rirDelta, note: '' };
+  return { id: `ph-${Math.random().toString(36).slice(2, 8)}`, name: PHASE_KINDS[k].label, kind: k, weeks, volumePct: PHASE_KINDS[k].volumePct, rirDelta: PHASE_KINDS[k].rirDelta, weeklyWeightPct: 0, note: '' };
 }
 
 // Gültige, begrenzte Phasenliste; ungültige Einträge fallen weg, Summe wird auf MAX_PLAN_WEEKS gekappt.
@@ -44,6 +44,7 @@ export function normalizePhases(list) {
       weeks,
       volumePct: clampInt(raw.volumePct, 30, 150, PHASE_KINDS[kind].volumePct),
       rirDelta: clampInt(raw.rirDelta, -3, 3, PHASE_KINDS[kind].rirDelta),
+      weeklyWeightPct: clampInt(raw.weeklyWeightPct, 0, 10, 0),
       note: (typeof raw.note === 'string' ? raw.note.trim() : '').slice(0, 300),
     });
   }
@@ -70,7 +71,15 @@ export const isDeloadWeek = (phases, week) => phaseForWeek(phases, week)?.kind =
 
 // Wendet Volumen-Faktor und RIR-Verschiebung auf einen Übungs-Snapshot an (rein, ohne Mutation).
 // Sätze werden gekürzt bzw. um Kopien des letzten Satzes ergänzt; fehlende Zielwerte werden nie erfunden.
-export function applyPhaseToExercise(ex, phase) {
+// Gewichtsprogression: +weeklyWeightPct % je Woche innerhalb der Phase (ab Woche 2), gerundet auf 0,5 kg.
+export function progressedWeight(weight, phase, week) {
+  const w = Number(weight);
+  if (weight === null || weight === undefined || weight === '' || !Number.isFinite(w) || !phase?.weeklyWeightPct) return weight;
+  const into = Math.max(0, (Math.floor(Number(week)) || phase.startWeek || 1) - (phase.startWeek || 1));
+  return Math.round((w * (1 + phase.weeklyWeightPct / 100) ** into) * 2) / 2;
+}
+
+export function applyPhaseToExercise(ex, phase, week) {
   if (!phase || !ex) return ex;
   const factor = (phase.volumePct ?? 100) / 100;
   const out = { ...ex };
@@ -78,19 +87,20 @@ export function applyPhaseToExercise(ex, phase) {
     const target = Math.max(1, Math.round(ex.templateSets.length * factor));
     const sets = ex.templateSets.slice(0, target).map((s) => ({ ...s }));
     while (sets.length < target) sets.push({ ...ex.templateSets.at(-1) });
-    out.templateSets = sets.map((s, i) => ({ ...s, setIndex: i }));
+    out.templateSets = sets.map((s, i) => ({ ...s, setIndex: i, ...(s.targetWeight != null && s.targetWeight !== '' ? { targetWeight: progressedWeight(s.targetWeight, phase, week) } : {}) }));
     out.target_sets = out.templateSets.length;
   } else if (Number(ex.target_sets) > 0) {
     out.target_sets = Math.max(1, Math.round(Number(ex.target_sets) * factor));
   }
+  if (ex.target_weight != null && ex.target_weight !== '') out.target_weight = progressedWeight(ex.target_weight, phase, week);
   // RIR (Reps in Reserve) liegt je Übung in `rir`; null/leer bleibt leer.
   if (ex.rir !== null && ex.rir !== undefined && ex.rir !== '' && Number.isFinite(Number(ex.rir))) out.rir = Math.min(5, Math.max(0, Number(ex.rir) + (phase.rirDelta || 0)));
   return out;
 }
 
-export function applyPhaseToRoutine(routine, phase) {
+export function applyPhaseToRoutine(routine, phase, week) {
   if (!phase || !routine) return routine;
-  return { ...routine, exercises: (routine.exercises || []).map((e) => applyPhaseToExercise(e, phase)) };
+  return { ...routine, exercises: (routine.exercises || []).map((e) => applyPhaseToExercise(e, phase, week)) };
 }
 
 // Kurztext für Karten: „Woche 3/10 · Aufbau (110 % Volumen, RIR −1)“.
