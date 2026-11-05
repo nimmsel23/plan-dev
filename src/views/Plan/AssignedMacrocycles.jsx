@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { CalendarRange, Dumbbell } from 'lucide-react'
 import { useUser } from '../../contexts/UserContext'
 import { listMacrocycles, getMacrocycle } from '@db'
+import { pickActiveMacrocycle } from './lib/activeMacrocycle.js'
 
 const DAY_KEYS = ['mo', 'di', 'mi', 'do', 'fr', 'sa', 'so']
 const DAY_LABELS = { mo: 'Montag', di: 'Dienstag', mi: 'Mittwoch', do: 'Donnerstag', fr: 'Freitag', sa: 'Samstag', so: 'Sonntag' }
@@ -39,7 +40,7 @@ export default function AssignedMacrocycles() {
     listMacrocycles(user.uid)
       .then(async (list) => {
         if (list.length === 0) { setCycle(null); return }
-        const full = await getMacrocycle(user.uid, list[0].id)
+        const full = await getMacrocycle(user.uid, pickActiveMacrocycle(list).id)
         setCycle(full)
       })
       .catch(() => setCycle(null))

@@ -1,13 +1,13 @@
-import { phaseProgress } from '../lib/phaseProgress.js';
+import { microcycleProgress } from '../lib/microcycleProgress.js';
 
 const STATE = { past: 'abgeschlossen', current: 'läuft', upcoming: 'kommt' };
 
-// Coach-Ansicht: Fortschritt des Klienten je Phase (nur wenn der Plan Phasen hat).
-export default function PhaseProgress({ plan, workouts }) {
-  const rows = phaseProgress(plan, workouts);
+// Coach-Ansicht: Fortschritt des Klienten je Mikrozyklus (nur wenn der Plan Mikrozyklen hat).
+export default function MicrocycleProgress({ plan, workouts }) {
+  const rows = microcycleProgress(plan, workouts);
   if (!rows.length) return null;
-  return <section aria-label="Fortschritt je Phase" className="mb-4 rounded-xl border border-fit-line bg-fit-bg p-3">
-    <h4 className="mb-2 text-sm font-semibold">Fortschritt je Phase</h4>
+  return <section aria-label="Fortschritt je Mikrozyklus" className="mb-4 rounded-xl border border-fit-line bg-fit-bg p-3">
+    <h4 className="mb-2 text-sm font-semibold">Fortschritt je Mikrozyklus</h4>
     <ul className="space-y-2">{rows.map((r) => {
       const pct = r.dueSoFar > 0 ? Math.min(100, Math.round((r.done / r.dueSoFar) * 100)) : 0;
       return <li key={r.id} className="text-xs">

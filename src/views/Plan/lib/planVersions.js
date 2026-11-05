@@ -1,4 +1,4 @@
-import { normalizePhases } from './microcycles.js';
+import { normalizeMicrocycles } from './microcycles.js';
 // Git-artige Versionen für Coach-Pläne: Der Plan selbst ist der Arbeitsstand,
 // jede Veröffentlichung ist ein unveränderlicher Commit (`versions/vN`) mit Nachricht.
 // snapshotOf bleibt bewusst nah an den Backends (Python vergleicht dict-Gleichheit: weekdays sortiert,
@@ -6,9 +6,9 @@ import { normalizePhases } from './microcycles.js';
 // Klienten sehen immer den Stand des letzten Commits (`plan.published`), nie den Arbeitsstand.
 
 export function snapshotOf(plan = {}) {
-  const phases = normalizePhases(plan.phases); // nur wenn vorhanden, damit Alt-Pläne ihre Snapshot-Gleichheit behalten
+  const microcycles = normalizeMicrocycles(plan.microcycles); // nur wenn vorhanden, damit Alt-Pläne ihre Snapshot-Gleichheit behalten
   return {
-    ...(phases.length ? { phases } : {}),
+    ...(microcycles.length ? { microcycles } : {}),
     name: plan.name || '',
     description: plan.description || '',
     totalWeeks: Number(plan.totalWeeks) || 10,

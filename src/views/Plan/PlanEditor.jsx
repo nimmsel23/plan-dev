@@ -8,13 +8,15 @@ import ExerciseRow from './components/ExerciseRow.jsx';
 import { completePrescription } from './lib/planReadiness.js';
 import { patchTemplateSets, ensureTemplateSets } from './lib/templateSets.js';
 import { WEEKDAY_LABELS, toggleWeekday } from './lib/weekSchedule.js';
+import MicrocycleEditor from './components/MicrocycleEditor.jsx';
+import { normalizeMicrocycles, microcyclesTotalWeeks } from './lib/microcycles.js';
 
 const clone = (v) => JSON.parse(JSON.stringify(v));
 const id = () => crypto.randomUUID();
 const input = 'mt-1 min-h-[44px] w-full rounded-xl border border-fit-line bg-fit-bg p-3 text-base';
 const button = 'min-h-[44px] rounded-xl border border-fit-line px-3 py-2 text-sm disabled:opacity-40';
 const newDay = (label) => ({ id: id(), label, exercises: [], weekdays: [], targetCount: 1, targetPeriodDays: 7, sourceTemplateId: null });
-const editable = (plan) => clone({ name: plan.name || '', description: plan.description || '', totalWeeks: plan.totalWeeks || 10, routines: plan.routines || [] });
+const editable = (plan) => clone({ name: plan.name || '', description: plan.description || '', totalWeeks: plan.totalWeeks || 10, routines: plan.routines || [], microcycles: normalizeMicrocycles(plan.microcycles) });
 
 // Separate composition surface; only the final atomic save touches the remote working copy.
 export default function PlanEditor({ plan, uid, templates = [], apiClient, onClose, onSaved, saveDraft, actorUid = uid, catalogSearch, clientName, draftNamespace = 'client' }) {
@@ -98,6 +100,7 @@ export default function PlanEditor({ plan, uid, templates = [], apiClient, onClo
         <div className="plan-composer-metadata"><label className="block text-sm">Planname<input className={input} maxLength={80} value={draft.name} onChange={(e) => change((d) => ({ ...d, name: e.target.value }))} /></label>
         <label className="block text-sm">Ziel und Hinweise<textarea className={input} rows={3} maxLength={2000} value={draft.description} onChange={(e) => change((d) => ({ ...d, description: e.target.value }))} /></label>
         <label className="block text-sm">Dauer in Wochen<input className={input} type="number" min="1" max="104" value={draft.totalWeeks} onChange={(e) => change((d) => ({ ...d, totalWeeks: Math.max(1, Math.min(104, Number(e.target.value) || 1)) }))} /></label>
+        <MicrocycleEditor key={JSON.stringify(draft.microcycles)} microcycles={draft.microcycles} disabled={busy} onSave={(microcycles) => change((d) => ({ ...d, microcycles, totalWeeks: microcyclesTotalWeeks(microcycles) || d.totalWeeks }))} />
         </div><div role="group" aria-label="Trainingstage" className="plan-composer-day-tabs flex flex-wrap gap-2">{draft.routines.map((r) => <button key={r.id} className={`${button} ${active === r.id ? 'border-fit-accent text-fit-accent' : ''}`} aria-pressed={active === r.id} onClick={() => setActive(r.id)}>{r.label || 'Unbenannter Tag'}</button>)}<button className={button} onClick={() => addDay(newDay(`Training ${draft.routines.length + 1}`))}>+ Trainingstag</button></div>
         {!!templates.length && <div className="flex flex-wrap gap-2"><select aria-label="Workout-Vorlage übernehmen" className={`${input} flex-1`} value={templateId} onChange={(e) => setTemplateId(e.target.value)}><option value="">Aus Vorlage starten…</option>{templates.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</select><button className={button} disabled={!templateId} onClick={importTemplate}>Übernehmen</button></div>}
         {!day && <p className="text-sm text-fit-muted">Lege deinen ersten Trainingstag an oder übernimm eine Vorlage.</p>}

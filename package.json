@@ -10,7 +10,7 @@
     "start": "node ../plan-backend/server.mjs",
     "fitness:routines": "node scripts/fitness-routines.mjs",
     "ui:dev": "vite",
-    "test:plan": "node scripts/tests/plan-document.test.mjs && node scripts/tests/programs.test.mjs && node scripts/tests/plan-client.test.mjs && node scripts/tests/plan-week.test.mjs && node scripts/tests/plan-updates.test.mjs && node scripts/tests/plan-versions.test.mjs && node scripts/tests/plan-microcycles.test.mjs && node scripts/tests/plan-session-draft.test.mjs && node scripts/tests/plan-phase-progress.test.mjs && node scripts/tests/db-barrel-contract.test.mjs && node scripts/tests/plan.test.mjs && node scripts/tests/plan-firestore.test.mjs && python3 scripts/tests/test_plan_backend.py && python3 scripts/tests/test_plan_tasks.py",
+    "test:plan": "node scripts/tests/plan-document.test.mjs && node scripts/tests/programs.test.mjs && node scripts/tests/plan-client.test.mjs && node scripts/tests/plan-week.test.mjs && node scripts/tests/plan-updates.test.mjs && node scripts/tests/plan-versions.test.mjs && node scripts/tests/plan-microcycles.test.mjs && node scripts/tests/plan-active-macrocycle.test.mjs && node scripts/tests/plan-session-draft.test.mjs && node scripts/tests/plan-microcycle-progress.test.mjs && node scripts/tests/db-barrel-contract.test.mjs && node scripts/tests/plan.test.mjs && node scripts/tests/plan-firestore.test.mjs && python3 scripts/tests/test_plan_backend.py && python3 scripts/tests/test_plan_tasks.py",
     "test:rules": "bash scripts/tests/run-rules.sh",
     "test:plan:browser": "bash scripts/tests/run-plan-browser.sh",
     "test:session:browser": "bash scripts/tests/run-session-browser.sh",

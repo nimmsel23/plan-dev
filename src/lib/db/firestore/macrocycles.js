@@ -1,6 +1,6 @@
 import { db } from '../../../firebase.js'
 import { snapshotOf, sameSnapshot } from '../../../views/Plan/lib/planVersions.js'
-import { normalizePhases } from '../../../views/Plan/lib/microcycles.js'
+import { normalizeMicrocycles, withMicrocycles } from '../../../views/Plan/lib/microcycles.js'
 import {
   doc,
   collection,
@@ -14,7 +14,7 @@ import { getDoc, setDoc, getDocs, writeBatch } from './offline.js';// Makrozykle
 const planRef = (clientUid, cycleId) => doc(db, 'fitness', clientUid, 'macrocycles', cycleId)
 async function loadDoc(clientUid, cycleId) {
   const snap = await getDoc(planRef(clientUid, cycleId))
-  return snap.exists() ? { id: snap.id, ...snap.data() } : null
+  return snap.exists() ? withMicrocycles({ id: snap.id, ...snap.data() }) : null
 }
 // Lesen-Ändern-Schreiben in einer Transaktion: fn(m) liefert nur die geänderten Felder,
 // so überschreibt kein veralteter Gesamtstand `published`/`headVersion`/`status`.
@@ -57,7 +57,7 @@ export async function listMacrocycles(clientUid) {
     const ref = collection(db, 'fitness', clientUid, 'macrocycles')
     const snap = await getDocs(query(ref, orderBy('createdAt', 'desc')))
     return snap.docs.map(d => {
-      const { routines, published, ...rest } = d.data()
+      const { routines, published, ...rest } = withMicrocycles(d.data())
       const working = (routines || []).length
       return { id: d.id, ...rest, routineCount: published ? (published.routines || []).length : working, workingRoutineCount: working }
     })
@@ -221,8 +221,8 @@ export async function restorePlanVersion(clientUid, cycleId, versionId) {
   return mutate(clientUid, cycleId, async (m, tx) => {
     const snap = await tx.get(doc(db, 'fitness', clientUid, 'macrocycles', cycleId, 'versions', String(versionId)));
     if (!snap.exists()) throw new Error('Version nicht gefunden.');
-    const { name, description, totalWeeks, routines, phases } = clone(snap.data().snapshot);
-    return { name, description, totalWeeks, routines, phases: phases || [] };
+    const { name, description, totalWeeks, routines, microcycles } = withMicrocycles(clone(snap.data().snapshot));
+    return { name, description, totalWeeks, routines, microcycles: microcycles || [] };
   });
 }
 
@@ -238,9 +238,9 @@ export async function updateMacrocycle(clientUid, cycleId, patch = {}) {
       if (!Number.isInteger(patch.totalWeeks) || patch.totalWeeks < 1 || patch.totalWeeks > 104) throw new Error('Ungültige Plandauer.');
       fields.totalWeeks = patch.totalWeeks;
     }
-    if ('phases' in patch) {
-      if (!Array.isArray(patch.phases)) throw new Error('Ungültige Phasen.');
-      fields.phases = normalizePhases(patch.phases);
+    if ('microcycles' in patch) {
+      if (!Array.isArray(patch.microcycles)) throw new Error('Ungültige Mikrozyklen.');
+      fields.microcycles = normalizeMicrocycles(patch.microcycles);
     }
     if ('routines' in patch) {
       if (!Array.isArray(patch.routines) || patch.routines.some((r) => !r.id || !r.label?.trim() || !Array.isArray(r.exercises)) || new Set(patch.routines.map((r) => r.id)).size !== patch.routines.length) throw new Error('Ungültige Trainingstage.');
