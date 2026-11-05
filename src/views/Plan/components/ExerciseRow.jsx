@@ -5,6 +5,8 @@ import { CSS } from "@dnd-kit/utilities";
 import { muskelDe, muskelColor, dedupeMuskeln } from "../../../lib/kb/muscles.js";
 import ExercisePhotoStrip from "../../../components/ExercisePhotoStrip.jsx";
 import { ensureTemplateSets } from "../lib/templateSets.js";
+import { applySchemeToExercise, takesRepScheme } from "../lib/planPresets.js";
+import SchemeChips from "./SchemeChips.jsx";
 
 // Common prescriptions stay editable; photos and advanced settings are optional.
 export default function ExerciseRow({ ex, onPatch, onDelete, onInspect }) {
@@ -100,6 +102,7 @@ export default function ExerciseRow({ ex, onPatch, onDelete, onInspect }) {
               className="min-h-[44px] min-w-0 w-full px-3 py-2 rounded-lg bg-fit-bg2 border border-fit-line text-fit-ink text-sm font-mono focus:outline-none focus:border-fit-accent" />
           </label>
       </div>
+      {takesRepScheme(ex) && <SchemeChips label={`${ex.name}: Schema`} className="px-3 pb-3" onPick={(scheme) => onPatch("templateSets", applySchemeToExercise(ex, scheme).templateSets)} />}
       {open && (
         <div className="px-4 pb-4 pt-3 border-t border-fit-line/50 grid grid-cols-2 gap-3">
           <div className="col-span-2">

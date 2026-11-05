@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { Layers, Plus, ChevronDown } from "lucide-react";
 import { listMacrocycles, createMacrocycle, getUid } from "@db";
 import PlanCard from "./components/PlanCard.jsx";
+import { PLAN_PRESETS, buildPresetDays } from "./lib/planPresets.js";
 
 // Shared plan composition for personal training and the client workspace.
 export default function TrainingPlans({ templates, workouts, onChanged, clientUid, clients, onStart }) {
   const [name, setName] = useState('');
   const [creating, setCreating] = useState(false);
+  const [presetId, setPresetId] = useState('ppl');
   const [busy, setBusy] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [plans, setPlans] = useState([]);
@@ -30,7 +32,7 @@ export default function TrainingPlans({ templates, workouts, onChanged, clientUi
     if (busy || !name.trim()) return;
     setBusy(true); setError('');
     try {
-      const created = await createMacrocycle(uid, { name: name.trim(), coachUid: getUid(), totalWeeks: 10, status: "draft" });
+      const created = await createMacrocycle(uid, { name: name.trim(), coachUid: getUid(), totalWeeks: 10, status: "draft", routines: buildPresetDays(presetId) });
       if (!created) throw new Error("Trainingsplan konnte nicht erstellt werden.");
       setEditingId(created.id); setCreating(false); setName('');
       await load();
@@ -55,7 +57,14 @@ export default function TrainingPlans({ templates, workouts, onChanged, clientUi
           {plans.map((p) => (
             <PlanCard key={p.id} initiallyEditing={p.id === editingId} plan={p} templates={templates} workouts={workouts} clientUid={clientUid} clients={clients} onReload={reload} onStart={onStart} />
           ))}
-          {creating && <form onSubmit={(e) => { e.preventDefault(); newPlan(); }} className="space-y-2 rounded-xl border border-fit-line p-3"><label className="block text-sm">Name des neuen Plans<input autoFocus aria-label="Neuer Planname" maxLength={80} value={name} onChange={(e) => setName(e.target.value)} className="mt-1 min-h-[44px] w-full rounded-xl border border-fit-line bg-fit-bg p-3" /></label><button disabled={busy || !name.trim()} className="vos-btn primary">{busy ? 'Erstellt…' : 'Plan gestalten'}</button><button type="button" disabled={busy} onClick={() => setCreating(false)} className="min-h-[44px] px-3">Abbrechen</button></form>}
+          {creating && <form onSubmit={(e) => { e.preventDefault(); newPlan(); }} className="space-y-3 rounded-xl border border-fit-line p-3">
+            <label className="block text-sm">Name des neuen Plans<input autoFocus aria-label="Neuer Planname" maxLength={80} value={name} onChange={(e) => setName(e.target.value)} className="mt-1 min-h-[44px] w-full rounded-xl border border-fit-line bg-fit-bg p-3" /></label>
+            <div role="radiogroup" aria-label="Aufbau des Plans" className="grid grid-cols-2 gap-2">
+              {PLAN_PRESETS.map((p) => <button key={p.id} type="button" role="radio" aria-checked={presetId === p.id} onClick={() => setPresetId(p.id)} className={`min-h-[44px] rounded-xl border p-2 text-left text-sm ${presetId === p.id ? 'border-fit-accent text-fit-accent' : 'border-fit-line'}`}><span className="block font-semibold">{p.label}</span><span className="block text-xs text-fit-muted">{p.hint}</span></button>)}
+            </div>
+            <p className="text-xs text-fit-muted">Die Trainingstage mit Wochentagen werden angelegt; Übungen und Wochentage kannst du danach frei ändern.</p>
+            <div className="flex gap-2"><button disabled={busy || !name.trim()} className="vos-btn primary">{busy ? 'Erstellt…' : 'Plan gestalten'}</button><button type="button" disabled={busy} onClick={() => setCreating(false)} className="min-h-[44px] px-3">Abbrechen</button></div>
+          </form>}
           <button
             onClick={() => setCreating(true)}
             className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-fit-card hover:bg-fit-accent/10 text-fit-ink text-sm font-medium transition-colors"
