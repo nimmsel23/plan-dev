@@ -77,3 +77,15 @@ test('adoptLastSets: füllt nur leere Felder, überschreibt nie, null wenn nicht
   assert.equal(adoptLastSets([{ reps: '', weight: '' }], []), null);
   assert.equal(adoptLastSets([], prev), null);
 });
+
+test('Zeit-Übungen (6Pack, Halte-Skills) nennen im Hinweis, dass das Wdh.-Feld Sekunden sind', () => {
+  const routine = { id: 'r', label: '6Pack · Woche 1 · Tag 1', exercises: [
+    { id: 'e1', exercise_id: 'marching_planks', name: 'Marching Planks', trackingType: 'duration', templateSets: [{ targetDuration: 60 }], rest_seconds: 45 },
+    { id: 'e2', exercise_id: 'bench', name: 'Bankdrücken', trackingType: 'weight_reps', templateSets: [{ targetReps: 8, targetWeight: 60 }] },
+  ] };
+  const draft = routineToSessionDraft(routine, {});
+  assert.match(draft.exercises[0].note, /Ziel: 1×60 s/);
+  assert.match(draft.exercises[0].note, /Wdh\.-Feld = Sekunden/);
+  assert.doesNotMatch(draft.exercises[1].note, /Sekunden/);
+  assert.deepEqual(draft.exercises[0].setsArray, [{ reps: '', weight: '' }], 'Ist-Werte bleiben leer');
+});

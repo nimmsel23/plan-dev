@@ -34,7 +34,8 @@ export function routineToSessionDraft(routine, { microcycle = null, planName = '
       secondaryMuscles: ex.secondaryMuscles || [],
       stabilizers: ex.stabilizers || [],
       setsArray: Array.from({ length: count }, () => ({ reps: '', weight: '' })),
-      note: [target && `Ziel: ${target}`, ex.notes].filter(Boolean).join('\n'),
+      // Zeit-Übungen (Halten, Zirkel): Das Wdh.-Feld nimmt die Sekunden auf, die Satzfelder kennen keine eigene Dauer.
+      note: [target && `Ziel: ${target}`, ex.trackingType === 'duration' && 'Wdh.-Feld = Sekunden', ex.notes].filter(Boolean).join('\n'),
       source: 'plan',
       slotId: null,
     };
