@@ -104,6 +104,11 @@ try {
   await labelFill('Ziel-Wdh', '10');
   await labelFill('Ziel-Wdh', '8');
   await click('Tag duplizieren');
+  // Modul/Vorlage an den bestehenden Tag anhängen (6Pack-Tag, Skill oder eigene Vorlage; hier die Vorlage "Push A" von oben, am Duplikat, das danach entfernt wird).
+  const modulesBefore = await evaluate(`document.querySelectorAll('[aria-label$=": Basisvorgaben"]').length`);
+  await fill('[aria-label="Modul-Workout an diesen Tag anhängen"]', await evaluate(`[...document.querySelector('[aria-label="Modul-Workout an diesen Tag anhängen"]').options].find((o) => o.text.includes('Push A')).value`));
+  await click('Anhängen');
+  await wait(`document.querySelectorAll('[aria-label$=": Basisvorgaben"]').length > ${modulesBefore}`, 'angehängte Übungen erscheinen im Tag');
   await click('Tag nach vorne');
   await click('Tag entfernen');
   assert.equal(await evaluate(`document.querySelectorAll('input[aria-label="Übung suchen und hinzufügen"]').length`), 1, 'Nach Tag duplizieren/verschieben/entfernen bleibt genau ein Suchfeld stehen');
