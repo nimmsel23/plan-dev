@@ -5,7 +5,7 @@ import { muskelDe } from '../../../lib/kb/muscles.js';
 import ExercisePhotoStrip from '../../../components/ExercisePhotoStrip.jsx';
 import CatalogDetail from './CatalogDetail.jsx';
 
-export default function ExerciseSearch({ onAdd, exclude = [], searchExercises = defaultSearch }) {
+export default function ExerciseSearch({ onAdd, exclude = [], searchExercises = defaultSearch, resetKey }) {
   const [q, setQ] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -15,6 +15,12 @@ export default function ExerciseSearch({ onAdd, exclude = [], searchExercises = 
   const [detail, setDetail] = useState(null);
   const [notice, setNotice] = useState('');
   const addingRef = useRef(false);
+  // Kontextwechsel (z. B. anderer Trainingstag) setzt die Suche zurück, ohne die Komponente neu zu mounten.
+  const firstReset = useRef(true);
+  useEffect(() => {
+    if (firstReset.current) { firstReset.current = false; return; }
+    setQ(''); setOpen(false); setNotice(''); setError(''); setDetail(null);
+  }, [resetKey]);
   const inputRef = useRef(null);
   const ref = useRef(null);
   useEffect(() => {
