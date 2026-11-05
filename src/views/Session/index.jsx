@@ -41,7 +41,7 @@ export default function Session({
   // aktiv ist — TodayPlan ist ohnehin ein reiner "heute"-Habit-Screen, für
   // jedes andere Datum ist der normale Editor korrekt.
   const isTodayTab = (subTab === 'today' || !subTab) && session.date === localToday();
-  if (isTodayTab && !planLoading && cycle && nextRoutine && !logFreely) {
+  if (isTodayTab && !planLoading && cycle && nextRoutine && !logFreely && !initialDraft) {
     return (
       <TodayPlan
         cycle={cycle}
@@ -50,6 +50,7 @@ export default function Session({
         clientUid={clientUid}
         onDone={reload}
         onLogFreely={() => setLogFreely(true)}
+        onLoadDraft={(draft) => onOpenSession?.(localToday(), draft)}
       />
     );
   }

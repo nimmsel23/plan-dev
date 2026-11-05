@@ -272,3 +272,14 @@ Beim Start einer Einheit aus dem Plan (PlanCard, CoachPlanToday) werden Satzzahl
 Übungs-Snapshot angewendet; das Workout speichert `sourcePlanPhase {id,name,week}`. UI: `components/PhaseEditor.jsx` (Coach, im Klientenpfad),
 Phasen-Banner in PlanCard/CoachPlanToday. Offen für Folge-Drills: Phase je Woche im Session-Tab (vos-training) anzeigen, Gewichtsprogression
 pro Woche, Wochen-Overrides einzelner Übungen. Tests: `scripts/tests/plan-microcycles.test.mjs`, `test_plan_backend.py::test_phases_*`.
+
+## Drill 2 — Plan → Session-Tab: Quick-Logging mit Vorbereitung (2026-11-05)
+
+`Session/TodayPlan.jsx` (Gate für Klienten mit Coach-Plan) wählt jetzt die Einheit frei (Chips, „dran“ markiert), zeigt die
+Phase der Woche und die phasen-angepasste Vorgabe (`prescriptionText`) und bietet **„Mit Vorbereitung loggen“**:
+`lib/sessionDraft.js::routineToSessionDraft` baut daraus den `initialDraft` des Session-Editors (Sätze vorbereitet, Ist-Werte
+leer, Vorgabe als Notiz „Ziel: …“, Block = Einheit + Phase + Plan). `Session/index.jsx` umgeht das Gate bei vorhandenem Draft
+(sonst Endlosschleife nach Remount). Der Draft gilt nur, wenn für das Datum noch keine Session existiert (`resetSessionData`).
+Die Habit-artige „erledigt“-Taste bleibt. Offen: Draft auch bei bereits bestehender Tages-Session anhängen, Plan-Workouts
+(`views/Plan/WorkoutSession`) und Session-Log zusammenführen, Vorlagen (Mikro-Workouts ohne Plan) im Gate wählbar machen.
+Tests: `scripts/tests/plan-session-draft.test.mjs`.
