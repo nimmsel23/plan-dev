@@ -297,3 +297,11 @@ Python-Spiegel `_phases` ergänzt. Offen: absolute Gewichtsstufen pro Woche, Woc
 (`api.get('/routines')`, lokal wie Firestore) und lädt sie per `routineToSessionDraft` als Quick-Logging-Entwurf (ohne Phase).
 Fehler/Leerzustand sichtbar (Erneut versuchen; leer = Bereich entfällt). Offen: das Gate erscheint nur für Nutzer mit Plan –
 Nutzer ganz ohne Plan brauchen denselben Launcher im Editor-Leerzustand (`SessionEditor`); Entwurf an bestehende Tages-Session anhängen.
+
+## Drill 5 — Coach: Fortschritt je Phase (2026-11-05)
+
+`lib/phaseProgress.js::phaseProgress(plan, workouts, now)` liefert je Phase Soll (Wochentage bzw. Zeitraumziel × Wochen), Soll bisher,
+absolvierte Einheiten (nur abgeschlossene Workouts mit `sourcePlanId` + `sourcePlanPhase.id`), Ø Anstrengung aus `feedback.effort` und
+Zustand (past/current/upcoming). `components/PhaseProgress.jsx` zeigt das im Klientenpfad der `PlanCard` über dem `PhaseEditor`.
+Workouts ohne Phasenbezug (Altbestand, freies Training) zählen bewusst nicht mit. Offen: Auswertung in der Klientenliste/Coach-Shell,
+Soll-Ist je Übung (Gewichts-Ist vs. progressiertes Ziel), Entwurf an bestehende Tages-Session anhängen, Launcher ohne Plan.
