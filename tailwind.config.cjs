@@ -16,6 +16,12 @@ function siblingGlob(devName, appName) {
   return `${path.resolve(__dirname, "..", devName)}/src/**/*.{js,jsx}`
 }
 
+// Gemeinsame Dateien kommen per Overlay aus fitness-dev/src (vite-fitness-overlay.mjs).
+function fitnessGlob() {
+  if (process.env.FITNESS_ROOT) return `${path.resolve(process.env.FITNESS_ROOT)}/src/**/*.{js,jsx}`
+  return siblingGlob("fitness-dev", "fitness-app")
+}
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -26,6 +32,7 @@ module.exports = {
     siblingGlob("journal-dev", "journal-app"),
     siblingGlob("habits-dev", "habit-app"),
     siblingGlob("learn-dev", "learn-app"),
+    fitnessGlob(),
   ],
   safelist: [
     'lg:flex',

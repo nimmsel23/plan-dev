@@ -79,6 +79,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Gemeinsame Quellen: plan-dev/src liegt per Overlay über fitness-dev/src
+      # (vite-fitness-overlay.mjs). Der Stand steht in fitness.ref (Branch oder Commit-SHA).
+      - name: fitness-dev-Stand lesen
+        id: fitref
+        run: echo "ref=$(tr -d '[:space:]' < fitness.ref)" >> "$GITHUB_OUTPUT"
+
+      - name: fitness-dev auschecken
+        uses: actions/checkout@v4
+        with:
+          repository: nimmsel23/fitness-dev
+          ref: ${{ steps.fitref.outputs.ref }}
+          path: .fitness-dev
+          token: ${{ secrets.GH_SUBMODULE_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: FITNESS_ROOT setzen
+        run: echo "FITNESS_ROOT=$GITHUB_WORKSPACE/.fitness-dev" >> "$GITHUB_ENV"
+
       - uses: pnpm/action-setup@v4
 
       - uses: actions/setup-node@v4
