@@ -1,6 +1,10 @@
 import { registerHooks } from 'node:module';
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { installNodeOverlay } from './overlay.mjs';
+
+// Dateien, die plan-dev nicht mehr selbst hält (offline.js …), kommen aus fitness-dev/src.
+installNodeOverlay();
 const fakeUrl = new URL('./firestore-double.mjs', import.meta.url).href;
 const macroUrl = new URL('../../src/lib/db/firestore/macrocycles.js', import.meta.url).href;
 registerHooks({ resolve(specifier, context, next) {
