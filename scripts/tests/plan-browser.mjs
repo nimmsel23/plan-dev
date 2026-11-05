@@ -125,7 +125,7 @@ try {
   await wait(has('Woche 1/1 · Basis'));
   await wait(has('Fortschritt je Mikrozyklus'));
   assert.equal(await evaluate('document.documentElement.scrollWidth <= window.innerWidth'), true, 'microcycle editor must not overflow on mobile');
-  console.log('PASS: Coach adds a microcycle (microcycle); banner and per-microcycle progress render.');
+  console.log('PASS: Coach adds a microcycle; banner and per-microcycle progress render.');
   await evaluate("localStorage.setItem('test-persona','client'); location.reload()");
   await wait(has('Training starten'));
   await click('Trainingspläne');
