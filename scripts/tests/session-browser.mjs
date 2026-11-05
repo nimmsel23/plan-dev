@@ -65,6 +65,14 @@ try {
   assert.equal(d2.exercises[0].setsArray.length, 2);
   assert.equal(await evaluate('document.documentElement.scrollWidth <= window.innerWidth'), true, 'gate must not overflow on mobile');
   console.log('PASS: Session gate shows phase, adjusts prescription, lets user pick a unit and builds a prepared draft (mobile width).');
+  // Drill 8: „Wie letztes Mal übernehmen“ füllt nur leere Felder, überschreibt nie.
+  await click('Wie letztes Mal übernehmen');
+  await wait(`document.getElementById('card-state').textContent.length > 0`);
+  const sets = JSON.parse(await evaluate(`document.getElementById('card-state').textContent`));
+  assert.deepEqual(sets, [{ reps: '8', weight: '60' }, { reps: '10', weight: '62.5' }, { reps: '7', weight: '62.5' }]);
+  await wait(has('Werte vom letzten Mal übernommen'));
+  await wait(`![...document.querySelectorAll('button')].some((b) => b.textContent.trim() === 'Wie letztes Mal übernehmen')`);
+  console.log('PASS: ExerciseCard adopts last performance into empty fields only, then hides the link.');
   assert.deepEqual(errors, []);
   console.log('PASS: No uncaught browser exceptions.');
 } catch (err) {

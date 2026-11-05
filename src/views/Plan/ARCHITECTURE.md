@@ -345,6 +345,6 @@ Harness mountet nur `views/Plan`) – dort bleibt es bei Unit-Tests (`plan-sessi
 `pnpm run test:session:browser` (`scripts/tests/session-harness.jsx`, `session-browser.mjs`, `run-session-browser.sh`): mountet das echte
 `Session/TodayPlan` mit einem Coach-Plan (Phasen Aufbau/Deload, Woche 2) im isolierten Harness auf 390 px Breite. Geprüft: Phasenbanner,
 phasen-angepasste Vorgabe (5→3 Sätze, RIR 2→4), freie Einheitenwahl, „Mit Vorbereitung loggen“ liefert den Entwurf (leere Ist-Werte),
-kein horizontaler Überlauf, keine Browserfehler. Weiter nur Unit-getestet: TemplateLauncher-Liste, „Wie letztes Mal übernehmen“ im
+kein horizontaler Überlauf, keine Browserfehler. Seit dem Nachtrag auch im Browser: „Wie letztes Mal übernehmen“ (echte `ExerciseCard`, füllt nur leere Felder). Weiter nur Unit-getestet: TemplateLauncher-Liste, (früher) im
 `ExerciseCard`, Einfügen in eine bestehende Tages-Session (`useSession`) – dafür müsste der Harness den gesamten Session-Editor mit
 Session-Backend mounten.
