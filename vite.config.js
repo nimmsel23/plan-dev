@@ -3,6 +3,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 import { existsSync } from 'fs'
+import { fitnessOverlay } from './vite-fitness-overlay.mjs'
 
 const BACKEND = 'http://localhost:9150'
 
@@ -21,6 +22,12 @@ function siblingDir(devName, appName) {
   }
   return resolve(__dirname, '..', devName)
 }
+
+// fitness-dev liefert alles, was Plan nicht selbst überschreibt (Overlay, siehe vite-fitness-overlay.mjs).
+// FITNESS_ROOT überschreibt die Nachbar-Suche (~/dev/fitness-dev bzw. ~/vitalos/fitness-app).
+const FITNESS_ROOT = process.env.FITNESS_ROOT
+  ? resolve(process.env.FITNESS_ROOT)
+  : siblingDir('fitness-dev', 'fitness-app')
 
 // Cross-App-Aliase: plan braucht nur @learn (src/App.jsx; @relax bleibt aus Paritätsgründen mit
 // fitness-dev) und löst sie über die Nachbar-Checkouts auf (siblingDir) — in jedem Kontext gleich:
@@ -45,7 +52,7 @@ export default defineConfig(async ({ mode }) => {
     // Präfix (z.B. /fitness-dev/) fälschlich zur Domain-Wurzel auf (404 →
     // Whitescreen). Core4/Door/Game/Fuel haben denselben Fix schon.
     base: './',
-    plugins: [vosChangelog({ appId: 'plan', appName: 'Plan', accent: '#fb923c' }), react()],
+    plugins: [fitnessOverlay({ planRoot: __dirname, fitnessRoot: FITNESS_ROOT }), vosChangelog({ appId: 'plan', appName: 'Plan', accent: '#fb923c' }), react()],
     resolve: {
       preserveSymlinks: true,
       alias: {
@@ -70,6 +77,7 @@ export default defineConfig(async ({ mode }) => {
     },
     server: {
       port: 5902,
+      fs: { allow: [__dirname, FITNESS_ROOT] },
       watch: {
         ignored: [
           '**/dist/**',

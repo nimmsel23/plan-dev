@@ -10,6 +10,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'acorn';
 import { transformSync } from 'esbuild';
+import { fitnessRoot, overlayPath } from './overlay.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const SRC = path.join(root, 'src');
@@ -19,8 +20,8 @@ const SHELL_ONLY = /(^|\/)(Touren|lib\/tours)\//;
 
 const own = ['src/lib/db/index.js', 'src/lib/db/index.firestore.app.js'].map((p) => path.join(root, p));
 const consumers = [
-  path.join(home, 'fitness-dev/src/lib/db/index.js'),
-  path.join(home, 'fitness-dev/src/lib/db/index.firestore.app.js'),
+  path.join(fitnessRoot, 'src/lib/db/index.js'),
+  path.join(fitnessRoot, 'src/lib/db/index.firestore.app.js'),
   ...(process.env.DB_CONTRACT_BARRELS || '').split(',').filter(Boolean),
 ];
 const barrels = [...own, ...consumers].filter((p) => fs.existsSync(p));
@@ -51,6 +52,7 @@ function importedFromDb() {
   return out;
 }
 function exportsOf(file, seen = new Set()) {
+  file = overlayPath(file);
   if (seen.has(file) || !fs.existsSync(file)) return new Set();
   seen.add(file);
   const names = new Set();
