@@ -364,7 +364,7 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
         {saveState !== 'saved' && <button onClick={() => flushSave().catch((err) => setError(err.message))} className="text-fit-accent">Jetzt speichern</button>}
       </div>
       {restTimer && (
-        <div className="sticky top-[calc(env(safe-area-inset-top)+0.5rem)] z-30 mb-4 rounded-2xl border border-fit-line bg-fit-card/95 backdrop-blur px-4 py-3 flex items-center justify-between gap-3">
+        <div className="sticky top-[calc(env(safe-area-inset-top)+0.5rem)] z-30 mb-3 rounded-2xl border border-fit-line bg-fit-card/95 backdrop-blur px-4 py-2 flex items-center justify-between gap-3">
           <div>
             <div className="text-[11px] uppercase tracking-wide text-fit-muted">Rest Timer</div>
             <div className="text-sm font-semibold text-fit-ink">{restTimer.exerciseName}</div>
@@ -379,9 +379,11 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
         </div>
       )}
 
-      <div className="mb-5">
-        <ExerciseSearch onAdd={addExercise} exclude={excludeIds} />
-      </div>
+      {exercises.length === 0 && (
+        <div className="mb-5">
+          <ExerciseSearch onAdd={addExercise} exclude={excludeIds} />
+        </div>
+      )}
 
       {exercises.length === 0 ? (
         <div className="text-center py-14 text-fit-muted text-sm">
@@ -405,6 +407,12 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
               }}
             />
           ))}
+        </div>
+      )}
+
+      {exercises.length > 0 && (
+        <div className="mt-4" aria-label="Übung hinzufügen">
+          <ExerciseSearch onAdd={addExercise} exclude={excludeIds} />
         </div>
       )}
 
