@@ -10,7 +10,8 @@ export function prescriptionText(ex) {
   const parts = groups.map((g) => {
     const rep = repetitionLabel(g);
     const w = g.weight != null && g.weight !== '' ? ` @ ${g.weight} kg` : '';
-    return `${g.count ? `${g.count}×` : ''}${rep ?? ''}${w}`.trim();
+    if (rep == null || rep === '') return g.count ? `${g.count} Sätze${w}` : '';
+    return `${g.count ? `${g.count}×` : ''}${rep}${w}`.trim();
   }).filter(Boolean);
   const bits = [];
   if (parts.length) bits.push(parts.join(' + '));
@@ -55,4 +56,33 @@ export function mergeDraftIntoExercises(existing = [], draft = null) {
     out[i] = { ...cur, setsArray: [...(cur.setsArray || []), ...ex.setsArray.map((x) => ({ ...x }))], note };
   }
   return out;
+}
+
+// Drill 7: „Letztes Mal“ je Übung (nur als Vorschlag in der Notiz – nie als Ist-Wert vorbelegt).
+// Karte {name -> {date, setsArray}} aus der Session-Historie (neueste zuerst); `excludeDate` blendet den heutigen Tag aus.
+export function lastPerformanceMap(sessions = [], excludeDate = null) {
+  const map = {};
+  for (const s of sessions) {
+    if (!s?.date || s.date === excludeDate) continue;
+    for (const ex of s.exercises || []) {
+      if (ex?.name && !map[ex.name] && (ex.setsArray || []).some((x) => x.reps || x.weight)) map[ex.name] = { date: s.date, setsArray: ex.setsArray };
+    }
+  }
+  return map;
+}
+
+export function lastPerformanceText(prev) {
+  const sets = (prev?.setsArray || []).filter((x) => x.reps || x.weight);
+  if (!sets.length) return '';
+  const body = sets.slice(0, 6).map((x) => `${x.reps || '?'}${x.weight ? `×${x.weight}` : ''}`).join(' · ');
+  const d = /^(\d{4})-(\d{2})-(\d{2})/.exec(prev.date || '');
+  return `Letztes Mal${d ? ` (${d[3]}.${d[2]}.)` : ''}: ${body}${sets.length > 6 ? ' …' : ''}`;
+}
+
+export function withLastPerformance(draft, prevMap = {}) {
+  if (!draft?.exercises) return draft;
+  return { ...draft, exercises: draft.exercises.map((ex) => {
+    const text = lastPerformanceText(prevMap[ex.name]);
+    return text ? { ...ex, note: [ex.note, text].filter(Boolean).join('\n') } : ex;
+  }) };
 }

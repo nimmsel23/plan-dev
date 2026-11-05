@@ -315,3 +315,12 @@ ging er dort verloren; (2) `SessionEditor` hat über der Übungsliste „Workout
 `exerciseOps.appendDraft` aus `useExerciseList`), damit auch Nutzer **ohne Plan** und mitten in einer Session Vorlagen laden können.
 Offen: letzte Leistung je Übung im Draft (Prefill-Vorschlag, erst nach Bestätigung gültig), Phasen-Auswertung in der Coach-Shell,
 Launcher lädt Vorlagenliste derzeit bei jedem Editor-Mount (lazy beim Öffnen wäre sparsamer).
+
+## Drill 7 — „Letztes Mal“ im Entwurf (2026-11-05)
+
+`sessionDraft.js`: `lastPerformanceMap(sessions, excludeDate)` (neueste Leistung je Übungsname aus der Session-Historie, leere Sätze ignoriert),
+`lastPerformanceText` („Letztes Mal (02.11.): 8×60 · 7×60“), `withLastPerformance(draft, map)` hängt den Text an die Übungsnotiz.
+Es bleibt **ein Vorschlag**: `setsArray` bleibt leer, nichts gilt ohne Bestätigung als absolviert. Genutzt im Session-Gate
+(`TodayPlan`, lädt `getSessionHistory(30)`) und im Editor-Launcher (`prevMap` aus `useSessionHistory`). Nebenbei: `prescriptionText`
+zeigt ohne Wiederholungsangabe „2 Sätze“ statt „2×“. Offen: Vorschlag per Tipp als Ist-Wert übernehmen (explizite Bestätigung),
+Zuordnung über Übungs-ID statt Name, Phasen-Auswertung in der Coach-Shell.

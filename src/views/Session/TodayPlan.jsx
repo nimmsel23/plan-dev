@@ -3,9 +3,9 @@ import { Dumbbell, Check } from 'lucide-react'
 import { useUser } from '../../contexts/UserContext'
 import { clientView } from '../Plan/lib/planVersions.js'
 import { phaseForWeek, phaseSummary, planWeek, applyPhaseToRoutine } from '../Plan/lib/microcycles.js'
-import { routineToSessionDraft, prescriptionText } from '../Plan/lib/sessionDraft.js'
+import { routineToSessionDraft, prescriptionText, lastPerformanceMap, withLastPerformance } from '../Plan/lib/sessionDraft.js'
 import TemplateLauncher from './TemplateLauncher.jsx'
-import { watchAuth, listMacrocycles, getMacrocycle, completeRoutine, getLastPerformance } from '@db'
+import { getSessionHistory, watchAuth, listMacrocycles, getMacrocycle, completeRoutine, getLastPerformance } from '@db'
 
 // Habit-artig: Coach legt eine rotierende Liste von Routinen an (Push/Pull/
 // Legs o.ä.), kein Kalender/Wochentag. Der Klient sieht immer nur "die
@@ -41,6 +41,8 @@ export function useTodayPlan() {
 
 export default function TodayPlan({ cycle: rawCycle, nextRoutine: next, lastPerformance, clientUid, onDone, onLogFreely, onLoadDraft }) {
   const [completing, setCompleting] = useState(false)
+  const [history, setHistory] = useState([])
+  useEffect(() => { getSessionHistory(30).then(h => setHistory(Array.isArray(h) ? h : [])).catch(() => {}) }, [])
   const cycle = rawCycle.coachUid && rawCycle.coachUid !== clientUid ? clientView(rawCycle) : rawCycle
   const routines = cycle.routines || []
   const [pickedId, setPickedId] = useState(next.id)
@@ -114,7 +116,7 @@ export default function TodayPlan({ cycle: rawCycle, nextRoutine: next, lastPerf
         <div className="p-3 space-y-2">
           {onLoadDraft && (nextRoutine.exercises || []).length > 0 && (
             <button
-              onClick={() => onLoadDraft(routineToSessionDraft(picked, { phase, week, planName: cycle.name }))}
+              onClick={() => onLoadDraft(withLastPerformance(routineToSessionDraft(picked, { phase, week, planName: cycle.name }), lastPerformanceMap(history)))}
               className="w-full btn btn-primary py-3 text-sm font-black uppercase"
             >
               Mit Vorbereitung loggen
@@ -130,7 +132,7 @@ export default function TodayPlan({ cycle: rawCycle, nextRoutine: next, lastPerf
         </div>
       </div>
 
-      {onLoadDraft && <TemplateLauncher onLoadDraft={onLoadDraft} />}
+      {onLoadDraft && <TemplateLauncher onLoadDraft={(d) => onLoadDraft(withLastPerformance(d, lastPerformanceMap(history)))} />}
 
       <button
         onClick={onLogFreely}
