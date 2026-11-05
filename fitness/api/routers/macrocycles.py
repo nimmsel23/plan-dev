@@ -144,6 +144,7 @@ def _phases(raw: Any) -> list[dict[str, Any]]:
             "weeks": weeks,
             "volumePct": _clamp(item.get("volumePct"), 30, 150, vol),
             "rirDelta": _clamp(item.get("rirDelta"), -3, 3, rir),
+            "weeklyWeightPct": _clamp(item.get("weeklyWeightPct"), 0, 10, 0),
             "note": _text(item.get("note"))[:300],
         })
     return out
