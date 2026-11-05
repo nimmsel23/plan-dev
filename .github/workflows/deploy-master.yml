@@ -1,57 +1,98 @@
-# Standalone-Prod Plan: Push auf master deployt live (nur CI). Gleiche Schritte wie das frühere
-# Meta-Repo-Workflow deploy-plan.yml; das Meta-Repo liefert nur die Nachbar-Repos (Cross-Repo-Aliase),
-# plan-app wird auf den ausgelösten Commit gesetzt.
+# Standalone-Prod Plan: Push auf master deployt live (nur CI) — aus den MASTER-Checkouts der
+# eigenen Repos, OHNE das Meta-Repo vitalos (gleiches Muster wie fitness-dev/deploy-master.yml).
+#
+# Layout (Geschwister nebeneinander, wie lokal unter ~/dev): plan-dev/ (dieser Commit) und
+# relax-dev learn-dev fitness-dev jeweils `master`. Jedes Repo installiert mit
+# seinem EIGENEN Lockfile (--frozen-lockfile, --ignore-scripts). Die Vite-Configs lösen die Nachbarn über
+# resolveSibling()/siblingDir() auf (`<x>-app` oder `<x>-dev` daneben).
+#
+# Auslöser: push auf master und workflow_dispatch (automerge.yml) -> baut und deployt live (nur master).
+# Push auf `ci-test/**` -> reiner Build-Test (Nachbarn von dev), KEIN Deploy.
+# Release-Branch `vitalos` und die Submodul-Pfade im Meta-Repo bleiben unberührt.
 
 name: Live Deploy (Plan master)
+
 'on':
-  workflow_dispatch: null
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: "Live deployen? (nur auf master wirksam; false = nur bauen)"
+        type: boolean
+        default: true
   push:
     branches:
-    - master
+      - master
+      - 'ci-test/**'
+
 concurrency:
-  group: live-plan-master
+  group: live-plan-${{ github.ref }}
   cancel-in-progress: false
+
 permissions:
   contents: read
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NEIGHBOR_REF: ${{ github.ref == 'refs/heads/master' && 'master' || 'dev' }}
+      DO_DEPLOY: ${{ github.ref == 'refs/heads/master' && (github.event_name == 'push' || inputs.deploy) }}
     steps:
-    - name: Checkout vitalos (Meta-Repo, liefert Nachbar-Repos)
-      uses: actions/checkout@v4
-      with:
-        repository: nimmsel23/vitalos
-        ref: master
-    - name: Private Skills submodule access
-      uses: ./.github/actions/skills-submodule-auth
-      with:
-        deploy-key: ${{ secrets.SKILLS_DEPLOY_KEY }}
-    - name: Submodules via HTTPS + Token
-      run: |
-        git config --global url."https://x-access-token:${{ secrets.GH_SUBMODULE_TOKEN || secrets.GITHUB_TOKEN }}@github.com/".insteadOf "git@github.com:"
-        git submodule sync
-        git submodule update --init --recursive
-    - name: plan-app auf den ausgelösten Commit setzen
-      run: |
-        cd plan-app
-        SHA="${{ github.sha }}"
-        git fetch origin "$SHA"
-        git checkout "$SHA"
-    - uses: pnpm/action-setup@v4
-      with:
-        version: 11.3.0
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 22
-        cache: pnpm
-    - name: Install (Workspaces)
-      run: pnpm install --no-frozen-lockfile
-    - name: Build Plan
-      run: pnpm --filter ./plan-app run build:firebase
-    - name: Deploy Plan to Firebase Hosting
-      run: |
-        cd plan-app
-        echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT || secrets.FIREBASE_SERVICE_ACCOUNT_FITNESS_AOS }}' > /tmp/sa.json
-        GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json \
-          npx firebase-tools@latest deploy --only hosting:plan \
-          --project fitness-aos --non-interactive
+      - name: Checkout plan-dev
+        uses: actions/checkout@v4
+        with:
+          path: plan-dev
+          # Volle Historie: der Changelog (scripts/vos-changelog) liest bei workflow_dispatch `git log <parent>..HEAD`.
+          fetch-depth: 0
+
+      - name: Checkout Nachbarn (${{ env.NEIGHBOR_REF }})
+        run: |
+          set -euo pipefail
+          for repo in relax-dev learn-dev fitness-dev; do
+            git clone --depth 1 --branch "$NEIGHBOR_REF" "https://github.com/nimmsel23/${repo}.git" "$repo"
+            echo "$repo @ $(git -C "$repo" rev-parse --short HEAD)"
+          done
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.3.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: plan-dev/pnpm-lock.yaml
+
+      - name: Install (plan-dev, eigener Lockfile)
+        working-directory: plan-dev
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Install Nachbarn (je eigener Lockfile)
+        run: |
+          set -euo pipefail
+          for repo in relax-dev learn-dev fitness-dev; do
+            echo "::group::$repo"
+            if [ -f "$repo/pnpm-lock.yaml" ]; then
+              (cd "$repo" && pnpm install --frozen-lockfile --ignore-scripts)
+            elif [ -f "$repo/package.json" ]; then
+              echo "::warning::$repo hat keinen pnpm-lock.yaml — Install ohne Lockfile"
+              (cd "$repo" && pnpm install --no-frozen-lockfile --ignore-scripts)
+            fi
+            echo "::endgroup::"
+          done
+
+      - name: Build Plan
+        working-directory: plan-dev
+        run: pnpm run build:firebase
+
+      - name: Deploy Plan to Firebase Hosting
+        if: env.DO_DEPLOY == 'true'
+        working-directory: plan-dev
+        env:
+          FIREBASE_SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT || secrets.FIREBASE_SERVICE_ACCOUNT_FITNESS_AOS }}
+        run: |
+          printf '%s' "$FIREBASE_SA" > "$RUNNER_TEMP/sa.json"
+          GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json" \
+            npx firebase-tools@latest deploy --only hosting:plan \
+            --project fitness-aos --non-interactive
