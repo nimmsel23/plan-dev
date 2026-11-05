@@ -4,6 +4,7 @@ import { useUser } from '../../contexts/UserContext'
 import { clientView } from '../Plan/lib/planVersions.js'
 import { phaseForWeek, phaseSummary, planWeek, applyPhaseToRoutine } from '../Plan/lib/microcycles.js'
 import { routineToSessionDraft, prescriptionText } from '../Plan/lib/sessionDraft.js'
+import TemplateLauncher from './TemplateLauncher.jsx'
 import { watchAuth, listMacrocycles, getMacrocycle, completeRoutine, getLastPerformance } from '@db'
 
 // Habit-artig: Coach legt eine rotierende Liste von Routinen an (Push/Pull/
@@ -128,6 +129,8 @@ export default function TodayPlan({ cycle: rawCycle, nextRoutine: next, lastPerf
           </button>
         </div>
       </div>
+
+      {onLoadDraft && <TemplateLauncher onLoadDraft={onLoadDraft} />}
 
       <button
         onClick={onLogFreely}

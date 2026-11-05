@@ -290,3 +290,10 @@ Phasen haben `weeklyWeightPct` (0–10, Default 0): ab Woche 2 einer Phase steig
 (Zinseszins, gerundet auf 0,5 kg; leere Zielgewichte bleiben leer). `microcycles.js::progressedWeight`, durchgereicht über
 `applyPhaseToExercise/Routine(…, phase, week)` – damit wirken PlanCard-Start, CoachPlanToday, Session-Gate und Session-Draft einheitlich.
 Python-Spiegel `_phases` ergänzt. Offen: absolute Gewichtsstufen pro Woche, Wochen-Overrides einzelner Übungen, Auto-Progression aus dem Log (letzte Leistung).
+
+## Drill 4 — Einzel-Workouts im Session-Gate (2026-11-05)
+
+`Session/TemplateLauncher.jsx` (im Gate `TodayPlan` unter der Einheiten-Karte) listet die Vorlagen/Einzel-Workouts des Nutzers
+(`api.get('/routines')`, lokal wie Firestore) und lädt sie per `routineToSessionDraft` als Quick-Logging-Entwurf (ohne Phase).
+Fehler/Leerzustand sichtbar (Erneut versuchen; leer = Bereich entfällt). Offen: das Gate erscheint nur für Nutzer mit Plan –
+Nutzer ganz ohne Plan brauchen denselben Launcher im Editor-Leerzustand (`SessionEditor`); Entwurf an bestehende Tages-Session anhängen.
