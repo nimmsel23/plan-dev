@@ -5,3 +5,7 @@ allowBuilds:
   better-sqlite3: true
   esbuild: true
   protobufjs: true
+# CI-Standalone: vite nutzt preserveSymlinks, firebase braucht seine @firebase/*-Pakete im obersten node_modules
+# (im Meta-Repo kam das durch den Workspace-Hoist).
+publicHoistPattern:
+  - '@firebase/*'
