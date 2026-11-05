@@ -106,6 +106,7 @@ try {
   await click('Tag duplizieren');
   await click('Tag nach vorne');
   await click('Tag entfernen');
+  assert.equal(await evaluate(`document.querySelectorAll('input[aria-label="Übung suchen und hinzufügen"]').length`), 1, 'Nach Tag duplizieren/verschieben/entfernen bleibt genau ein Suchfeld stehen');
   await click('Zurück · Entwurf behalten');
   await click('Trainingstage und Übungen bearbeiten', false);
   await wait(has('ungesicherter Entwurf'));
