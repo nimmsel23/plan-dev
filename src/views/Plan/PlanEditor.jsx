@@ -33,6 +33,7 @@ export default function PlanEditor({ plan, uid, templates = [], apiClient, onClo
   const [storageError, setStorageError] = useState('');
   const [saved, setSaved] = useState(false);
   const [templateId, setTemplateId] = useState('');
+  const [moduleId, setModuleId] = useState('');
   const saving = useRef(false);
   const touched = useRef(false);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
@@ -60,6 +61,18 @@ export default function PlanEditor({ plan, uid, templates = [], apiClient, onClo
   function change(fn) { touched.current = true; setSaved(false); setDraft(fn); }
   function patchDay(dayId, fn) { change((d) => ({ ...d, routines: d.routines.map((r) => r.id === dayId ? fn(r) : r) })); }
   function addDay(day) { change((d) => ({ ...d, routines: [...d.routines, day] })); setActive(day.id); }
+  // Modul-Workout (6Pack-Tag, Calisthenics-Skill, eigene Vorlage) an den aktiven Trainingstag anhängen.
+  async function appendTemplate(dayId) {
+    if (!moduleId || busy) return;
+    setBusy(true); setError('');
+    try {
+      const { routine } = await apiClient.get(`/routines/${encodeURIComponent(moduleId)}`);
+      const added = clone(routine.exercises || []).map((ex) => ({ ...ex, id: id() }));
+      patchDay(dayId, (r) => ({ ...r, exercises: [...r.exercises, ...added] }));
+      setModuleId('');
+    } catch (err) { setError(err.message || 'Modul konnte nicht geladen werden.'); }
+    finally { setBusy(false); }
+  }
   async function importTemplate() {
     if (!templateId || busy) return;
     setBusy(true); setError('');
@@ -109,6 +122,7 @@ export default function PlanEditor({ plan, uid, templates = [], apiClient, onClo
           <label className="block text-sm">Name des Trainingstags<input className={input} maxLength={80} value={day.label} onChange={(e) => patchDay(day.id, (r) => ({ ...r, label: e.target.value }))} /></label>
           <div role="group" aria-label="Tag verwalten" className="flex gap-2 overflow-x-auto pb-1"><button className={chip} onClick={() => addDay({ ...clone(day), id: id(), label: `${day.label} (Kopie)`, exercises: day.exercises.map((ex) => ({ ...clone(ex), id: id() })) })}>Tag duplizieren</button>{[-1, 1].map((step) => { const i = draft.routines.findIndex((r) => r.id === day.id); return <button key={step} className={chip} disabled={i + step < 0 || i + step >= draft.routines.length} onClick={() => change((d) => ({ ...d, routines: arrayMove(d.routines, i, i + step) }))}>{step < 0 ? 'Tag nach vorne' : 'Tag nach hinten'}</button>; })}<button className={`${chip} text-fit-red`} onClick={() => { if (!confirm('Trainingstag aus dem Entwurf entfernen?')) return; change((d) => ({ ...d, routines: d.routines.filter((r) => r.id !== day.id) })); setActive(draft.routines.find((r) => r.id !== day.id)?.id || ''); }}>Tag entfernen</button></div>
           <p className="-mb-2 text-xs text-fit-muted">Trainingstage in der Woche</p><div role="group" aria-label="Geplante Wochentage" className="grid grid-cols-7 gap-1">{WEEKDAY_LABELS.map((label, i) => <button key={i} aria-pressed={day.weekdays?.includes(i) || false} className={`min-h-[40px] rounded-full border text-xs ${day.weekdays?.includes(i) ? 'border-fit-accent text-fit-accent' : 'border-fit-line'}`} onClick={() => patchDay(day.id, (r) => ({ ...r, weekdays: toggleWeekday(r.weekdays, i) }))}>{label}</button>)}</div>
+          {!!templates.length && <div role="group" aria-label="Modul anhängen" className="flex gap-2"><select aria-label="Modul-Workout an diesen Tag anhängen" className={`${input} flex-1`} value={moduleId} onChange={(e) => setModuleId(e.target.value)}><option value="">Modul anhängen (6Pack, Skill, Vorlage)…</option>{[...new Set(templates.map((t) => t.category || 'Vorlagen'))].map((cat) => <optgroup key={cat} label={cat}>{templates.filter((t) => (t.category || 'Vorlagen') === cat).map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</optgroup>)}</select><button className={button} disabled={!moduleId} onClick={() => appendTemplate(day.id)}>Anhängen</button></div>}
           <ExerciseSearch resetKey={day.id} exclude={day.exercises.map((ex) => ex.exercise_id)} searchExercises={catalogSearch} onAdd={(ex) => patchDay(day.id, (r) => ({ ...r, exercises: [...r.exercises, patchTemplateSets({ ...clone(ex), id: id(), exercise_id: ex.id, rest_seconds: 90, notes: '', rir: null }, (sets) => sets)] }))} />
           <TrainingMuscleExplorer key={day.id} exercises={day.exercises} selectedId={inspect} onSelect={setInspect} title={day.label} />
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={({ active: a, over }) => { if (!over || a.id === over.id) return; patchDay(day.id, (r) => ({ ...r, exercises: arrayMove(r.exercises, r.exercises.findIndex((ex) => ex.id === a.id), r.exercises.findIndex((ex) => ex.id === over.id)) })); }}><SortableContext items={day.exercises.map((ex) => ex.id)} strategy={verticalListSortingStrategy}><div className="space-y-3">{day.exercises.map((ex) => <ExerciseRow key={ex.id} ex={ex} onInspect={() => setInspect(ex.id)} onDelete={() => patchDay(day.id, (r) => ({ ...r, exercises: r.exercises.filter((x) => x.id !== ex.id) }))} onPatch={(field, value) => patchDay(day.id, (r) => ({ ...r, exercises: r.exercises.map((x) => x.id !== ex.id ? x : field === 'templateSets' ? { ...patchTemplateSets(x, () => value), prescriptionIncomplete: !completePrescription(x, value) } : { ...x, [field]: value }) }))} />)}</div></SortableContext></DndContext>
