@@ -86,3 +86,19 @@ export function withLastPerformance(draft, prevMap = {}) {
     return text ? { ...ex, note: [ex.note, text].filter(Boolean).join('\n') } : ex;
   }) };
 }
+
+// Drill 8: „Wie letztes Mal“ per Tipp übernehmen. Füllt NUR leere Felder (nach Index, darüber hinaus der letzte
+// Vorwert); bereits eingegebene Werte bleiben. Liefert null, wenn es nichts zu übernehmen gibt.
+export function adoptLastSets(current = [], prevSets = []) {
+  const prev = (prevSets || []).filter((x) => x && (x.reps || x.weight));
+  if (!prev.length || !current.length) return null;
+  let changed = false;
+  const next = current.map((s, i) => {
+    const p = prev[Math.min(i, prev.length - 1)];
+    const reps = s.reps === '' || s.reps == null ? (p.reps || '') : s.reps;
+    const weight = s.weight === '' || s.weight == null ? (p.weight || '') : s.weight;
+    if (reps !== (s.reps ?? '') || weight !== (s.weight ?? '')) changed = true;
+    return { ...s, reps, weight };
+  });
+  return changed ? next : null;
+}

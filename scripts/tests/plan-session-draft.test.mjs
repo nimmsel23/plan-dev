@@ -65,3 +65,15 @@ test('Letztes Mal: Karte aus Historie, nur Vorschlag in der Notiz', async () => 
   assert.equal(d.exercises[1].note, 'Ziel: 2 Sätze');
   assert.equal(withLastPerformance(null, map), null);
 });
+
+test('adoptLastSets: füllt nur leere Felder, überschreibt nie, null wenn nichts zu tun', async () => {
+  const { adoptLastSets } = await import('../../src/views/Plan/lib/sessionDraft.js');
+  const prev = [{ reps: '8', weight: '60' }, { reps: '7', weight: '62.5' }];
+  const out = adoptLastSets([{ reps: '', weight: '' }, { reps: '', weight: '' }, { reps: '', weight: '' }], prev);
+  assert.deepEqual(out.map((s) => [s.reps, s.weight]), [['8', '60'], ['7', '62.5'], ['7', '62.5']]);
+  const part = adoptLastSets([{ reps: '10', weight: '' }], prev);
+  assert.deepEqual(part[0], { reps: '10', weight: '60' });
+  assert.equal(adoptLastSets([{ reps: '5', weight: '50' }], prev), null);
+  assert.equal(adoptLastSets([{ reps: '', weight: '' }], []), null);
+  assert.equal(adoptLastSets([], prev), null);
+});

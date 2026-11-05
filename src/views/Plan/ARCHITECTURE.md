@@ -324,3 +324,11 @@ Es bleibt **ein Vorschlag**: `setsArray` bleibt leer, nichts gilt ohne Bestätig
 (`TodayPlan`, lädt `getSessionHistory(30)`) und im Editor-Launcher (`prevMap` aus `useSessionHistory`). Nebenbei: `prescriptionText`
 zeigt ohne Wiederholungsangabe „2 Sätze“ statt „2×“. Offen: Vorschlag per Tipp als Ist-Wert übernehmen (explizite Bestätigung),
 Zuordnung über Übungs-ID statt Name, Phasen-Auswertung in der Coach-Shell.
+
+## Drill 8 — „Wie letztes Mal übernehmen“ (2026-11-05)
+
+`sessionDraft.js::adoptLastSets(current, prevSets)`: füllt ausschließlich leere reps/weight-Felder aus den Sätzen der letzten Einheit
+(nach Index, darüber hinaus der letzte Vorwert), überschreibt nie, liefert `null` wenn nichts zu tun ist. `Session/ExerciseCard.jsx`
+zeigt den Link „Wie letztes Mal übernehmen“ nur, wenn es etwas zu übernehmen gibt (`prev` = `prevMap[ex.name]`), die Übernahme ist
+ein ausdrücklicher Tipp (Autosave über `replaceSets`). Offen: Zuordnung per Übungs-ID statt Name, Übernahme inkl. Progression
+(+% aus Phase auf Vorgewicht), Phasen-Auswertung in der Coach-Shell (coach-dev, separates Repo).
