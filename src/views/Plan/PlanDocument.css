@@ -40,3 +40,35 @@
 @media screen and (max-width:640px){
 .plan-training-table{min-width:0;table-layout:auto}.plan-training-table colgroup,.plan-training-table thead{display:none}.plan-training-table tbody{display:block}.plan-training-table tr:not(.plan-exercise-note){display:grid;grid-template-columns:26px repeat(4,minmax(0,1fr));column-gap:5px}.plan-training-table .plan-exercise-number{grid-column:1;grid-row:1;padding:13px 0 8px}.plan-training-table .plan-exercise-name{grid-column:2/-1;grid-row:1;padding:12px 0 9px;font-size:13px}.plan-training-table .plan-value{grid-row:2;padding:0 0 12px;text-align:left!important;font-size:10px}.plan-training-table .plan-sets{grid-column:2}.plan-training-table .plan-reps{grid-column:3}.plan-training-table .plan-weight{grid-column:4}.plan-training-table .plan-rest{grid-column:5;font-size:9px}.plan-value:before{content:attr(data-label);display:block;margin-bottom:5px;color:#7d8d85;font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}.plan-training-table .plan-extra-set .plan-value{grid-row:1}.plan-exercise-note{display:block;padding-left:31px}.plan-exercise-note td:first-child{display:none}.plan-exercise-note td:last-child{display:block;padding-left:0!important;padding-right:0!important}.plan-table-scroll{overflow:visible}
 }
+
+/* Bildschirm: dunkles App-Thema statt weißem A4-Blatt (Druck bleibt hell, siehe .plan-print-root). Größere Schrift wie in Strong. */
+@media screen{
+.plan-document{--plan-ink:var(--ink);--plan-dim:var(--muted);--plan-line:var(--line);--plan-green:var(--accent);gap:14px}
+.plan-document .plan-overview,.plan-document .plan-sheet,.plan-document .plan-program-notes{background:var(--card);box-shadow:none}
+.plan-document .plan-overview{padding:20px 18px;border-top:3px solid var(--accent)}
+.plan-document .plan-sheet{padding:18px 14px 12px}
+.plan-document .plan-print-button{background:transparent;color:var(--ink)}.plan-document .plan-print-button:hover{background:var(--card-hover)}
+.plan-document .plan-eyebrow,.plan-document .plan-section-label{font-size:11px}
+.plan-document .plan-facts strong{font-size:14px}.plan-document .plan-facts small{font-size:11px}
+.plan-document .plan-sheet-masthead,.plan-document .plan-sheet-footer{font-size:11px;color:var(--dim)}.plan-document .plan-masthead-separator{color:var(--dim)}
+.plan-document .plan-day-heading{margin:16px 0}
+.plan-document .plan-day-letter{background:var(--accent);color:var(--bg);width:48px;height:52px;font-size:28px;border-radius:12px}
+.plan-document .plan-day-heading h2{font-size:22px}.plan-document .plan-day-meta{font-size:13px}
+.plan-document .plan-day-status{font-size:11px;border-radius:999px}
+.plan-document .plan-preparation,.plan-document .plan-finisher{background:color-mix(in srgb,var(--accent) 9%,transparent);border:1px solid color-mix(in srgb,var(--accent) 25%,transparent);border-left-width:3px;border-radius:12px}
+.plan-document .plan-preparation p,.plan-document .plan-finisher p{font-size:14px;line-height:1.5}
+.plan-document .plan-training-table{font-size:13px}
+.plan-document .plan-training-table thead{background:var(--bg2);color:var(--muted)}.plan-document .plan-training-table thead th{font-size:11px;padding:10px 8px}
+.plan-document .plan-exercise-name{font-size:15px;color:var(--accent)}
+.plan-document .plan-value{font-size:14px}.plan-document .plan-rest{font-size:12px}.plan-document .plan-exercise-number{font-size:12px;color:var(--dim)}
+.plan-document .plan-training-table small{font-size:11px}
+.plan-document .plan-exercise-tag{font-size:11px;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent)}
+.plan-document .plan-tag-open{background:color-mix(in srgb,var(--orange) 18%,transparent);color:var(--orange)}.plan-document .plan-open-value{color:var(--orange);font-size:12px}
+.plan-document .plan-exercise-note td{font-size:12px}.plan-document .plan-exercise-note td>span{font-size:10px}
+.plan-document .plan-table-legend{font-size:11px}.plan-document .plan-review-notice{background:color-mix(in srgb,var(--orange) 14%,transparent);color:var(--orange);font-size:13px}
+.plan-document .plan-program-notes{font-size:14px}.plan-document .plan-program-notes p{font-size:14px}
+}
+@media screen and (max-width:640px){
+.plan-document .plan-value:before{font-size:10px;color:var(--dim)}.plan-document .plan-training-table .plan-value{font-size:13px}.plan-document .plan-training-table .plan-exercise-name{font-size:15px}
+.plan-document .plan-sheet{padding:16px 12px 10px}.plan-document .plan-day-letter{width:42px;height:48px;font-size:24px}.plan-document .plan-day-heading h2{font-size:20px}
+}
