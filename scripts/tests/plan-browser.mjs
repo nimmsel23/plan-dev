@@ -120,12 +120,12 @@ try {
   await wait(has('Für diesen Klienten bereitgestellt'));
   console.log('PASS: Coach creates client template, prescriptions and published training plan.');
   // Drill 1/3/5: Mikrozyklus anlegen, speichern, Banner + Fortschrittsbereich sichtbar.
-  await click('Phase hinzufügen');
-  await click('Phasen speichern');
+  await click('Mikrozyklus hinzufügen');
+  await click('Mikrozyklen speichern');
   await wait(has('Woche 1/1 · Basis'));
-  await wait(has('Fortschritt je Phase'));
-  assert.equal(await evaluate('document.documentElement.scrollWidth <= window.innerWidth'), true, 'phase editor must not overflow on mobile');
-  console.log('PASS: Coach adds a phase (microcycle); banner and per-phase progress render.');
+  await wait(has('Fortschritt je Mikrozyklus'));
+  assert.equal(await evaluate('document.documentElement.scrollWidth <= window.innerWidth'), true, 'microcycle editor must not overflow on mobile');
+  console.log('PASS: Coach adds a microcycle (microcycle); banner and per-microcycle progress render.');
   await evaluate("localStorage.setItem('test-persona','client'); location.reload()");
   await wait(has('Training starten'));
   await click('Trainingspläne');

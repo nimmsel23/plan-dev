@@ -190,7 +190,7 @@ class PlanBackendTest(unittest.TestCase):
                 self.assertFalse((sub.parent / f'{plan["id"]}.json').exists())
                 self.assertTrue((sub.parent / f'{copy["id"]}.json').exists())
 
-    def test_phases_are_validated_versioned_and_restored(self):
+    def test_microcycles_are_validated_versioned_and_restored(self):
         with tempfile.TemporaryDirectory(prefix="plan-router-test-") as root:
             config = types.ModuleType("fitness.api.config")
             config.RUNTIME = Path(root)
@@ -214,35 +214,35 @@ class PlanBackendTest(unittest.TestCase):
                 plan = client.post(base, json={"name": "Block", "coachUid": "coach"}).json()["macrocycle"]
                 url = f'{base}/{plan["id"]}'
                 client.post(f"{url}/routines", json={"label": "Push", "exercises": [{"exercise_id": "a", "name": "A"}]})
-                self.assertEqual(client.patch(url, json={"phases": "x"}).status_code, 422)
-                out = client.patch(url, json={"phases": [
+                self.assertEqual(client.patch(url, json={"microcycles": "x"}).status_code, 422)
+                out = client.patch(url, json={"microcycles": [
                     {"id": "p1", "kind": "build", "weeks": 3},
                     {"kind": "deload", "weeks": "1", "volumePct": 999, "rirDelta": -9},
                     {"kind": "kaputt", "weeks": 200},
                     "müll",
                 ]}).json()["macrocycle"]
-                self.assertEqual([(p["kind"], p["weeks"]) for p in out["phases"]], [("build", 3), ("deload", 1), ("base", 52)][:3])
-                self.assertEqual(out["phases"][1]["volumePct"], 150)
-                self.assertEqual(out["phases"][1]["rirDelta"], -3)
-                self.assertEqual(out["phases"][0]["weeklyWeightPct"], 0)
-                prog = client.patch(url, json={"phases": [{"id": "p1", "kind": "build", "weeks": 2, "weeklyWeightPct": 99}]}).json()["macrocycle"]
-                self.assertEqual(prog["phases"][0]["weeklyWeightPct"], 10)
-                self.assertEqual(sum(p["weeks"] for p in out["phases"]), 56)
-                client.patch(url, json={"phases": [{"id": "p1", "kind": "build", "weeks": 3}]})
+                self.assertEqual([(p["kind"], p["weeks"]) for p in out["microcycles"]], [("build", 3), ("deload", 1), ("base", 52)][:3])
+                self.assertEqual(out["microcycles"][1]["volumePct"], 150)
+                self.assertEqual(out["microcycles"][1]["rirDelta"], -3)
+                self.assertEqual(out["microcycles"][0]["weeklyWeightPct"], 0)
+                prog = client.patch(url, json={"microcycles": [{"id": "p1", "kind": "build", "weeks": 2, "weeklyWeightPct": 99}]}).json()["macrocycle"]
+                self.assertEqual(prog["microcycles"][0]["weeklyWeightPct"], 10)
+                self.assertEqual(sum(p["weeks"] for p in out["microcycles"]), 56)
+                client.patch(url, json={"microcycles": [{"id": "p1", "kind": "build", "weeks": 3}]})
                 v1 = client.patch(url, json={"status": "published"}).json()["macrocycle"]
-                self.assertEqual(v1["published"]["phases"][0]["volumePct"], 110)
-                # Phasen ändern = inhaltliche Änderung → neue Version
-                client.patch(url, json={"phases": [{"id": "p1", "kind": "peak", "weeks": 2}]})
+                self.assertEqual(v1["published"]["microcycles"][0]["volumePct"], 110)
+                # Mikrozyklen ändern = inhaltliche Änderung → neue Version
+                client.patch(url, json={"microcycles": [{"id": "p1", "kind": "peak", "weeks": 2}]})
                 v2 = client.patch(url, json={"status": "published"}).json()["macrocycle"]
                 self.assertEqual(v2["headVersion"], 2)
-                # Restore auf v1 stellt Phasen wieder her
+                # Restore auf v1 stellt Mikrozyklen wieder her
                 restored = client.post(f"{url}/restore", json={"version": "v1"}).json()["macrocycle"]
-                self.assertEqual(restored["phases"][0]["kind"], "build")
-                # Plan ohne Phasen: Snapshot enthält keinen phases-Schlüssel (Alt-Pläne bleiben gleich)
+                self.assertEqual(restored["microcycles"][0]["kind"], "build")
+                # Plan ohne Mikrozyklen: Snapshot enthält keinen microcycles-Schlüssel (Alt-Pläne bleiben gleich)
                 plain = client.post(base, json={"name": "Alt", "coachUid": "coach"}).json()["macrocycle"]
                 client.post(f'{base}/{plain["id"]}/routines', json={"label": "X", "exercises": [{"exercise_id": "a", "name": "A"}]})
                 pub = client.patch(f'{base}/{plain["id"]}', json={"status": "published"}).json()["macrocycle"]
-                self.assertNotIn("phases", pub["published"])
+                self.assertNotIn("microcycles", pub["published"])
 
 
 if __name__ == "__main__":

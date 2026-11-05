@@ -88,11 +88,25 @@ def _completions_dir(client_uid: str, cycle_id: str) -> Path:
     return _dir(client_uid) / cycle_id / "completions"
 
 
+def _with_microcycles(doc: Any) -> Any:
+    """Altdaten: bis 2026-11-05 hieß das Feld `phases`; wird beim Lesen auf `microcycles` abgebildet."""
+    if not isinstance(doc, dict):
+        return doc
+    out = dict(doc)
+    if "phases" in out:
+        legacy = out.pop("phases")
+        out.setdefault("microcycles", legacy)
+    for key in ("published", "snapshot"):
+        if isinstance(out.get(key), dict):
+            out[key] = _with_microcycles(out[key])
+    return out
+
+
 def _load(client_uid: str, cycle_id: str) -> dict[str, Any]:
     m = _read_json(_path(client_uid, cycle_id))
     if not m:
         raise HTTPException(404, detail="Zyklus nicht gefunden")
-    return m
+    return _with_microcycles(m)
 
 
 def _save(client_uid: str, macrocycle: dict[str, Any]) -> dict[str, Any]:
@@ -105,7 +119,7 @@ def _versions_dir(client_uid: str, cycle_id: str) -> Path:
     return _dir(client_uid) / cycle_id / "versions"
 
 
-PHASE_KINDS = {"base": (100, 0), "build": (110, -1), "peak": (90, -2), "deload": (60, 2), "test": (70, 0)}
+MICROCYCLE_KINDS = {"base": (100, 0), "build": (110, -1), "peak": (90, -2), "deload": (60, 2), "test": (70, 0)}
 MAX_PLAN_WEEKS = 104
 
 
@@ -117,8 +131,8 @@ def _clamp(value: Any, lo: int, hi: int, default: int) -> int:
     return min(hi, max(lo, n))
 
 
-def _phases(raw: Any) -> list[dict[str, Any]]:
-    """Spiegel von src/views/Plan/lib/microcycles.js::normalizePhases (Periodisierungs-Phasen)."""
+def _microcycles(raw: Any) -> list[dict[str, Any]]:
+    """Spiegel von src/views/Plan/lib/microcycles.js::normalizeMicrocycles (Periodisierungs-Mikrozyklen)."""
     if not isinstance(raw, list):
         return []
     out: list[dict[str, Any]] = []
@@ -127,7 +141,7 @@ def _phases(raw: Any) -> list[dict[str, Any]]:
     for item in raw:
         if not isinstance(item, dict):
             continue
-        kind = item.get("kind") if item.get("kind") in PHASE_KINDS else "base"
+        kind = item.get("kind") if item.get("kind") in MICROCYCLE_KINDS else "base"
         pid = _text(item.get("id"))[:40] or f"ph-{len(out) + 1}"
         while pid in seen:
             pid += "-x"
@@ -136,7 +150,7 @@ def _phases(raw: Any) -> list[dict[str, Any]]:
         if weeks < 1:
             break
         total += weeks
-        vol, rir = PHASE_KINDS[kind]
+        vol, rir = MICROCYCLE_KINDS[kind]
         out.append({
             "id": pid,
             "name": (_text(item.get("name")) or kind.capitalize())[:60],
@@ -153,9 +167,9 @@ def _phases(raw: Any) -> list[dict[str, Any]]:
 def _snapshot(m: dict[str, Any]) -> dict[str, Any]:
     """Inhalt, der veröffentlicht wird (Git: Tree eines Commits)."""
     routines = [{**r, "weekdays": sorted(r.get("weekdays") or []), "exercises": r.get("exercises") or []} for r in m.get("routines") or []]
-    phases = _phases(m.get("phases"))
+    microcycles = _microcycles(m.get("microcycles"))
     return {
-        **({"phases": phases} if phases else {}),
+        **({"microcycles": microcycles} if microcycles else {}),
         "name": m.get("name", ""),
         "description": m.get("description") or "",
         "totalWeeks": _weeks(m.get("totalWeeks")),
@@ -165,7 +179,7 @@ def _snapshot(m: dict[str, Any]) -> dict[str, Any]:
 
 def _versions(client_uid: str, cycle_id: str) -> list[dict[str, Any]]:
     dir_ = _versions_dir(client_uid, cycle_id)
-    items = [v for f in dir_.glob("*.json") if (v := _read_json(f))] if dir_.exists() else []
+    items = [_with_microcycles(v) for f in dir_.glob("*.json") if (v := _read_json(f))] if dir_.exists() else []
     items.sort(key=lambda v: v.get("number", 0))
     return items
 
@@ -395,10 +409,10 @@ async def update_macrocycle(client_uid: str, cycle_id: str, request: Request):
             if type(weeks) is not int or not 1 <= weeks <= 104:
                 raise HTTPException(422, detail="Ungültige Plandauer")
             m["totalWeeks"] = weeks
-        if "phases" in body:
-            if not isinstance(body["phases"], list):
-                raise HTTPException(422, detail="Ungültige Phasen")
-            m["phases"] = _phases(body["phases"])
+        if "microcycles" in body:
+            if not isinstance(body["microcycles"], list):
+                raise HTTPException(422, detail="Ungültige Mikrozyklen")
+            m["microcycles"] = _microcycles(body["microcycles"])
         if "routines" in body:
             routines = body["routines"]
             if (not isinstance(routines, list)
@@ -511,7 +525,7 @@ async def restore_version(client_uid: str, cycle_id: str, request: Request):
         raise HTTPException(404, detail="Version nicht gefunden")
     with _lock:
         m = _load(client_uid, cycle_id)
-        m.pop("phases", None)  # Snapshots ohne Phasen setzen den Arbeitsstand ebenfalls zurück
+        m.pop("microcycles", None)  # Snapshots ohne Mikrozyklen setzen den Arbeitsstand ebenfalls zurück
         m.update({k: v for k, v in version["snapshot"].items()})
         _save(client_uid, m)
     return {"ok": True, "macrocycle": m}

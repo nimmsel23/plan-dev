@@ -38,8 +38,40 @@ def atomic(path, value):
     finally:
         if os.path.exists(tmp): os.unlink(tmp)
 
+MICROCYCLE_KINDS = {'base': (100, 0), 'build': (110, -1), 'peak': (90, -2), 'deload': (60, 2), 'test': (70, 0)}
+MICROCYCLE_LABELS = {'base': 'Basis', 'build': 'Aufbau', 'peak': 'Peak', 'deload': 'Deload', 'test': 'Test'}
+MAX_PLAN_WEEKS = 104
+
+def _clamp(value, low, high, fallback):
+    try: number = round(float(value))
+    except (TypeError, ValueError, OverflowError): return fallback
+    return min(high, max(low, number))
+
+def normalize_microcycles(items):
+    """Spiegel von microcycles.js::normalizeMicrocycles (Mikrozyklen); ungültige Einträge fallen weg."""
+    if not isinstance(items, list): return []
+    seen, out, total = set(), [], 0
+    for raw in items:
+        if not isinstance(raw, dict): continue
+        kind = raw.get('kind') if raw.get('kind') in MICROCYCLE_KINDS else 'base'
+        pid = raw['id'].strip()[:40] if isinstance(raw.get('id'), str) and raw['id'].strip() else f'ph-{len(out) + 1}'
+        while pid in seen: pid += '-x'
+        seen.add(pid)
+        weeks = min(_clamp(raw.get('weeks'), 1, 52, 1), MAX_PLAN_WEEKS - total)
+        if weeks < 1: break
+        total += weeks
+        name = raw['name'].strip()[:60] if isinstance(raw.get('name'), str) and raw['name'].strip() else MICROCYCLE_LABELS[kind]
+        out.append({'id': pid, 'name': name, 'kind': kind, 'weeks': weeks,
+                    'volumePct': _clamp(raw.get('volumePct'), 30, 150, MICROCYCLE_KINDS[kind][0]),
+                    'rirDelta': _clamp(raw.get('rirDelta'), -3, 3, MICROCYCLE_KINDS[kind][1]),
+                    'weeklyWeightPct': _clamp(raw.get('weeklyWeightPct'), 0, 10, 0),
+                    'note': (raw['note'].strip() if isinstance(raw.get('note'), str) else '')[:300]})
+    return out
+
 def snapshot(plan):
-    return {key: plan[key] for key in ('name', 'description', 'totalWeeks', 'routines')}
+    snap = {key: plan[key] for key in ('name', 'description', 'totalWeeks', 'routines')}
+    snap['microcycles'] = normalize_microcycles(plan.get('microcycles', plan.get('phases')))
+    return snap
 
 def complete_prescription(ex):
     sets = ex.get('templateSets')
@@ -78,7 +110,7 @@ def validate(body, complete=False):
             if complete and (ex.get('prescriptionIncomplete') or not complete_prescription(ex)): raise PlanError(f"{day['label']} · {ex['name']}: Satzvorgaben zuerst ergänzen.")
         if complete and not day['exercises']: raise PlanError('Jeder Trainingstag braucht Übungen.')
     if complete and not routines: raise PlanError('Mindestens ein Trainingstag erforderlich.')
-    return {'name': name, 'description': str(body.get('description') or '')[:2000], 'totalWeeks': weeks, 'routines': routines}
+    return {'name': name, 'description': str(body.get('description') or '')[:2000], 'totalWeeks': weeks, 'routines': routines, 'microcycles': normalize_microcycles(body.get('microcycles'))}
 
 class LocalPlans:
     def __init__(self, root):

@@ -64,7 +64,7 @@ try {
   assert.match(d2.block, /^Pull \[Deload, W2\]/);
   assert.equal(d2.exercises[0].setsArray.length, 2);
   assert.equal(await evaluate('document.documentElement.scrollWidth <= window.innerWidth'), true, 'gate must not overflow on mobile');
-  console.log('PASS: Session gate shows phase, adjusts prescription, lets user pick a unit and builds a prepared draft (mobile width).');
+  console.log('PASS: Session gate shows microcycle, adjusts prescription, lets user pick a unit and builds a prepared draft (mobile width).');
   // Drill 8: „Wie letztes Mal übernehmen“ füllt nur leere Felder, überschreibt nie.
   await click('Wie letztes Mal übernehmen');
   await wait(`document.getElementById('card-state').textContent.length > 0`);

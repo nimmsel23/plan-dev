@@ -1,8 +1,8 @@
 // Drill 2 — Plan → Session-Tab („Quick-Logging mit Vorbereitung“).
-// Wandelt eine Plan-Einheit (optional phasen-angepasst) in einen Entwurf für den Session-Editor
+// Wandelt eine Plan-Einheit (optional mikrozyklus-angepasst) in einen Entwurf für den Session-Editor
 // (`initialDraft` = {block, exercises:[{id,name,setsArray,note,...}]}). Die Vorgaben landen als Hinweistext;
 // Ist-Werte (reps/weight) bleiben leer – nichts gilt als absolviert, bevor es bestätigt wurde.
-import { applyPhaseToRoutine } from './microcycles.js';
+import { applyMicrocycleToRoutine } from './microcycles.js';
 import { prescriptionGroups, repetitionLabel, pauseLabel } from './planDocument.js';
 
 export function prescriptionText(ex) {
@@ -21,9 +21,9 @@ export function prescriptionText(ex) {
   return bits.join(' · ');
 }
 
-export function routineToSessionDraft(routine, { phase = null, planName = '', week = null } = {}) {
-  const adjusted = applyPhaseToRoutine(routine, phase, week);
-  const tag = phase ? ` [${phase.name}${week ? `, W${week}` : ''}]` : '';
+export function routineToSessionDraft(routine, { microcycle = null, planName = '', week = null } = {}) {
+  const adjusted = applyMicrocycleToRoutine(routine, microcycle, week);
+  const tag = microcycle ? ` [${microcycle.name}${week ? `, W${week}` : ''}]` : '';
   const exercises = (adjusted.exercises || []).map((ex, i) => {
     const count = Math.max(1, ex.templateSets?.length || Number(ex.target_sets) || 1);
     const target = prescriptionText(ex);

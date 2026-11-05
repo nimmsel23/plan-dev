@@ -31,8 +31,8 @@ def _workouts_path(uid: str) -> Path:
     return SESS_ROOT / uid / "workouts.json"
 
 
-def _phase_ref(value) -> dict | None:
-    """Welche Plan-Phase beim Start galt (Spiegel von firestore/workouts.js); nur id/name/week."""
+def _microcycle_ref(value) -> dict | None:
+    """Welcher Plan-Mikrozyklus beim Start galt (Spiegel von firestore/workouts.js); nur id/name/week."""
     if not isinstance(value, dict) or not isinstance(value.get("id"), str) or not value["id"]:
         return None
     week = value.get("week")
@@ -421,7 +421,7 @@ async def create_workout(request: Request):
     workout = {
         "id": _new_id(), "routine_id": routine_id, "sourceRoutineId": routine_id,
         "sourcePlanId": body.get("sourcePlanId"), "sourcePlanRoutineId": body.get("sourcePlanRoutineId"), "sourcePlanVersion": body.get("sourcePlanVersion"),
-        "sourcePlanPhase": _phase_ref(body.get("sourcePlanPhase")),
+        "sourcePlanMicrocycle": _microcycle_ref(body.get("sourcePlanMicrocycle")),
         "sourceAssignmentId": body.get("sourceAssignmentId"),
         "name": name or f"Workout {datetime.now().strftime('%d.%m.')}",
         "started_at": datetime.now().isoformat(), "finished_at": None, "sessionState": "work",

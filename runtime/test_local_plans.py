@@ -14,6 +14,21 @@ class LocalPlansTest(unittest.TestCase):
         self.store = LocalPlans(self.root)
         self.body = {'name':'Plan', 'totalWeeks':8, 'routines':[{'id':'day', 'label':'A', 'exercises':[{'id':'ex','name':'Bench','rest_seconds':0,'templateSets':[{'targetReps':'8-12','targetWeight':60}]}]}]}
 
+    def test_microcycles_are_normalised_released_and_delivered(self):
+        microcycles = [{'name': ' Aufbau ', 'kind': 'build', 'weeks': 3, 'weeklyWeightPct': 2}, {'kind': 'unbekannt', 'weeks': 999}, 'müll']
+        plan = self.store.create('client', {**self.body, 'microcycles': microcycles})
+        self.assertEqual([p['kind'] for p in plan['microcycles']], ['build', 'base'])
+        self.assertEqual(plan['microcycles'][0]['volumePct'], 110)
+        self.assertEqual(plan['microcycles'][0]['weeklyWeightPct'], 2)
+        self.assertEqual(sum(p['weeks'] for p in plan['microcycles']), 52 + 3)
+        released = self.store.release('client', plan['id'], {'expectedUpdatedAt': plan['updatedAt']})
+        self.assertEqual(released['published']['microcycles'], plan['microcycles'])
+        self.assertEqual(self.store.delivery_payload('client', plan['id'])['snapshot']['microcycles'], plan['microcycles'])
+
+    def test_plan_without_microcycles_stays_compatible(self):
+        plan = self.store.create('client', self.body)
+        self.assertEqual(plan['microcycles'], [])
+
     def test_draft_release_reopen_conflict_and_delivery(self):
         plan = self.store.create('client', self.body)
         released = self.store.release('client', plan['id'], {'expectedUpdatedAt':plan['updatedAt']})

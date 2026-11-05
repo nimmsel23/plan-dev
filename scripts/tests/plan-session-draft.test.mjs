@@ -19,9 +19,9 @@ test('Entwurf: Sätze vorbereitet, Ist-Werte leer, Vorgaben im Hinweis', () => {
   assert.equal(d.exercises[1].source, 'plan');
 });
 
-test('Entwurf mit Deload-Phase: weniger Sätze, mehr RIR, Phase im Blocknamen', () => {
-  const phase = { id: 'd', name: 'Deload', volumePct: 60, rirDelta: 2 };
-  const d = routineToSessionDraft(routine, { phase, week: 4 });
+test('Entwurf mit Deload-Mikrozyklus: weniger Sätze, mehr RIR, Mikrozyklus im Blocknamen', () => {
+  const microcycle = { id: 'd', name: 'Deload', volumePct: 60, rirDelta: 2 };
+  const d = routineToSessionDraft(routine, { microcycle, week: 4 });
   assert.equal(d.block, 'Push [Deload, W4]');
   assert.equal(d.exercises[0].setsArray.length, 3);
   assert.match(d.exercises[0].note, /3×8 @ 60 kg · RIR 4/);

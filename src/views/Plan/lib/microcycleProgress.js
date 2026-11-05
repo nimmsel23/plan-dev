@@ -1,7 +1,7 @@
-// Drill 5 — Coach-Auswertung je Phase: geplante vs. absolvierte Einheiten, Ø Anstrengung.
-// Zuordnung eines Workouts über `sourcePlanPhase.id` (beim Start gesetzt, Drill 1); Workouts ohne Phasenbezug
+// Drill 5 — Coach-Auswertung je Mikrozyklus: geplante vs. absolvierte Einheiten, Ø Anstrengung.
+// Zuordnung eines Workouts über `sourcePlanMicrocycle.id` (beim Start gesetzt, Drill 1); Workouts ohne Mikrozyklus-Bezug
 // (Altbestand, freies Training) zählen nirgends mit – nichts wird geraten.
-import { phaseTimeline } from './microcycles.js';
+import { microcycleTimeline } from './microcycles.js';
 
 export function plannedPerWeek(routines = []) {
   return routines.reduce((n, r) => {
@@ -11,13 +11,13 @@ export function plannedPerWeek(routines = []) {
   }, 0);
 }
 
-export function phaseProgress(plan, workouts = [], now = new Date()) {
+export function microcycleProgress(plan, workouts = [], now = new Date()) {
   const perWeek = plannedPerWeek(plan?.routines);
   const start = new Date(plan?.publishedAt || plan?.createdAt || now).getTime();
   const week = Number.isFinite(start) ? Math.max(1, Math.floor((now.getTime() - start) / (7 * 86400000)) + 1) : 1;
   const mine = workouts.filter((w) => w.sourcePlanId === plan?.id && w.finished_at);
-  return phaseTimeline(plan?.phases).map((p) => {
-    const done = mine.filter((w) => w.sourcePlanPhase?.id === p.id);
+  return microcycleTimeline(plan?.microcycles).map((p) => {
+    const done = mine.filter((w) => (w.sourcePlanMicrocycle ?? w.sourcePlanPhase)?.id === p.id);
     const efforts = done.map((w) => Number(w.feedback?.effort)).filter((e) => Number.isFinite(e) && e > 0);
     const state = week > p.endWeek ? 'past' : week >= p.startWeek ? 'current' : 'upcoming';
     const elapsedWeeks = state === 'past' ? p.weeks : state === 'current' ? week - p.startWeek + 1 : 0;
