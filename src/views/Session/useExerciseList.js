@@ -25,6 +25,7 @@
 import { useState } from 'react';
 import { getExercise, normalizeExerciseRecord, parseQuick, queueForEnrichment } from '@db';
 import { slugify } from './utils';
+import { mergeDraftIntoExercises } from '../Plan/lib/sessionDraft.js';
 
 export function useExerciseList({ scheduleAutoSave, showToast, saveRef, setDirty }) {
   const [exercises, setExercises] = useState([]);
@@ -82,6 +83,14 @@ export function useExerciseList({ scheduleAutoSave, showToast, saveRef, setDirty
     });
     if (!merged && normalized.source !== 'expert') queueForEnrichment({ ...normalized, id, name: displayName });
     showToast(merged ? `+ Satz (${displayName})` : `+ ${displayName}`);
+    setTimeout(() => { saveRef.current?.(true); setDirty(false); }, 0);
+  }
+
+  // Drill 6: vorbereiteten Plan-/Vorlagen-Entwurf in die laufende Session einfügen.
+  function appendDraft(draft) {
+    if (!draft?.exercises?.length) return;
+    setExercises(prev => mergeDraftIntoExercises(prev, draft));
+    showToast(`+ ${draft.block || 'Workout'}`);
     setTimeout(() => { saveRef.current?.(true); setDirty(false); }, 0);
   }
 
@@ -176,6 +185,6 @@ export function useExerciseList({ scheduleAutoSave, showToast, saveRef, setDirty
   return {
     exercises, setExercises,
     quickInput, setQuickInput,
-    addEx, addQuick, updateEx, addSet, replaceSets, removeSet, moveEx, moveExercise, removeEx,
+    addEx, addQuick, appendDraft, updateEx, addSet, replaceSets, removeSet, moveEx, moveExercise, removeEx,
   };
 }

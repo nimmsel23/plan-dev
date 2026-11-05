@@ -261,3 +261,90 @@ Der Druck rendert weiterhin Trainingsblätter ohne interaktive Körperkarten.
 Die lokale und Cloud-Host-App liefern Identität, Speicher und Navigation.
 
 Lokale Freigabe: `planReadiness.js` nennt offene Übungen vorab. Leere Satzlisten werden nicht durch eine beliebige Feldänderung als vollständig markiert; der Python-Runtime prüft dieselben Zielvorgaben und nennt die betroffene Übung.
+
+## Drill 1 — Mikrozyklen / Periodisierung (2026-11-05)
+
+Ein Makrozyklus hat optional `phases` (Mikrozyklen): aufeinanderfolgende Blöcke `{id, name, kind, weeks, volumePct, rirDelta, note}`
+mit `kind` ∈ base/build/peak/deload/test. Logik: `lib/microcycles.js` (`normalizePhases`, `phaseTimeline`, `phaseForWeek`,
+`planWeek`, `applyPhaseToRoutine`). Python-Spiegel: `macrocycles.py::_phases` (Änderungen immer an beiden Stellen).
+`phases` ist Teil des Versions-Snapshots, aber nur wenn nicht leer (Alt-Pläne behalten Snapshot-Gleichheit); `restore` setzt sie zurück.
+Beim Start einer Einheit aus dem Plan (PlanCard, CoachPlanToday) werden Satzzahl (Volumen-%) und RIR der aktuellen Phase auf den
+Übungs-Snapshot angewendet; das Workout speichert `sourcePlanPhase {id,name,week}`. UI: `components/PhaseEditor.jsx` (Coach, im Klientenpfad),
+Phasen-Banner in PlanCard/CoachPlanToday. Offen für Folge-Drills: Phase je Woche im Session-Tab (vos-training) anzeigen, Gewichtsprogression
+pro Woche, Wochen-Overrides einzelner Übungen. Tests: `scripts/tests/plan-microcycles.test.mjs`, `test_plan_backend.py::test_phases_*`.
+
+## Drill 2 — Plan → Session-Tab: Quick-Logging mit Vorbereitung (2026-11-05)
+
+`Session/TodayPlan.jsx` (Gate für Klienten mit Coach-Plan) wählt jetzt die Einheit frei (Chips, „dran“ markiert), zeigt die
+Phase der Woche und die phasen-angepasste Vorgabe (`prescriptionText`) und bietet **„Mit Vorbereitung loggen“**:
+`lib/sessionDraft.js::routineToSessionDraft` baut daraus den `initialDraft` des Session-Editors (Sätze vorbereitet, Ist-Werte
+leer, Vorgabe als Notiz „Ziel: …“, Block = Einheit + Phase + Plan). `Session/index.jsx` umgeht das Gate bei vorhandenem Draft
+(sonst Endlosschleife nach Remount). Der Draft gilt nur, wenn für das Datum noch keine Session existiert (`resetSessionData`).
+Die Habit-artige „erledigt“-Taste bleibt. Offen: Draft auch bei bereits bestehender Tages-Session anhängen, Plan-Workouts
+(`views/Plan/WorkoutSession`) und Session-Log zusammenführen, Vorlagen (Mikro-Workouts ohne Plan) im Gate wählbar machen.
+Tests: `scripts/tests/plan-session-draft.test.mjs`.
+
+## Drill 3 — Gewichtsprogression je Phasenwoche (2026-11-05)
+
+Phasen haben `weeklyWeightPct` (0–10, Default 0): ab Woche 2 einer Phase steigt jedes Zielgewicht um diesen Prozentsatz pro Woche
+(Zinseszins, gerundet auf 0,5 kg; leere Zielgewichte bleiben leer). `microcycles.js::progressedWeight`, durchgereicht über
+`applyPhaseToExercise/Routine(…, phase, week)` – damit wirken PlanCard-Start, CoachPlanToday, Session-Gate und Session-Draft einheitlich.
+Python-Spiegel `_phases` ergänzt. Offen: absolute Gewichtsstufen pro Woche, Wochen-Overrides einzelner Übungen, Auto-Progression aus dem Log (letzte Leistung).
+
+## Drill 4 — Einzel-Workouts im Session-Gate (2026-11-05)
+
+`Session/TemplateLauncher.jsx` (im Gate `TodayPlan` unter der Einheiten-Karte) listet die Vorlagen/Einzel-Workouts des Nutzers
+(`api.get('/routines')`, lokal wie Firestore) und lädt sie per `routineToSessionDraft` als Quick-Logging-Entwurf (ohne Phase).
+Fehler/Leerzustand sichtbar (Erneut versuchen; leer = Bereich entfällt). Offen: das Gate erscheint nur für Nutzer mit Plan –
+Nutzer ganz ohne Plan brauchen denselben Launcher im Editor-Leerzustand (`SessionEditor`); Entwurf an bestehende Tages-Session anhängen.
+
+## Drill 5 — Coach: Fortschritt je Phase (2026-11-05)
+
+`lib/phaseProgress.js::phaseProgress(plan, workouts, now)` liefert je Phase Soll (Wochentage bzw. Zeitraumziel × Wochen), Soll bisher,
+absolvierte Einheiten (nur abgeschlossene Workouts mit `sourcePlanId` + `sourcePlanPhase.id`), Ø Anstrengung aus `feedback.effort` und
+Zustand (past/current/upcoming). `components/PhaseProgress.jsx` zeigt das im Klientenpfad der `PlanCard` über dem `PhaseEditor`.
+Workouts ohne Phasenbezug (Altbestand, freies Training) zählen bewusst nicht mit. Offen: Auswertung in der Klientenliste/Coach-Shell,
+Soll-Ist je Übung (Gewichts-Ist vs. progressiertes Ziel), Entwurf an bestehende Tages-Session anhängen, Launcher ohne Plan.
+
+## Drill 6 — Entwurf in bestehende Session + Launcher im Editor (2026-11-05)
+
+`lib/sessionDraft.js::mergeDraftIntoExercises` fügt einen Entwurf in vorhandene Übungen ein (neue anhängen; gleiche `id` bekommt
+zusätzliche vorbereitete Sätze, Zielnotiz ohne Duplikat; erfasste Ist-Werte bleiben). Zwei Wege nutzen es:
+(1) `useSession`: ein `initialDraft` wird bei bereits bestehender Tages-Session einmalig eingefügt (`draftAppliedRef`) – vorher
+ging er dort verloren; (2) `SessionEditor` hat über der Übungsliste „Workout / Vorlage laden“ (`TemplateLauncher` →
+`exerciseOps.appendDraft` aus `useExerciseList`), damit auch Nutzer **ohne Plan** und mitten in einer Session Vorlagen laden können.
+Offen: letzte Leistung je Übung im Draft (Prefill-Vorschlag, erst nach Bestätigung gültig), Phasen-Auswertung in der Coach-Shell,
+Launcher lädt Vorlagenliste derzeit bei jedem Editor-Mount (lazy beim Öffnen wäre sparsamer).
+
+## Drill 7 — „Letztes Mal“ im Entwurf (2026-11-05)
+
+`sessionDraft.js`: `lastPerformanceMap(sessions, excludeDate)` (neueste Leistung je Übungsname aus der Session-Historie, leere Sätze ignoriert),
+`lastPerformanceText` („Letztes Mal (02.11.): 8×60 · 7×60“), `withLastPerformance(draft, map)` hängt den Text an die Übungsnotiz.
+Es bleibt **ein Vorschlag**: `setsArray` bleibt leer, nichts gilt ohne Bestätigung als absolviert. Genutzt im Session-Gate
+(`TodayPlan`, lädt `getSessionHistory(30)`) und im Editor-Launcher (`prevMap` aus `useSessionHistory`). Nebenbei: `prescriptionText`
+zeigt ohne Wiederholungsangabe „2 Sätze“ statt „2×“. Offen: Vorschlag per Tipp als Ist-Wert übernehmen (explizite Bestätigung),
+Zuordnung über Übungs-ID statt Name, Phasen-Auswertung in der Coach-Shell.
+
+## Drill 8 — „Wie letztes Mal übernehmen“ (2026-11-05)
+
+`sessionDraft.js::adoptLastSets(current, prevSets)`: füllt ausschließlich leere reps/weight-Felder aus den Sätzen der letzten Einheit
+(nach Index, darüber hinaus der letzte Vorwert), überschreibt nie, liefert `null` wenn nichts zu tun ist. `Session/ExerciseCard.jsx`
+zeigt den Link „Wie letztes Mal übernehmen“ nur, wenn es etwas zu übernehmen gibt (`prev` = `prevMap[ex.name]`), die Übernahme ist
+ein ausdrücklicher Tipp (Autosave über `replaceSets`). Offen: Zuordnung per Übungs-ID statt Name, Übernahme inkl. Progression
+(+% aus Phase auf Vorgewicht), Phasen-Auswertung in der Coach-Shell (coach-dev, separates Repo).
+
+## Browserabnahme Drills 1–8 (2026-11-05)
+
+`pnpm run test:plan:browser` (isolierter Harness: temporäre Daten, eigene Ports, headless Thorium) läuft mit den Drills grün;
+neuer Schritt: Coach legt eine Phase an, speichert, Banner „Woche 1/1 · Basis“ + „Fortschritt je Phase“ erscheinen, kein horizontaler
+Überlauf bei Mobilbreite. Nicht im Harness abgedeckt: Session-Tab-Gate/Launcher/„Wie letztes Mal“ (liegen im Session-View, der
+Harness mountet nur `views/Plan`) – dort bleibt es bei Unit-Tests (`plan-session-draft`). Eine authentifizierte Firebase-Abnahme steht aus.
+
+## Browserabnahme Session-Gate (2026-11-05)
+
+`pnpm run test:session:browser` (`scripts/tests/session-harness.jsx`, `session-browser.mjs`, `run-session-browser.sh`): mountet das echte
+`Session/TodayPlan` mit einem Coach-Plan (Phasen Aufbau/Deload, Woche 2) im isolierten Harness auf 390 px Breite. Geprüft: Phasenbanner,
+phasen-angepasste Vorgabe (5→3 Sätze, RIR 2→4), freie Einheitenwahl, „Mit Vorbereitung loggen“ liefert den Entwurf (leere Ist-Werte),
+kein horizontaler Überlauf, keine Browserfehler. Weiter nur Unit-getestet: TemplateLauncher-Liste, „Wie letztes Mal übernehmen“ im
+`ExerciseCard`, Einfügen in eine bestehende Tages-Session (`useSession`) – dafür müsste der Harness den gesamten Session-Editor mit
+Session-Backend mounten.

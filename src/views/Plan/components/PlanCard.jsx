@@ -6,6 +6,9 @@ import { countCompletionsInPeriod, pickNextPlanRoutine } from '../../../lib/habi
 import PlanEditor from '../PlanEditor.jsx';
 import PlanVersions from './PlanVersions.jsx';
 import { clientView } from '../lib/planVersions.js';
+import PhaseEditor from './PhaseEditor.jsx';
+import PhaseProgress from './PhaseProgress.jsx';
+import { phaseForWeek, phaseSummary, applyPhaseToRoutine, phasesTotalWeeks } from '../lib/microcycles.js';
 import TemplatePicker from './TemplatePicker.jsx';
 import TemplateTargetForm from './TemplateTargetForm.jsx';
 import WeekSlider from '../../../components/WeekSlider.jsx';
@@ -28,6 +31,7 @@ export default function PlanCard({ plan, templates, workouts, clientUid, clients
   const [copyWarn, setCopyWarn] = useState(false);
   const [chosen, setChosen] = useState(null);
   const [renaming, setRenaming] = useState(null);
+  const [week, setWeek] = useState(1);
   const uid = clientUid || getUid();
   const fromCoach = !clientUid && plan.coachUid && plan.coachUid !== uid;
   const canEdit = !!clientUid || !fromCoach;
@@ -37,6 +41,7 @@ export default function PlanCard({ plan, templates, workouts, clientUid, clients
       const data = await getMacrocycle(uid, plan.id);
       if (!data?.macrocycle) throw new Error('Trainingsplan konnte nicht geladen werden.');
       setDetail(data.macrocycle);
+      setWeek(Number(data.currentWeek) || 1);
       setNote(null);
     } catch (err) { setError(err.message); }
   }
@@ -88,6 +93,7 @@ export default function PlanCard({ plan, templates, workouts, clientUid, clients
   if (editing) return <PlanEditor key={`${uid}:${plan.id}`} plan={detail} uid={uid} actorUid={getUid()} saveDraft={(patch) => updateMacrocycle(uid, plan.id, patch)} templates={templates} apiClient={createPlanApi(clientUid)} onClose={() => setEditing(false)} onSaved={() => { setEditing(false); load(); onReload?.(); }} />;
   const view = canEdit ? detail : clientView(detail);
   const routines = view.routines || [];
+  const phase = phaseForWeek(view.phases, week);
   const next = pickNextPlanRoutine(routines, workouts);
   const targets = routines.filter((r) => r.targetCount > 0 && r.targetPeriodDays > 0);
   const met = targets.length > 0 && targets.every((r) => countCompletionsInPeriod(r, workouts, r.targetPeriodDays) >= r.targetCount);
@@ -104,6 +110,9 @@ export default function PlanCard({ plan, templates, workouts, clientUid, clients
       {clientUid && <PlanVersions plan={detail} uid={uid} busy={busy} onPublish={(message) => act(async () => { if (note !== null) await saveNote(); if (!await publishMacrocycle(uid, plan.id, { message, author: getUid() })) throw new Error('Bereitstellen fehlgeschlagen.'); await load(); onReload?.(); })} onRestored={() => { load(); onReload?.(); }} />}
       {clientUid && detail.status !== 'draft' && <button disabled={busy} onClick={() => { if (confirm('Plan zurück in den Entwurf setzen? Der Klient sieht ihn dann nicht mehr.')) act(async () => { if (!await updateMacrocycle(uid, plan.id, { status: 'draft' })) throw new Error('Zurückziehen fehlgeschlagen.'); await load(); onReload?.(); }); }} className="mb-3 flex items-center gap-1.5 text-xs text-fit-muted underline"><Undo2 size={13} /> Zurück in den Entwurf setzen</button>}
       {error && <p role="alert" className="mb-3 text-sm text-fit-red">{error}</p>}
+      {phase && <p aria-label="Aktuelle Phase" className={`mb-3 rounded-xl border p-3 text-xs ${phase.kind === 'deload' ? 'border-green-500/40 bg-green-500/10' : 'border-fit-accent/30 bg-fit-accent/10'}`}><span className="font-semibold">{phaseSummary(view.phases, week)}</span>{phase.note && <span className="mt-1 block text-fit-muted">{phase.note}</span>}</p>}
+      {clientUid && <PhaseProgress plan={detail} workouts={workouts} />}
+      {clientUid && <PhaseEditor key={JSON.stringify(detail.phases || [])} phases={detail.phases} disabled={busy} onSave={(phases) => act(async () => { if (!await updateMacrocycle(uid, plan.id, { phases, ...(phases.length ? { totalWeeks: phasesTotalWeeks(phases) } : {}) })) throw new Error('Phasen konnten nicht gespeichert werden.'); await load(); onReload?.(); })} />}
       {hasSchedule(routines) && <div aria-label="Wochenplan" className="mb-3 grid grid-cols-7 gap-1">{weekGrid(routines).map((d) => { const full = d.routines.map((r) => r.label).join(', '); const today = d.day === weekdayIndex(); return <div key={d.day} title={full || undefined} aria-label={`${d.label}${today ? ' (heute)' : ''}: ${full || 'frei'}`} aria-current={today ? 'date' : undefined} className={`rounded-lg border p-1.5 text-center ${today ? 'border-fit-accent bg-fit-accent/10' : 'border-fit-line'}`}><span className="block text-[10px] font-semibold uppercase text-fit-muted">{d.label}</span>{d.routines.length ? d.routines.map((r) => <span key={r.id} title={r.label} className="block truncate text-[11px] font-medium">{r.label}</span>) : <span className="block text-[11px] text-fit-dim">–</span>}</div>; })}</div>}
       {!clientUid && hasSchedule(routines) && (() => { const open = todaysOpenRoutines(routines, workouts); return open.length ? <p className="mb-3 text-xs text-fit-accent">Heute geplant: <span className="font-semibold">{open.map((r) => r.label).join(' + ')}</span></p> : <p className="mb-3 text-xs text-fit-muted">Heute ist nichts offen.</p>; })()}
       {met ? <p className="mb-3 text-xs text-green-500">Alle Zeitraumziele erreicht.</p> : next && <p className="mb-3 text-xs text-fit-muted">Als Nächstes empfohlen: <span className="text-fit-ink">{next.label}</span></p>}
@@ -114,7 +123,7 @@ export default function PlanCard({ plan, templates, workouts, clientUid, clients
         {r.targetCount > 0 && <p className="my-2 flex items-center gap-1 text-xs text-fit-accent"><Target size={12} /> {countCompletionsInPeriod(r, workouts, r.targetPeriodDays)}/{r.targetCount} in {r.targetPeriodDays} Tagen</p>}
         {preview === r.id && <ol className="my-3 space-y-2 text-sm">{(r.exercises || []).map((ex, i) => <li key={ex.id || i} className="flex justify-between gap-2"><span>{ex.name}</span><span className="text-xs text-fit-muted">{ex.templateSets?.length || ex.target_sets || 3} Sätze</span></li>)}</ol>}
         {r.sourceTemplateId && <WeekSlider readOnly templateId={r.sourceTemplateId} workouts={workouts} />}
-        {!clientUid && onStart && <button disabled={busy} onClick={() => act(() => onStart(r.sourceTemplateId, { sourcePlanId: plan.id, sourcePlanRoutineId: r.id, sourcePlanVersion: view.headVersion || null, name: r.label, ...(r.exercises?.length ? { routine_snapshot: { name: r.label, exercises: r.exercises } } : {}) }))} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-fit-accent py-2.5 text-sm font-semibold text-fit-bg disabled:opacity-50"><Play size={14} /> Training starten</button>}
+        {!clientUid && onStart && <button disabled={busy} onClick={() => act(() => onStart(r.sourceTemplateId, { sourcePlanId: plan.id, sourcePlanRoutineId: r.id, sourcePlanVersion: view.headVersion || null, name: r.label, ...(r.exercises?.length ? { routine_snapshot: { name: r.label, exercises: applyPhaseToRoutine(r, phase, week).exercises }, ...(phase ? { sourcePlanPhase: { id: phase.id, name: phase.name, week } } : {}) } : {}) }))} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-fit-accent py-2.5 text-sm font-semibold text-fit-bg disabled:opacity-50"><Play size={14} /> Training starten</button>}
       </div>)}</div>
       {clientUid && clients.length > 1 && !!routines.length && (copyOpen
         ? <label className="mt-3 block text-xs font-semibold text-fit-muted">Kopie als Entwurf anlegen für

@@ -1,0 +1,16 @@
+{
+  "repo": "plan-dev",
+  "apps": [
+    {
+      "id": "plan",
+      "kind": "main",
+      "name": "VitalOS Plan",
+      "short": "Plan",
+      "description": "Trainingspläne bauen und verwalten",
+      "accent": "#5b8cff",
+      "site": "vos-plan",
+      "url": "https://vos-plan.web.app",
+      "tab": null
+    }
+  ]
+}

@@ -31,6 +31,14 @@ def _workouts_path(uid: str) -> Path:
     return SESS_ROOT / uid / "workouts.json"
 
 
+def _phase_ref(value) -> dict | None:
+    """Welche Plan-Phase beim Start galt (Spiegel von firestore/workouts.js); nur id/name/week."""
+    if not isinstance(value, dict) or not isinstance(value.get("id"), str) or not value["id"]:
+        return None
+    week = value.get("week")
+    return {"id": value["id"][:40], "name": str(value.get("name") or "")[:60], "week": week if type(week) is int and week > 0 else 1}
+
+
 def _new_id() -> str:
     return str(uuid.uuid4())
 
@@ -413,6 +421,7 @@ async def create_workout(request: Request):
     workout = {
         "id": _new_id(), "routine_id": routine_id, "sourceRoutineId": routine_id,
         "sourcePlanId": body.get("sourcePlanId"), "sourcePlanRoutineId": body.get("sourcePlanRoutineId"), "sourcePlanVersion": body.get("sourcePlanVersion"),
+        "sourcePlanPhase": _phase_ref(body.get("sourcePlanPhase")),
         "sourceAssignmentId": body.get("sourceAssignmentId"),
         "name": name or f"Workout {datetime.now().strftime('%d.%m.')}",
         "started_at": datetime.now().isoformat(), "finished_at": None, "sessionState": "work",
