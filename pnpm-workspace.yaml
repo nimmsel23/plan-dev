@@ -9,3 +9,6 @@ allowBuilds:
 # Abhängigkeiten über das oberste node_modules auf (im Meta-Repo kam das durch den Workspace-Hoist).
 publicHoistPattern:
   - '*'
+
+overrides:
+  '@grpc/grpc-js@<1.13.6': '^1.14.6'

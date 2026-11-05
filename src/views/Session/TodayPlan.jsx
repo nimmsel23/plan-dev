@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Dumbbell, Check } from 'lucide-react'
 import { useUser } from '../../contexts/UserContext'
 import { clientView } from '../Plan/lib/planVersions.js'
+import { pickActiveMacrocycle } from '../Plan/lib/activeMacrocycle.js'
 import { microcycleForWeek, microcycleSummary, planWeek, applyMicrocycleToRoutine } from '../Plan/lib/microcycles.js'
 import { routineToSessionDraft, prescriptionText, lastPerformanceMap, withLastPerformance } from '../Plan/lib/sessionDraft.js'
 import TemplateLauncher from './TemplateLauncher.jsx'
@@ -24,7 +25,7 @@ export function useTodayPlan() {
     if (!user?.uid) { setState({ loading: false, cycle: null, nextRoutine: null, lastPerformance: null }); return }
     const list = await listMacrocycles(user.uid)
     if (!list.length) { setState({ loading: false, cycle: null, nextRoutine: null, lastPerformance: null }); return }
-    const full = await getMacrocycle(user.uid, list[0].id)
+    const full = await getMacrocycle(user.uid, pickActiveMacrocycle(list).id)
     if (!full || !(full.macrocycle.routines || []).length) {
       setState({ loading: false, cycle: null, nextRoutine: null, lastPerformance: null })
       return
