@@ -5,3 +5,7 @@ allowBuilds:
   better-sqlite3: true
   esbuild: true
   protobufjs: true
+# CI-Standalone: vite nutzt preserveSymlinks, Pakete wie firebase (@firebase/*) oder recharts (clsx) lösen ihre
+# Abhängigkeiten über das oberste node_modules auf (im Meta-Repo kam das durch den Workspace-Hoist).
+publicHoistPattern:
+  - '*'
