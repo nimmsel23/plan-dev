@@ -151,6 +151,7 @@ export default function SetGridEditor({
                 <button
                   type="button"
                   onClick={() => stepReps(sIdx, -1)}
+                  aria-label="Wiederholungen verringern"
                   className="absolute left-0 top-0 bottom-0 w-9 flex items-center justify-center transition-all z-10 rounded-l-xl"
                   style={{ color: 'var(--dim)', opacity: 0.5 }}
                   onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.color = 'var(--accent)'; }}
@@ -181,6 +182,7 @@ export default function SetGridEditor({
                 <button
                   type="button"
                   onClick={() => stepReps(sIdx, +1)}
+                  aria-label="Wiederholungen erhöhen"
                   className="absolute right-0 top-0 bottom-0 w-9 flex items-center justify-center transition-all z-10 rounded-r-xl"
                   style={{ color: 'var(--dim)', opacity: 0.5 }}
                   onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.color = 'var(--accent)'; }}
@@ -210,6 +212,7 @@ export default function SetGridEditor({
                 <button
                   type="button"
                   onClick={() => stepWeight(sIdx, -2.5)}
+                  aria-label="Gewicht verringern"
                   className="absolute left-0 top-0 bottom-0 w-9 flex items-center justify-center transition-all z-10 rounded-l-xl"
                   style={{ color: 'var(--dim)', opacity: 0.5 }}
                   onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.color = 'var(--accent)'; }}
@@ -239,6 +242,7 @@ export default function SetGridEditor({
                 <button
                   type="button"
                   onClick={() => stepWeight(sIdx, +2.5)}
+                  aria-label="Gewicht erhöhen"
                   className="absolute right-0 top-0 bottom-0 w-9 flex items-center justify-center transition-all z-10 rounded-r-xl"
                   style={{ color: 'var(--dim)', opacity: 0.5 }}
                   onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.color = 'var(--accent)'; }}
@@ -259,7 +263,8 @@ export default function SetGridEditor({
               {/* Remove set */}
               <button
                 onClick={() => removeSet(i, sIdx)}
-                className="w-6 h-6 rounded-lg flex items-center justify-center transition-all"
+                aria-label="Satz entfernen"
+                className="w-6 h-6 rounded-lg flex items-center justify-center transition-all relative after:absolute after:-inset-3 after:content-['']"
                 style={{ color: 'var(--dim)', opacity: 0.3 }}
                 onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.color = 'var(--red)'; e.currentTarget.style.background = 'rgba(255,80,80,0.08)'; }}
                 onMouseLeave={e => { e.currentTarget.style.opacity = '0.3'; e.currentTarget.style.color = 'var(--dim)'; e.currentTarget.style.background = 'transparent'; }}

@@ -151,6 +151,7 @@ export default function ExerciseList({
           />
           <button
             onClick={addQuick}
+            aria-label="Übung hinzufügen"
             className="w-12 h-12 rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95"
             style={{
               background: 'var(--bg2)',

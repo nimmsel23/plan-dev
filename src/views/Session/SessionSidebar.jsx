@@ -15,7 +15,7 @@ export default function SessionSidebar({
       {onClose && (
         <div className="flex items-center justify-between px-6 pt-2 pb-4">
           <span className="text-[10px] font-black uppercase tracking-[0.2em] text-fit-dim/40">Session Details</span>
-          <button onClick={onClose} className="w-8 h-8 rounded-xl bg-fit-bg2 flex items-center justify-center text-fit-dim hover:text-ink transition-colors">
+          <button onClick={onClose} aria-label="Schließen" className="w-8 h-8 rounded-xl bg-fit-bg2 flex items-center justify-center text-fit-dim hover:text-ink transition-colors relative after:absolute after:-inset-2.5 after:content-['']">
             <X size={16} />
           </button>
         </div>

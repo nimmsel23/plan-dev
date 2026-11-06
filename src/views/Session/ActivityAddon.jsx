@@ -60,7 +60,8 @@ export default function ActivityAddon({ hasActivity, setHasActivity, activity, s
         </div>
         <button
           onClick={() => setHasActivity(false)}
-          className="w-7 h-7 rounded-lg bg-fit-bg2 flex items-center justify-center text-fit-dim hover:text-fit-red hover:bg-fit-red/10 transition-all"
+          aria-label="Aktivität entfernen"
+          className="w-7 h-7 rounded-lg bg-fit-bg2 flex items-center justify-center text-fit-dim hover:text-fit-red hover:bg-fit-red/10 transition-all relative after:absolute after:-inset-3 after:content-['']"
         >
           <X size={13} />
         </button>

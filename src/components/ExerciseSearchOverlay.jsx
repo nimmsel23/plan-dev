@@ -149,7 +149,8 @@ export default function ExerciseSearchOverlay({ onSelect, onClose, date }) {
             {query && !loading && (
               <button
                 onClick={() => setQuery('')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-fit-line/20 flex items-center justify-center text-fit-dim hover:text-fit-ink hover:bg-fit-line/40 transition-all"
+                aria-label="Suche leeren"
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-fit-line/20 flex items-center justify-center text-fit-dim hover:text-fit-ink hover:bg-fit-line/40 transition-all after:absolute after:-inset-2.5 after:content-['']"
               >
                 <X size={16} />
               </button>
@@ -157,6 +158,7 @@ export default function ExerciseSearchOverlay({ onSelect, onClose, date }) {
           </div>
           <button
             onClick={onClose}
+            aria-label="Schließen"
             className="w-12 h-12 rounded-2xl bg-fit-bg2 flex items-center justify-center text-fit-dim hover:text-fit-ink hover:bg-fit-card transition-all border border-fit-line shrink-0"
           >
             <X size={24} />
@@ -267,7 +269,9 @@ export default function ExerciseSearchOverlay({ onSelect, onClose, date }) {
                         </span>
                         <button
                           onClick={e => handleToggleFav(e, ex.id || ex.exercise_id)}
-                          className="shrink-0 p-0.5 rounded-full hover:scale-110 transition-transform"
+                          aria-label={`${ex.name} als Favorit`}
+                          aria-pressed={favourites.includes(ex.id || ex.exercise_id)}
+                          className="shrink-0 p-0.5 rounded-full hover:scale-110 transition-transform relative after:absolute after:-inset-3 after:content-['']"
                         >
                           <Star size={12} className={favourites.includes(ex.id || ex.exercise_id) ? 'text-yellow-400 fill-yellow-400' : 'text-fit-dim/20'} />
                         </button>

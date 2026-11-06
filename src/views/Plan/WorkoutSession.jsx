@@ -328,7 +328,7 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
   return (
     <fieldset disabled={saving} className="min-w-0 max-w-2xl mx-auto border-0 px-4 py-6">
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={async () => { try { await flushSave(); onBack(); } catch (err) { setError(err.message); } }} className="p-2 rounded-xl text-fit-muted hover:text-fit-ink hover:bg-fit-bg2 transition-all">
+        <button onClick={async () => { try { await flushSave(); onBack(); } catch (err) { setError(err.message); } }} aria-label="Zurück" className="p-2 rounded-xl text-fit-muted hover:text-fit-ink hover:bg-fit-bg2 transition-all relative after:absolute after:-inset-2.5 after:content-['']">
           <ArrowLeft size={20} />
         </button>
         <div className="flex-1 min-w-0">

@@ -654,7 +654,7 @@ export default function ExerciseInsightModal({ exercise, onClose, onExerciseChan
                   <button onClick={downloadSheet} className="rounded-2xl px-3 py-2 text-sm font-semibold" style={{ background: 'var(--bg2)', border: '1px solid var(--line)', color: 'var(--ink)' }}>
                     <span className="inline-flex items-center gap-2"><Download size={14} /> MD</span>
                   </button>
-                  <button onClick={onClose} className="rounded-2xl p-2.5" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--muted)' }}>
+                  <button onClick={onClose} aria-label="Schließen" className="rounded-2xl p-2.5 relative after:absolute after:-inset-2.5 after:content-['']" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--muted)' }}>
                     <X size={18} />
                   </button>
                 </div>

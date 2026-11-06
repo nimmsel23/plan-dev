@@ -222,7 +222,8 @@ export default function AssignPlan({ clientUid: presetClientUid, clientName: pre
                   </div>
                   <button
                     onClick={(e) => { e.stopPropagation(); handleDeleteCycle(c.id) }}
-                    className="p-2 text-fit-dim hover:text-red-400 transition-colors"
+                    aria-label={`Zyklus ${c.name} entfernen`}
+                    className="p-2 text-fit-dim hover:text-red-400 transition-colors relative after:absolute after:-inset-2.5 after:content-['']"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -390,7 +391,7 @@ export default function AssignPlan({ clientUid: presetClientUid, clientName: pre
                                 className="w-14 bg-fit-bg border border-fit-line rounded px-1.5 py-1 text-xs text-center text-fit-ink"
                                 title="Gewicht (kg)"
                               />
-                              <button onClick={() => removeExercise(routine.id, exIdx)} className="p-1 text-fit-dim hover:text-red-400">
+                              <button onClick={() => removeExercise(routine.id, exIdx)} aria-label="Übung entfernen" className="p-1 text-fit-dim hover:text-red-400 relative after:absolute after:-inset-3 after:content-['']">
                                 <X size={14} />
                               </button>
                             </div>

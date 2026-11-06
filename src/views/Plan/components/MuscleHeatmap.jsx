@@ -47,6 +47,7 @@ export default function MuscleHeatmap({ exercises }) {
         <div className="flex gap-1 bg-fit-card rounded-lg p-0.5">
           <button
             onClick={() => setView("body")}
+            aria-pressed={view === "body"}
             className={`p-1.5 rounded-md transition-colors ${view === "body" ? "bg-fit-bg2 text-fit-accent" : "text-fit-muted hover:text-fit-ink"}`}
             title="Körperansicht"
           >
@@ -54,6 +55,7 @@ export default function MuscleHeatmap({ exercises }) {
           </button>
           <button
             onClick={() => setView("bars")}
+            aria-pressed={view === "bars"}
             className={`p-1.5 rounded-md transition-colors ${view === "bars" ? "bg-fit-bg2 text-fit-accent" : "text-fit-muted hover:text-fit-ink"}`}
             title="Balkendiagramm"
           >

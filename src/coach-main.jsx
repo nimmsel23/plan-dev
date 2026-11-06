@@ -85,8 +85,9 @@ function CoachShell() {
               <button
                 type="button"
                 onClick={() => window.location.reload()}
-                className="flex h-10 w-10 items-center justify-center rounded-xl border border-fit-line bg-fit-card text-fit-dim transition-colors hover:text-fit-accent"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-fit-line bg-fit-card text-fit-dim transition-colors hover:text-fit-accent relative after:absolute after:-inset-2 after:content-['']"
                 title="Refresh"
+                aria-label="Seite neu laden"
               >
                 <RefreshCw size={16} />
               </button>
@@ -94,8 +95,9 @@ function CoachShell() {
                 <button
                   type="button"
                   onClick={signOut}
-                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-fit-line bg-fit-card text-fit-dim transition-colors hover:text-fit-red"
+                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-fit-line bg-fit-card text-fit-dim transition-colors hover:text-fit-red relative after:absolute after:-inset-2 after:content-['']"
                   title="Logout"
+                  aria-label="Abmelden"
                 >
                   <LogOut size={16} />
                 </button>
