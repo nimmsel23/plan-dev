@@ -20,8 +20,7 @@ Stand 2026-10-29. Ausführlich: `~/vitalos/docs/DEPLOYMENT.md` (GitHub: nimmsel2
 | `master` | **Standalone-Prod** (Hosting-Target `plan` = vos-plan.web.app); deployt nur per CI (`Live Deploy (Plan master)`) | nein, muss nicht existieren |
 | `vitalos` | Stand für die Shell (`~/vitalos/plan-app`); darf hinter `master` liegen | nur als `-app`-Checkout im Meta-Repo |
 
-- Release: `vos-release-pr plan` öffnet den PR `dev → master`. `Check (Plan)` läuft, bei Grün mergt der Auto-Merge
-  (Merge-Commit) und startet den Live-Deploy per Dispatch. Nie von Hand auf `master` pushen, außer Hotfix.
+- Release (automatisch): `dev` committen und pushen ist ausdrücklich erwünscht, nichts bleibt liegen. Nach grünem `Check (Plan)` promotet `.github/workflows/automerge.yml` `dev` per Fast-Forward nach `master` und startet den Live-Deploy per Dispatch (Vorlage und Logik: `~/vitalos-prod/docs/product-dev/ci-auto-promote/`). Kein PR nötig, kein Force-Push. Direkte Hotfix-Pushes auf `master` sind erlaubt; `dev` zieht die Automatik danach nach.
 - Shell: `vos-release plan` merged `origin/master` nach `vitalos` und bumpt den Pointer im Meta-Repo (deployt die Shell).
   Vorher `vos-overview`.
 - `master` wird nie lokal ausgecheckt; `git fetch` genügt. Das Meta-Repo `vitalos` deployt nur noch die Shell.
