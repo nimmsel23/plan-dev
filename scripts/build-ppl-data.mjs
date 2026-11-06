@@ -15,8 +15,9 @@ import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+import { KB_DIR } from './lib/kb-dir.mjs';
 const REPO_ROOT = join(__dirname, '..');
-const EXERCISES_DIR = join(REPO_ROOT, 'fitness/catalog/kb/exercises');
+const EXERCISES_DIR = join(KB_DIR, 'exercises');
 const OUT_DIR = join(REPO_ROOT, 'src/lib/db/firestore');
 
 const UNREVIEWED_FILES = new Set(['unreviewed_wger.yml', 'unreviewed_yuhonas.yml']);

@@ -16,9 +16,9 @@ import { useEffect, useState } from "react";
 
 import { setKBMuscles } from "../db/shared/muscle.js";
 
-import muscleIndexRaw from "../../../fitness/catalog/kb/muscle_index.yml?raw";
+import muscleIndexRaw from "@kb/muscle_index.yml?raw";
 
-const muscleDocSources = import.meta.glob("../../../fitness/catalog/kb/muscles/**/*.yml", {
+const muscleDocSources = import.meta.glob("@kb/muscles/**/*.yml", {
   eager: true,
   query: "?raw",
   import: "default",

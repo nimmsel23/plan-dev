@@ -23,7 +23,8 @@ import yaml from 'js-yaml';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dirname, '..');
-const EXERCISES_DIR = join(REPO_ROOT, 'fitness/catalog/kb/exercises');
+import { KB_DIR } from './lib/kb-dir.mjs';
+const EXERCISES_DIR = join(KB_DIR, 'exercises');
 const OUT_FILE = join(REPO_ROOT, 'src/lib/db/firestore/exerciseBulkData.generated.js');
 
 const SOURCE_FILES = ['unreviewed_wger.yml', 'unreviewed_yuhonas.yml'];

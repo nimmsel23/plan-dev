@@ -5,7 +5,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 **Sub-Docs (lies mit, je nach Bereich):**
-- `../fitness/CLAUDE.md` — Python-Backend (Prod-API :9150, Dispatcher, Alembic, Packages)
+- `../fitness/CLAUDE.md` — Python-Backend (Stand 2026-11-06: `~/dev/coach-dev/fitness` ist die aktuellste Version (läuft per `fitness-api.service`); `plan-dev/fitness` und `~/.local/fitness` sind ältere, abweichende Kopien) (Prod-API :9150, Dispatcher, Alembic, Packages)
 - `../fitness/catalog/CLAUDE.md` — Katalog-/KB-Tool-Set (Sub-Package von `fitness/`: KB-Struktur, Coverage-Formel, Gemini-Enrichment)
 - `../src/CLAUDE.md` — React-Frontend (Tabs/Views, DB-Layer, Body-Highlighter, PWA/Offline, Session-JSON-Format)
 - `../anatomy-kb/CLAUDE.md` — Muskel-Anatomie-KB (Git Subtree, :9200)
@@ -30,7 +30,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **`~/vitalos/bin/fitness-release` ist der bevorzugte Weg für den
   `dev`→`vitalos`-Merge + Deploy** (dünner Wrapper um
   `~/vitalos/bin/vos-release fitness`, verifiziert + branch-Fix
-  2026-08-22). Er pusht `~/fitness-dev`s `dev`-Branch, mergt ihn in den
+  2026-08-22). Er pusht `~/dev/fitness-dev`s `dev`-Branch, mergt ihn in den
   `~/vitalos/fitness-app`-Worktree, pusht dort — was den Post-Push-Hook
   triggert (`npm run firebase`: KB-Data-Rebuild → `vite build --mode
   firebase` → stamp-sw → snapshot → `firebase deploy --only hosting` nach
@@ -40,7 +40,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   Läuft interaktiv mit `gum confirm`-Rückfragen vor den kritischen Git-
   Operationen; `--yes` überspringt diese — nur nach expliziter User-
   Bestätigung verwenden, da das Skript einen echten Prod-Deploy auslöst.
-  Voraussetzung: `~/fitness-dev` sauber (`git status` clean) und `dev`-Branch
+  Voraussetzung: `~/dev/fitness-dev` sauber (`git status` clean) und `dev`-Branch
   ausgecheckt, sonst bricht `require_clean_repo`/`expect_branch` kontrolliert
   ab, bevor irgendwas gepusht wird.
   `vos-release`s `NOISE_PATTERNS[fitness]` (Stand 2026-08-31) blendet
@@ -49,7 +49,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   `src/**` + KB-*Daten*-YAMLs außerhalb von `inbox/`), blockiert den
   Release also nicht mehr automatisch. Andere unstaged Änderungen
   (`src/**`, KB-Daten außerhalb `inbox/`) blockieren weiterhin zu Recht.
-- `~/vitalos/fitness-app` ist ein Git-**Worktree** von `~/fitness-dev`
+- `~/vitalos/fitness-app` ist ein Git-**Worktree** von `~/dev/fitness-dev`
   (`git worktree list` zeigt alle) — kein separater Clone. Der dort
   ausgecheckte Branch heißt **`vitalos`**, nicht mehr `master`
   (umbenannt, `origin/HEAD` zeigt entsprechend auf `origin/vitalos`;
@@ -60,11 +60,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   dem Firebase-Build/Deploy** — kein einziger laufender lokaler Server zeigt
   dorthin. Der eigentliche Dev-Server (Node `fitness-dev.service` :9100 +
   Python `fitness-api.service` :9150, inkl. eingebettetem Firestore-Watcher
-  für Katalog-Approvals) läuft mit `WorkingDirectory=/home/alpha/fitness-dev`
+  für Katalog-Approvals) läuft mit `WorkingDirectory` (Stand 2026-11-06 laut systemd: `fitness-api.service` → `/home/alpha/dev/coach-dev`, nicht fitness-dev)
   — sprich, jede lokale Entwicklung/jeder Funnel-Zugriff läuft über
-  `~/fitness-dev`, nie über den Worktree. Verifiziert 2026-08-17 via
+  `~/dev/fitness-dev`, nie über den Worktree. Verifiziert 2026-08-17 via
   `systemctl --user show <service> -p WorkingDirectory`. **`git checkout
-  vitalos` in `~/fitness-dev` schlägt
+  vitalos` in `~/dev/fitness-dev` schlägt
   deshalb erwartbar fehl** ("bereits von Arbeitsverzeichnis in .../vitalos/...
   verwendet") — das ist kein Fehlerzustand, den man dem User meldet oder bei
   dem man nachfragt, sondern der Normalfall.
@@ -81,9 +81,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   Manueller Fallback, falls `fitness-release` nicht verfügbar/gewünscht ist —
   direkt ausführen statt zu stoppen:
   ```
-  cd ~/fitness-dev && git push origin dev        # dev-Branch sichern
+  cd ~/dev/fitness-dev && git push origin dev        # dev-Branch sichern
   cd ~/vitalos/fitness-app                       # vitalos ist hier schon ausgecheckt
-  git merge dev --no-edit
+  git merge dev --no-edit   # ACHTUNG: vos-release erwartet SOURCE_BRANCHES[fitness]="master", dieser Fallback mergt dev (Stand 2026-11-06: dev ist 17 Commits vor vitalos, master 0) - vor Nutzung klären
   git push origin vitalos
   ```
   Bei Konflikten: `vitalos` entwickelt sich hier eigenständig weiter (andere
@@ -96,7 +96,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   Merge-Absicht (z.B. Datei ansehen): `git checkout <commit-hash>` (detached)
   reicht, `vitalos` muss dafür nicht angerührt werden.
   Push von `vitalos` passiert aus `~/vitalos/fitness-app` heraus (`git push`),
-  nicht aus `~/fitness-dev` — von dort ist `vitalos` ja nicht ausgecheckt.
+  nicht aus `~/dev/fitness-dev` — von dort ist `vitalos` ja nicht ausgecheckt.
 - Live-KB-Pfad ist `fitness/catalog/kb/`. `catalog` ist Symlink darauf
   (`catalog -> fitness/catalog`), `fitness_cli` Symlink auf `fitness` — kein
   separater Alt-Baum mehr, alle drei Pfade sind identisch. Details zur
@@ -136,7 +136,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   `-u`, pfad-gescoped) umgeht das Symlink-Problem und eignet sich, um
   fremdes unstaged WIP (andere Session) kurz beiseitezulegen, z.B. vor
   einem `fitness-release`-Lauf, der `require_clean_repo` verlangt.
-- `~/fitness/free-exercise-db` ist ein reiner Git-Klon von
+- `~/dev/fitness-dev/free-exercise-db` (Stand 2026-11-06 nicht vorhanden) ist ein reiner Git-Klon von
   `github.com/yuhonas/free-exercise-db` (kein eigener Code) — falls Dateien
   fehlen, ist ein frischer Klon in ein Temp-Verzeichnis + gezieltes Kopieren
   risikofrei; `git checkout -- .` im Original-Ordner wird vom
@@ -145,8 +145,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   gefunden + gefixt (2026-08-15):** `deploy.sh`s `rsync --delete` leerte
   dieses manuell platzierte Repo bei jedem Staging-Deploy, weil es nicht in
   `$SOURCE` existiert — Fix: `--exclude "free-exercise-db"` in
-  `RSYNC_EXCLUDES` (beide Kopien, `~/fitness-dev/deploy.sh` und
-  `~/fitness/deploy.sh`). Details: `../fitness/catalog/CLAUDE.md`. Der oben
+  `RSYNC_EXCLUDES` (beide Kopien, `~/dev/fitness-dev/deploy.sh` und
+  `~/dev/fitness-dev/deploy.sh`-Schwester (`~/fitness` existiert nicht mehr; Python-Backend jetzt `~/dev/coach-dev`, ältere Kopie `~/.local/fitness`, ohne `deploy.sh`)). Details: `../fitness/catalog/CLAUDE.md`. Der oben
   beschriebene Restore-Weg bleibt trotzdem gültig, falls es doch nochmal
   passiert (z.B. durch einen manuellen `rm`) — jetzt reicht dafür sogar
   `git checkout HEAD -- .` direkt im Original-Ordner, da die Ursache (nicht
@@ -277,7 +277,7 @@ gibt den deutschen Anzeigenamen zurück (`"Rücken"`).
   basiertes Firestore-Konfliktmodell (Details: `docs/ARCHITECTURE.md`)
 - ✅ Gmail-Pipeline (bin/fitness-mail, Fitbit-Daten)
 - ✅ Firestore Sync + PWA Offline-Unterstützung (SW + IndexedDB offline-queue)
-- ✅ Firebase PWA: `npm run build:firebase` → `~/fitness/dist-firebase/`
+- ✅ Firebase PWA: `npm run build:firebase` → `~/dev/fitness-dev/dist-firebase/`
 - ✅ anatomy-kb Integration (Git Subtree, :9200)
 - ✅ Exercise-Insight-Modal zeigt bei fehlender Lesson echte wger/yuhonas-
   Rohdaten statt erfundenem Keyword-Fallback-Text (Details: `../src/CLAUDE.md`)

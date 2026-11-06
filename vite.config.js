@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 import { existsSync } from 'fs'
 import { fitnessOverlay } from './vite-fitness-overlay.mjs'
+import { KB_DIR } from './scripts/lib/kb-dir.mjs'
 
 const BACKEND = 'http://localhost:9150'
 
@@ -46,6 +47,8 @@ function resolveCrossAppAliases() {
   return {
     '@relax': resolve(siblingDir('relax-dev', 'relax-app'), 'src'),
     '@learn': resolve(siblingDir('learn-dev', 'learn-app'), 'src'),
+    // 6Pack: Quelle ist das Nachbar-Checkout (~/dev/6pack-dev bzw. ~/vitalos/6pack-app), keine Kopie mehr.
+    '@6pack': siblingDir('6pack-dev', '6pack-app'),
   }
 }
 
@@ -69,11 +72,11 @@ export default defineConfig(async ({ mode }) => {
         '@src':                resolve(__dirname, './src'),
         '@db':                 resolve(__dirname, isFirebase ? './src/lib/db/index.firestore.app.js' : './src/lib/db/index.js'),
         '@tours-strava':       resolve(__dirname, isFirebase ? './src/lib/tours/adapters/live/strava.firestore.js' : './src/lib/tours/adapters/live/strava.js'),
+        '@kb':                 KB_DIR, // Fitness-KB: genau eine Quelle (coach-dev/fitness/catalog/kb), keine Kopie in plan-dev
         '@fitness-db':         resolve(__dirname, './src/lib/db'),
         '@utils':              resolve(__dirname, './src/lib/utils.js'),
         '@cloud/firebase.js':  resolve(__dirname, './src/firebase.js'),
         '@firebase-config':    resolve(__dirname, './firebase.config.js'),
-        '@aliase':             resolve(__dirname, './fitness/catalog/kb/aliases.yml'),
         '@fitness/components': resolve(__dirname, './src/components'),
         '@fitness/constants':  resolve(__dirname, './src/constants'),
         '@fitness':            resolve(__dirname, './src'),
@@ -85,7 +88,7 @@ export default defineConfig(async ({ mode }) => {
     },
     server: {
       port: 5902,
-      fs: { allow: [__dirname, FITNESS_ROOT] },
+      fs: { allow: [__dirname, FITNESS_ROOT, KB_DIR, siblingDir('6pack-dev', '6pack-app')] },
       watch: {
         ignored: [
           '**/dist/**',

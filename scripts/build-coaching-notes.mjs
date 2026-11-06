@@ -13,7 +13,8 @@ import yaml from 'js-yaml';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dirname, '..');
-const NOTES_DIR = join(REPO_ROOT, 'fitness/catalog/kb/coaching_notes');
+import { KB_DIR } from './lib/kb-dir.mjs';
+const NOTES_DIR = join(KB_DIR, 'coaching_notes');
 const OUT_FILE = join(REPO_ROOT, 'src/lib/coachNotesData.generated.js');
 
 function loadYaml(path) {

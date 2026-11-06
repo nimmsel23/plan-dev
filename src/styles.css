@@ -1,7 +1,7 @@
 @import "./styles/themes/vital.css";
 @import "./styles/themes/vital-light.css";
 /* Dark Themes */
-@import "../6pack/sixpack.css";
+@import "@6pack/sixpack.css";
 @import "../Skills/skills.css";
 @import "./styles/themes/nordic.css";
 @import "./styles/themes/dracula.css";
