@@ -74,6 +74,12 @@ jobs:
           for repo in relax-dev learn-dev fitness-dev; do
             echo "::group::$repo"
             if [ -f "$repo/pnpm-lock.yaml" ]; then
+              # Ein overrides-Block im Lockfile (z. B. @grpc/grpc-js) muss auch in der Konfiguration stehen; pnpm 11 liest
+              # overrides nur aus pnpm-workspace.yaml. Flüchtig aus dem Lockfile erzeugt, passt also immer dazu.
+              # Muster aus fuel-dev/relax-dev deploy-master.yml (fix(ci): ERR_PNPM_LOCKFILE_CONFIG_MISMATCH).
+              if grep -q '^overrides:' "$repo/pnpm-lock.yaml" && [ ! -f "$repo/pnpm-workspace.yaml" ]; then
+                sed -n '/^overrides:/,/^$/p' "$repo/pnpm-lock.yaml" > "$repo/pnpm-workspace.yaml"
+              fi
               (cd "$repo" && pnpm install --frozen-lockfile --ignore-scripts)
             elif [ -f "$repo/package.json" ]; then
               echo "::warning::$repo hat keinen pnpm-lock.yaml — Install ohne Lockfile"
