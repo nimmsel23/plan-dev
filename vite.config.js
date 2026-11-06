@@ -20,6 +20,14 @@ function siblingDir(devName, appName) {
       if (existsSync(candidate)) return candidate
     }
   }
+  // Home-Dev-Layout (~/dev/<name>-dev): greift, wenn kein Sibling relativ erreichbar
+  // ist — Builds aus Temp-Worktrees irgendwo im Dateisystem (z.B. /dev/shm) finden
+  // das Overlay-Quell-Repo sonst nie. In CI existiert ~/dev nicht, Verhalten dort
+  // bleibt unverändert.
+  if (process.env.HOME) {
+    const homeDev = resolve(process.env.HOME, 'dev', devName)
+    if (existsSync(homeDev)) return homeDev
+  }
   return resolve(__dirname, '..', devName)
 }
 
