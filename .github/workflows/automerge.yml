@@ -1,41 +1,78 @@
-# Auto-Merge bei grünem Check (Muster aus fitness-dev, dort die Referenz):
-#   - Release-PR dev -> master (vos-release-pr): Merge-Commit (kein Squash, sonst driftet dev),
-#     Kein Deploy hier: die Live-Veröffentlichung läuft über den Pointer-Bump im Meta-Repo
-#     vitalos (siehe vitalos/docs/CI-DEPLOY-PR-FLOW.md).
-# Rot bleibt liegen. Läuft als workflow_run im Kontext des Default-Branch und checkt nie
-# PR-Code aus. Wirkt deshalb erst, wenn diese Datei im Default-Branch des Repos liegt.
+# Auto-Promote dev -> master (ersetzt den alten PR-basierten Auto-Merge).
+# Ziel: nichts bleibt auf dev liegen. Ablauf:
+#   Check auf dev gruen            -> master wird per Fast-Forward auf dev gezogen, Live-Deploy per Dispatch
+#   dev hinter master              -> dev wird per Fast-Forward auf master gezogen
+#   beide haben eigene Commits     -> roter Lauf (kommt nur nach direktem Push auf master vor): von Hand mit normalem Push zusammenfuehren
+# Rot bleibt liegen (kein Promote). Ein Zeitplan (alle 30 Min) faengt haengende Faelle ab. Fast-Forward statt Merge-Commit auf master, weil der Branch-Schutz den Check
+# `check` fuer genau diesen Commit verlangt. Pushes mit GITHUB_TOKEN loesen keine Workflows aus -> der Deploy
+# wird per workflow_dispatch gestartet. Laeuft aus dem Default-Branch; die Datei muss dort liegen.
 
-name: Auto-Merge (grüner Check Plan)
+name: Auto-Promote dev -> master (Check (Plan))
 
 on:
   workflow_run:
     workflows: ["Check (Plan)"]
     types: [completed]
+  push:
+    branches: [master]
+  schedule:
+    - cron: '17,47 * * * *'   # Sicherungsnetz: haengende Faelle alle 30 Min abgleichen
+  workflow_dispatch:
 
 permissions:
   contents: write
-  pull-requests: write
   actions: write
+  checks: read
+
+concurrency:
+  group: auto-promote-${{ github.repository }}
+  cancel-in-progress: false
 
 jobs:
-  merge:
+  promote:
     if: >-
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.head_branch == 'dev'
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'dev' &&
+       (github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch'))
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
       REPO: ${{ github.repository }}
-      BRANCH: ${{ github.event.workflow_run.head_branch }}
-      SHA: ${{ github.event.workflow_run.head_sha }}
+      DEPLOY_FILE: deploy-master.yml
+      CHECK_FILE: check.yml
     steps:
-      - name: Mergen, wenn der grüne Lauf dem aktuellen PR-Stand entspricht
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: dev
+      - name: Abgleichen
+        timeout-minutes: 10
         run: |
-          pr=$(gh pr list -R "$REPO" --head "$BRANCH" --base master --state open --json number,headRefOid \
-            --jq ".[] | select(.headRefOid == \"$SHA\") | .number")
-          [ -n "$pr" ] || { echo "Kein offener PR mit Stand $SHA (veraltet oder schon gemergt)."; exit 0; }
-          gh pr merge "$pr" -R "$REPO" --merge
-          # Merge mit GITHUB_TOKEN löst keinen Push-Trigger aus -> Live-Deploy per Dispatch
-          gh workflow run deploy-master.yml -R "$REPO" --ref master
-          echo "Gemergt. Live-Deploy per Dispatch gestartet."
+          set -euo pipefail
+          git fetch -q origin master dev
+          master=$(git rev-parse origin/master); dev=$(git rev-parse origin/dev)
+          [ "$master" = "$dev" ] && { echo "dev == master, nichts zu tun."; exit 0; }
+
+          if git merge-base --is-ancestor "$dev" "$master"; then
+            echo "dev ist hinter master -> dev per Fast-Forward nachziehen."
+            git push origin "${master}:refs/heads/dev"
+            exit 0
+          fi
+
+          if ! git merge-base --is-ancestor "$master" "$dev"; then
+            echo "::error::dev und master haben eigene Commits (jemand hat direkt auf master gepusht). Von Hand mit einem normalen Push zusammenfuehren: git merge origin/master auf dev, pushen -> Check -> dieser Workflow zieht master nach."
+            exit 1
+          fi
+
+          # Nur ein Check, den ein normaler Push ausgeloest hat, erfuellt den Branch-Schutz; per Dispatch gestartete Checks nicht.
+          res=$(gh api "repos/$REPO/commits/$dev/check-runs" --jq '[.check_runs[]|select(.name=="check")]|first|if .==null then "none" elif .status!="completed" then "pending" else .conclusion end')
+          case "$res" in
+            success)
+              echo "Check gruen auf $dev -> master per Fast-Forward, Live-Deploy per Dispatch."
+              git push origin "${dev}:refs/heads/master"
+              gh workflow run "$DEPLOY_FILE" -R "$REPO" --ref master
+              ;;
+            none|pending) echo "Check fuer $dev laeuft noch/fehlt -> naechster Lauf (workflow_run oder Zeitplan) uebernimmt." ;;
+            *) echo "Check auf $dev ist '$res' -> bleibt auf dev liegen (rot)." ;;
+          esac

@@ -49,7 +49,7 @@ jobs:
       - name: Checkout Nachbarn (${{ env.NEIGHBOR_REF }})
         run: |
           set -euo pipefail
-          for repo in relax-dev learn-dev fitness-dev; do
+          for repo in relax-dev learn-dev fitness-dev 6pack-dev; do
             git clone --depth 1 --branch "$NEIGHBOR_REF" "https://github.com/nimmsel23/${repo}.git" "$repo"
             echo "$repo @ $(git -C "$repo" rev-parse --short HEAD)"
           done
