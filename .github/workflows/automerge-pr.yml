@@ -1,0 +1,73 @@
+# PR-AutoMerge: geoeffnete Dependabot-PRs (-> dev) werden bei gruenem `check` gesquasht.
+# Danach laeuft die gewohnte Kette automatisch weiter: check.yml (Dispatch auf dem
+# neuen dev-Stand) -> Auto-Promote (automerge.yml) -> Live-Deploy (deploy-master.yml).
+#
+# Gruen = der Check-Run namens "check" auf dem PR-Stand ist success (gleiches Kriterium
+# wie der Branch-Schutz auf master). Andere Runs (z. B. Preview) bleiben unberuecksichtigt.
+# Rot bleibt liegen und wird beim naechsten Dependabot-Lauf aktualisiert. Kein Release
+# geht mehr verloren, nur weil niemand den PR zusammenclickt: workflow_run feuert sofort
+# nach gruenem Check, der stuendliche Zeitplan holt verpasste Events nach. Wirkt erst,
+# wenn diese Datei im Default-Branch liegt (der Auto-Promote zieht sie beim naechsten
+# Lauf von dev nach master).
+
+name: PR-AutoMerge (Dependabot -> dev)
+
+on:
+  workflow_run:
+    workflows: ["Check (Plan)"]
+    types: [completed]
+  schedule:
+    - cron: '11 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: pr-automerge
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'pull_request' &&
+       startsWith(github.event.workflow_run.head_branch, 'dependabot/'))
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+    steps:
+      - name: Gruene Dependabot-PRs squaschen
+        id: squash
+        run: |
+          set -euo pipefail
+          merged=0
+          prs=$(gh pr list -R "$REPO" --base dev --state open \
+            --json number,headRefName,statusCheckRollup \
+            --jq '.[] | select(.headRefName | startswith("dependabot/")) | [.number, .headRefName, ([.statusCheckRollup[]? | select(.name == "check") | .conclusion] | join(","))] | @tsv')
+          while IFS=$'\t' read -r n branch res; do
+            [ -n "${n:-}" ] || continue
+            case "$res" in
+              success)
+                echo "PR #$n ($branch): check gruen -> squash."
+                if gh pr merge "$n" -R "$REPO" --squash --delete-branch; then
+                  merged=1
+                else
+                  echo "::warning::Merge von PR #$n fehlgeschlagen (Konflikt? Dependabot rebased beim naechsten Lauf selbst)."
+                fi
+                ;;
+              *)
+                echo "PR #$n ($branch): check '$res' -> bleibt offen (rot)."
+                ;;
+            esac
+          done <<< "$prs"
+          echo "merged=$merged" >> "$GITHUB_OUTPUT"
+      - name: check.yml auf dem neuen dev-Stand anstossen
+        if: steps.squash.outputs.merged == '1'
+        run: |
+          echo "Merge mit GITHUB_TOKEN loest keinen Push-Trigger aus -> Check per Dispatch."
+          gh workflow run check.yml -R "$REPO" --ref dev
