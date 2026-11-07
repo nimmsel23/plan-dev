@@ -51,8 +51,8 @@ jobs:
             --jq '.[] | select(.headRefName | startswith("dependabot/")) | [.number, .headRefName, ([.statusCheckRollup[]? | select(.name == "check") | .conclusion] | join(","))] | @tsv')
           while IFS=$'\t' read -r n branch res; do
             [ -n "${n:-}" ] || continue
-            case "$res" in
-              success)
+            case "${res^^}" in
+              SUCCESS)
                 echo "PR #$n ($branch): check gruen -> squash."
                 if gh pr merge "$n" -R "$REPO" --squash --delete-branch; then
                   merged=1
