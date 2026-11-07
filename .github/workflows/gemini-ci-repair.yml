@@ -13,6 +13,21 @@ on:
       - Check (Plan)
       - Check (Relax)
       - Check (Skills)
+      - 6Pack deploy (preview + standalone)
+      - Live Deploy (Fitness master)
+      - Live Deploy (Fuel master)
+      - Live Deploy (Fuel Mini-Apps je Tab)
+      - Live Deploy (Habits master)
+      - Live Deploy (Journal master)
+      - Live Deploy (Learn master)
+      - Live Deploy (Plan master)
+      - Live Deploy (Relax master)
+      - Live Deploy (Skills master)
+      - Preview (Habits dev)
+      - Preview (Journal dev)
+      - Preview (Learn dev)
+      - Preview (Fuel dev)
+      - Preview (vos-skills)
       - Deploy Firebase Hosting
       - Preview Firebase Hosting
       - Deploy
