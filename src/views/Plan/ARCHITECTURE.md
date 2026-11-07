@@ -40,7 +40,11 @@ Der lokale Python-Owner ist `~/fitness-dev`; die Router-Verträge wurden dorthin
 übernommen. Bestehende direkte Routen bleiben für ältere Consumer erhalten. Derselbe
 `RoutineBuilder` bearbeitet eigene und Klienten-Vorlagen einschließlich Sätzen,
 Pausen, Reihenfolge und Hinweisen. Klienten-Vorlagen werden im Klientenpfad
-angelegt und sind dort unmittelbar verfügbar.
+angelegt und sind dort unmittelbar verfügbar. Ungespeicherte Änderungen im
+`RoutineBuilder` (Name, Ziel, Satzvorgaben) werden als lokaler Entwurf
+(`lib/routineDraft.js`) sofort persistent abgelegt und überstehen
+Reload/Tab-Close; erst ein erfolgreiches Speichern leert ihn. Patches für
+Übungen, die zwischenzeitlich entfernt wurden, verfallen beim Wiederherstellen.
 
 `TrainingPlans`/`PlanCard` bündeln Vorlagen als Makrozyklus. Neue Coach-Pläne
 beginnen als `draft`; explizites Bereitstellen erfordert mindestens eine Einheit

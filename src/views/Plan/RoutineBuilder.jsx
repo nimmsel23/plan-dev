@@ -11,10 +11,15 @@ import ExerciseSearch from "./components/ExerciseSearch.jsx";
 import MuscleHeatmap from "./components/MuscleHeatmap.jsx";
 import ExerciseRow from "./components/ExerciseRow.jsx";
 import { patchTemplateSets } from "./lib/templateSets.js";
+import {
+  applyDraftToExercises, applyDraftToRoutine, clearRoutineDraft,
+  loadRoutineDraft, patchesForExercises, saveRoutineDraft,
+} from "./lib/routineDraft.js";
 
 export default function RoutineBuilder({ routineId, onBack, apiClient = defaultApi }) {
   const api = apiClient;
   const [routine, setRoutine] = useState(null);
+  const [saved, setSaved] = useState(null);
   const [exercises, setExercises] = useState([]);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState({});
@@ -24,11 +29,23 @@ export default function RoutineBuilder({ routineId, onBack, apiClient = defaultA
 
   async function load() {
     const d = await api.get(`/routines/${routineId}`);
-    setRoutine(d.routine);
-    setExercises(d.routine.exercises);
+    const draft = loadRoutineDraft();
+    setSaved(d.routine);
+    setRoutine(applyDraftToRoutine(d.routine, draft));
+    setExercises(applyDraftToExercises(d.routine.exercises, draft));
+    setDirty(patchesForExercises(draft?.patches ?? {}, d.routine.exercises));
   }
 
   useEffect(() => { load().catch((err) => setError(err.message)); }, [routineId, apiClient]);
+
+  // Ungespeicherte Änderungen als persistenten Entwurf ablegen (Baseline: `saved`),
+  // damit sie Reload/Tab-Close überleben; freigegeben nach erfolgreichem Speichern.
+  useEffect(() => {
+    if (!routine || !saved) return;
+    const headerEdited = routine.name !== saved.name || (routine.goal ?? null) !== (saved.goal ?? null);
+    if (!headerEdited && Object.keys(dirty).length === 0) return;
+    saveRoutineDraft(undefined, routineId, { name: routine.name, goal: routine.goal ?? null, patches: dirty });
+  }, [routine, saved, dirty, routineId]);
 
   async function addExercise(ex) {
     await savePatches();
@@ -87,7 +104,9 @@ export default function RoutineBuilder({ routineId, onBack, apiClient = defaultA
           api.patch(`/routines/${routineId}/exercises/${id}`, patch)
         )
       );
+      setSaved(routine);
       setDirty({});
+      clearRoutineDraft();
     } finally {
       setSaving(false);
     }
