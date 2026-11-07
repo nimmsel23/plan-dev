@@ -519,3 +519,9 @@ pruefen.
   (reine CSS/Layout-Fixes ohne Architektur-Relevanz), kein Nachtrag geplant.
 - Plan-Tab Taskwarrior Stufe 1 (`d0dec6d`) ist nur lokal committet, nicht released. Stufe 2 offen: Firestore → lokal Sync für Pläne/Workouts (z. B. über `fitness-firestore-daemon`), Auslöser (Timer/Daemon) statt manuellem `plan_tasks sync`, optional Rückrichtung `task done` → Workout erledigt. Mit echten lokalen Daten entstehen bisher keine Tasks.
 - Plan-Tab: Browser-/Geräte-Abnahme mit echtem Login fehlt (Banner, Lesebestätigung, Fälligkeitsfenster, Meine Woche, Rules-Verhalten live). Push-Tokens ungültiger Geräte werden nicht bereinigt; Klienten sehen kein Änderungsprotokoll, nur die aktuelle Version.
+
+
+## Gemini CI-Agent — verbleibende Betriebsprüfung
+
+- [ ] Einen echten roten, code-behebbaren CI-Lauf beobachten und bestätigen, dass Reparatur-Commit, grüner Check und vorgesehener Promote/Deploy enden.
+- [ ] Fehler außerhalb des Codes (fehlende Deploy-Credentials, externe Dienste, Runner-Ausfälle) separat als Diagnose melden; keine ungeprüften Änderungen an Secrets oder Deploy-Konfiguration.
