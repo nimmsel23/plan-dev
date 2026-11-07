@@ -1555,3 +1555,10 @@ Pilot für Jakob: 30 Termine aus dem lokal gespeicherten PPL-Entwurf wurden in d
 vorhandene `tw-data`-DB geschrieben. Der unabhängige Bestand blieb erhalten; die
 vorherige DB wurde als `tw-data.pre-ppl-pilot-20261102` gesichert. Keine
 Firestore-Schreibvorgänge.
+
+
+## 2026-11-07 — Gemini CI-Agent aktiviert
+
+- Agent-Workflow und lokale Trigger für `plan-dev` auf `dev` eingerichtet; `GEMINI_API_KEY` als Actions-Secret gesetzt.
+- `Check`/Preview und Agent-Run [42405217459](https://github.com/nimmsel23/plan-dev/actions/runs/42405217459) waren auf Commit `1d5940ee` grün. Dieser Lauf war ein No-op auf einem erfolgreichen Check; ein roter Code-Fehler wurde noch nicht absichtlich simuliert.
+- Pushes und PR-Merges verwenden die eng berechtigte `GITHUB_TOKEN`-Workflow-Berechtigung; kein separates `SYNC_TOKEN` erforderlich.
