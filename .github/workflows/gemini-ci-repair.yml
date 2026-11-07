@@ -1,0 +1,81 @@
+name: Gemini CI Agent
+
+on:
+  workflow_run:
+    workflows:
+      - Check
+      - Check (6Pack)
+      - Check (Fitness)
+      - Check (Fuel)
+      - Check (Habits)
+      - Check (Journal)
+      - Check (Learn)
+      - Check (Plan)
+      - Check (Relax)
+      - Check (Skills)
+      - Deploy Firebase Hosting
+      - Preview Firebase Hosting
+      - Deploy
+      - Deploy Firebase
+    types: [completed]
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+concurrency:
+  group: gemini-ci-agent-${{ github.event.workflow_run.head_sha || github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    if: >-
+      (github.event_name == 'workflow_run' && contains(fromJSON('["success","failure"]'), github.event.workflow_run.conclusion)) ||
+      (github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          token: ${{ secrets.SYNC_TOKEN }}
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - name: Fehler analysieren und Reparatur vorbereiten
+        id: repair
+        env:
+          GH_TOKEN: ${{ secrets.SYNC_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: node .github/ci-agent/repair.mjs
+      - name: Reparatur committen und Branch aktualisieren
+        if: steps.repair.outputs.action == 'repair' || steps.repair.outputs.action == 'merge'
+        env:
+          GH_TOKEN: ${{ secrets.SYNC_TOKEN }}
+          CI_BRANCH: ${{ steps.repair.outputs.branch }}
+          CI_BASE: ${{ steps.repair.outputs.base }}
+          CI_TARGET: ${{ steps.repair.outputs.target_branch }}
+          CI_IS_MERGE: ${{ steps.repair.outputs.is_merge }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ "$CI_IS_MERGE" = true ]; then
+            git commit -m "merge($CI_BASE): CI conflict repair [ci-agent]"
+          else
+            git commit -m "fix(ci): source repair [ci-agent]"
+          fi
+          if [ -n "$CI_TARGET" ]; then
+            git push origin "HEAD:refs/heads/$CI_BRANCH"
+            gh pr create --repo "$GITHUB_REPOSITORY" --base "$CI_TARGET" --head "$CI_BRANCH" \
+              --title "fix(ci): repair failed $CI_TARGET check" \
+              --body "Automated Gemini CI repair. This PR merges only after the repository Check succeeds."
+          else
+            git push origin "HEAD:refs/heads/$CI_BRANCH"
+          fi

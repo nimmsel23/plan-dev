@@ -1,3 +1,9 @@
+## 2026-11-07 — Gemini CI-Agent installiert
+
+- CI-Agent fuer Check-Fehler, Dependabot-PRs und Merge-Konflikte ergänzt; Tailwind-/Paket-Upgrades bleiben erhalten.
+- Quellreparaturen werden auf den betroffenen Branch geschrieben; Zielbranch-Reparaturen erhalten einen PR und werden erst nach gruenem Check gemergt.
+- Gemini-API und `SYNC_TOKEN` muessen als Actions-Secrets vorhanden sein. Nachweis: erster erfolgreicher automatischer Reparatur- und Deploy-Lauf steht aus.
+
 # Plan-Tab: Auslieferung an Klienten, Versionierung, Fälligkeitsfenster, Taskwarrior Stufe 1 (2026-10-23)
 
 Der Plan-Tab wurde vom Strong-Replica zum Auslieferungsweg für Trainingspläne (Coach → Klient) ausgebaut. Alles auf `dev` in `~/plan-dev`; releast bis `4e1ad47` (vos-plan.web.app, fitness-aos.web.app, Rules, Cloud Function), die Taskwarrior-Anbindung (`d0dec6d`) ist nur committet. Browser-/Geräte-Abnahme mit echtem Login fehlt durchgehend (bisher Testdoubles + Emulator).
