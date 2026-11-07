@@ -96,6 +96,15 @@ jobs:
       - name: FITNESS_ROOT setzen
         run: echo "FITNESS_ROOT=$GITHUB_WORKSPACE/.fitness-dev" >> "$GITHUB_ENV"
 
+      # 6pack-dev ist Quelle fuer @6pack/sixpack.css (vite siblingDir): als Nachbar
+      # neben dem Workspace klonen — wie Check (Plan) und Live Deploy bereits tun;
+      # ohne diesen Schritt bricht der Preview-Build mit ENOENT sixpack.css.
+      - name: Nachbar 6pack-dev auschecken
+        run: |
+          git clone --depth 1 --branch master \
+            "https://x-access-token:${{ secrets.GH_SUBMODULE_TOKEN || secrets.GITHUB_TOKEN }}@github.com/nimmsel23/6pack-dev.git" \
+            "$GITHUB_WORKSPACE/../6pack-dev"
+
       - uses: pnpm/action-setup@v4
 
       - uses: actions/setup-node@v4
