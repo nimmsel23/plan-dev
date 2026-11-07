@@ -47,10 +47,16 @@ jobs:
           set -euo pipefail
           merged=0
           prs=$(gh pr list -R "$REPO" --base dev --state open \
-            --json number,headRefName,statusCheckRollup \
-            --jq '.[] | select(.headRefName | startswith("dependabot/")) | [.number, .headRefName, ([.statusCheckRollup[]? | select(.name == "check") | .conclusion] | join(","))] | @tsv')
-          while IFS=$'\t' read -r n branch res; do
+            --json number,headRefName,title,statusCheckRollup \
+            --jq '.[] | select(.headRefName | startswith("dependabot/")) | [.number, .headRefName, (.title // ""), ([.statusCheckRollup[]? | select(.name == "check") | .conclusion] | join(","))] | @tsv')
+          while IFS=$'\t' read -r n branch title res; do
             [ -n "${n:-}" ] || continue
+            # Majors-Sperre (bleibt Owner-Entscheid): Versionssprung in der ersten Stelle -> kein Auto-Merge.
+            # Gruppen-PRs (z. B. minor-and-patch, actions) haben keine from/to-Version im Titel und laufen weiter.
+            if [[ "$title" =~ from\ ([0-9]+)\.[0-9]+\S*\ to\ ([0-9]+)\.[0-9]+ ]] && [ "${BASH_REMATCH[1]}" != "${BASH_REMATCH[2]}" ]; then
+              echo "PR #$n ($branch): Major-Bump laut Titel -> Owner-Entscheid, kein Auto-Merge."
+              continue
+            fi
             case "${res^^}" in
               SUCCESS)
                 echo "PR #$n ($branch): check gruen -> squash."
