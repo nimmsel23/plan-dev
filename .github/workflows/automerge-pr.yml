@@ -51,12 +51,7 @@ jobs:
             --jq '.[] | select(.headRefName | startswith("dependabot/")) | [.number, .headRefName, (.title // ""), ([.statusCheckRollup[]? | select(.name == "check") | .conclusion] | join(","))] | @tsv')
           while IFS=$'\t' read -r n branch title res; do
             [ -n "${n:-}" ] || continue
-            # Majors-Sperre (bleibt Owner-Entscheid): Versionssprung in der ersten Stelle -> kein Auto-Merge.
-            # Gruppen-PRs (z. B. minor-and-patch, actions) haben keine from/to-Version im Titel und laufen weiter.
-            if [[ "$title" =~ from\ ([0-9]+)\.[0-9]+\S*\ to\ ([0-9]+)\.[0-9]+ ]] && [ "${BASH_REMATCH[1]}" != "${BASH_REMATCH[2]}" ]; then
-              echo "PR #$n ($branch): Major-Bump laut Titel -> Owner-Entscheid, kein Auto-Merge."
-              continue
-            fi
+            # Majors (Owner-Freigabe 2026-11-07): auch Major-Bumps automatisch squaschen. Betta ueberwacht Check/Live-Deploy; bei rot geht per Email ein Auftrag an Alpha.
             case "${res^^}" in
               SUCCESS)
                 echo "PR #$n ($branch): check gruen -> squash."
