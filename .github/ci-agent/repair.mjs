@@ -11,6 +11,8 @@ const apiKey = process.env.GEMINI_API_KEY;
 const run = event.workflow_run;
 const prEvent = event.pull_request;
 
+if (run?.head_commit?.message?.includes("[ci-agent]")) stop("CI-Agent-Commit erkannt; Reparaturschleife gestoppt.");
+
 function git(args, { allowFailure = false, encoding = "utf8" } = {}) {
   try {
     return execFileSync("git", args, { cwd, encoding, maxBuffer: 16 * 1024 * 1024 }).trim();
