@@ -1,3 +1,9 @@
+## 2026-11-08 — dev-Divergenz aufgelöst, Org-Task-Konvention publiziert
+
+- Hängender lokaler `dev`-Commit `51356589` (Org-Taskwarrior-Konvention in `AGENTS.md`/`GEMINI.md`, Vorgängerlauf) hing hinter 23 `origin/dev`-Commits zurück; per Cherry-Pick als `d9d3dfb7` auf `origin/dev` gehoben und fast-forward gepusht (kein Force, kein `master`-Push).
+- Kette grün: Check (Plan) `42445774283`, Auto-Promote `42445811954` (`dev`->`master` FF), Live Deploy (Plan master) `42445821508` (vos-plan.web.app).
+- Offen: `vos-release-pr plan` (Shell-Pointer) und Draft-PR #92 — siehe AL-LOG 2026-11-08.
+
 ## 2026-11-07 — CI-Agent-Fix: gh pr list Feld korrigiert
 
 - Journal-Run 42416606547 scheiterte vor Gemini: GitHub CLI meldete `Unknown JSON field: baseRepository`; `gh pr list` beendete den Analyse-Step mit Exit 1. Kein Gemini-API-Key-Fehler.
