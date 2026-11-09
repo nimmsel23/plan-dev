@@ -1,3 +1,8 @@
+## 2026-11-09 — Backend-Breakthrough in ARCHITECTURE.md
+
+- `docs/ARCHITECTURE.md` + Root-`ARCHITECTURE.md`: Rollen KB/Coach/Plan/
+  Fitness/Node, Laufzeit-Fluss, Plan ohne Local-Backend.
+
 ## 2026-11-09 — Fitness-Fork-Schuld (Catalog/Agent) archiviert
 
 - Kaputte Symlinks `catalog`/`fitness_cli` + `fitnessctl*` /
