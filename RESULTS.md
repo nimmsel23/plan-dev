@@ -1,3 +1,10 @@
+## 2026-11-09 — AL: AutoMerge-Stabilitätswache `922f1cf0`
+
+- Org-Task closed: 2 grüne Tage (08.+09.11.) Auto-Promote u.a. `42445811954` /
+  `42587948080` / `42643223616`; PR-AutoMerge schedule Mo idle-grün
+  `42551887610` / `42608497148` (0 offene Dependabot-PRs); letzter Squash
+  #42 `a83e332a` (07.11.). CI.md 9.1/9.5. Queue `project:plan-dev` leer.
+
 ## 2026-11-09 — kb-dir: fitness-app Nachbar für VitalOS-Meta
 
 - `scripts/lib/kb-dir.mjs`: Kandidat `../fitness-app/fitness/catalog/kb` (Shell-CI / Meta-Checkout).
