@@ -34,8 +34,10 @@ Eine laufende Einheit lässt sich minimieren und über die Fortsetzen-Leiste
 wieder öffnen. Satzänderungen werden auf diesem Gerät zwischengespeichert;
 bei Speicherfehlern zeigt die App den Zustand und bietet erneutes Speichern an.
 Zum Starten, Ändern der Übungsstruktur und Abschließen ist ein erfolgreicher
-Backend-Zugriff erforderlich. Nicht mehrere Geräte gleichzeitig zum Bearbeiten
-derselben Einheit verwenden: eine Konfliktauflösung ist noch nicht umgesetzt.
+Backend-Zugriff erforderlich. Parallel darf nur ein offenes Workout existieren:
+ein zweites Gerät setzt dasselbe Ziel fort oder fragt bei anderem Ziel nach.
+Gleichzeitige Satz-Schreibvorgänge erkennen einen Versionskonflikt (`updatedAt`);
+lokal kannst du den Entwurf bewusst übernehmen oder den Remote-Stand laden.
 
 ## Als Coach einen Plan bereitstellen
 

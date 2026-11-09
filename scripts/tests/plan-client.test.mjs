@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { localDay, isFinished, matchesPlanRoutine, completionsInWindow, doneOnDay } from '../../src/views/Plan/lib/planProgress.js';
 import { todaysOpenRoutines } from '../../src/views/Plan/lib/weekSchedule.js';
-import { conflictsWithActive, targetKey } from '../../src/views/Plan/lib/startTarget.js';
+import { conflictsWithActive, findUnfinishedWorkout, resolveStart, targetKey } from '../../src/views/Plan/lib/startTarget.js';
 
 const done = (extra) => ({ finished_at: new Date(2026, 9, 21, 9).toISOString(), sessionState: 'completed', ...extra });
 
@@ -51,4 +51,14 @@ test('Startkonflikt: anderes Ziel fragt nach, gleiches setzt fort, frei+frei ble
   assert.equal(conflictsWithActive({ id: 'w2' }, {}), false);
   assert.equal(conflictsWithActive({ id: 'w2' }, { routine_snapshot: { exercises: [] }, name: 'X' }), true);
   assert.equal(targetKey({ sourceAssignmentId: 'as1' }), 'as1');
+});
+
+test('Server-unfinished vor Create: resume, conflict oder create', () => {
+  const running = { id: 'w1', sourcePlanRoutineId: 'rt_push', finished_at: null, name: 'Push' };
+  const done = { id: 'w0', finished_at: '2026-11-08T10:00:00Z' };
+  assert.equal(findUnfinishedWorkout([done, running])?.id, 'w1');
+  assert.equal(resolveStart([done], { sourcePlanRoutineId: 'rt_push' }).action, 'create');
+  assert.equal(resolveStart([running], { sourcePlanRoutineId: 'rt_push' }).action, 'resume');
+  assert.equal(resolveStart([running], { sourcePlanRoutineId: 'rt_pull' }).action, 'conflict');
+  assert.equal(resolveStart([running], { sourcePlanRoutineId: 'rt_pull' }).workout.id, 'w1');
 });

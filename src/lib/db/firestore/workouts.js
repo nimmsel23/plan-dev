@@ -19,6 +19,7 @@ import { getDoc, getDocs, updateDoc, writeBatch } from "./offline.js";
 import { db } from "../../../firebase.js";
 import { getUid } from "./core.js";
 import { getRoutine } from "./routines.js";
+import { ActiveWorkoutError, WorkoutConflictError, resolveStart } from "../../../views/Plan/lib/startTarget.js";
 
 function normalizeSetEntry(set = {}, index = 0) {
   return {
@@ -133,6 +134,13 @@ export async function listWorkouts(uidOverride) {
 // Ohne Override identisch zum Self-Service-Fall.
 export async function createWorkout(body, uidOverride) {
   const uid = uidOverride || getUid();
+  const listed = await listWorkouts(uid);
+  const decision = resolveStart(listed.workouts, body);
+  if (decision.action === "conflict") {
+    throw new ActiveWorkoutError({ id: decision.workout.id, name: decision.workout.name || "Workout" });
+  }
+  if (decision.action === "resume") return { id: decision.workout.id };
+
   let exercises = [];
   let name = body.name;
   if (body.routine_snapshot || body.routine_id) {
@@ -145,6 +153,7 @@ export async function createWorkout(body, uidOverride) {
   }
 
   const ref = doc(workoutsCol(uid));
+  const startedAt = new Date().toISOString();
   const workout = {
     routine_id: body.routine_id || null,
     sourceRoutineId: body.routine_id || null,
@@ -154,7 +163,8 @@ export async function createWorkout(body, uidOverride) {
     sourcePlanMicrocycle: body.sourcePlanMicrocycle?.id ? { id: String(body.sourcePlanMicrocycle.id).slice(0, 40), name: String(body.sourcePlanMicrocycle.name || '').slice(0, 60), week: Number(body.sourcePlanMicrocycle.week) || 1 } : null,
     sourceAssignmentId: body.sourceAssignmentId || null,
     name: name || `Workout ${new Date().toLocaleDateString("de-AT", { day: "2-digit", month: "2-digit" })}`,
-    started_at: new Date().toISOString(),
+    started_at: startedAt,
+    updatedAt: startedAt,
     finished_at: null,
     sessionState: "work",
     protocolMeta: { moduleId: body.moduleId || null, protocolType: body.protocolType || null, requiresReview: true },
@@ -168,7 +178,7 @@ export async function createWorkout(body, uidOverride) {
     batch.set(exerciseDoc(uid, ref.id, ex.id), ex);
   }
   await batch.commit();
-  return { id: ref.id };
+  return { id: ref.id, updatedAt: startedAt };
 }
 
 export async function getWorkout(workoutId, uidOverride) {
@@ -185,7 +195,15 @@ export async function getWorkout(workoutId, uidOverride) {
 
 export async function updateWorkout(workoutId, patch, uidOverride) {
   const uid = uidOverride || getUid();
-  const { exercises, ...meta } = patch || {};
+  const { exercises, expectedUpdatedAt, ...meta } = patch || {};
+  const ref = workoutDoc(uid, workoutId);
+  const metaSnap = await getDoc(ref);
+  if (!metaSnap.exists()) throw Object.assign(new Error("Workout nicht gefunden"), { code: "not-found" });
+  const current = metaSnap.data() || {};
+  if ("expectedUpdatedAt" in (patch || {}) && expectedUpdatedAt !== (current.updatedAt || null)) {
+    throw new WorkoutConflictError();
+  }
+  const updatedAt = new Date().toISOString();
   if (Array.isArray(exercises)) {
     const exSnap = await getDocs(exercisesCol(uid, workoutId));
     const batch = writeBatch(db);
@@ -194,12 +212,14 @@ export async function updateWorkout(workoutId, patch, uidOverride) {
       const normalized = normalizeWorkoutExercise({ ...ex, id: ex.id || newId() }, index);
       batch.set(exerciseDoc(uid, workoutId, normalized.id), normalized);
     });
-    batch.update(workoutDoc(uid, workoutId), { ...meta, exerciseCount: exercises.length });
+    batch.update(ref, { ...meta, exerciseCount: exercises.length, updatedAt });
     await batch.commit();
   } else if (Object.keys(meta).length) {
-    await updateDoc(workoutDoc(uid, workoutId), meta);
+    await updateDoc(ref, { ...meta, updatedAt });
+  } else {
+    await updateDoc(ref, { updatedAt });
   }
-  return { ok: true };
+  return { ok: true, updatedAt };
 }
 
 export async function deleteWorkout(workoutId, uidOverride) {

@@ -27,27 +27,65 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
   const [summary, setSummary] = useState(null);
   const [saveState, setSaveState] = useState('saved');
   const [error, setError] = useState('');
+  const [conflict, setConflict] = useState(false);
   const ownerUid = useMemo(() => getUid(), []);
   const api = useMemo(() => createPlanApi(ownerUid), [ownerUid]);
+  const updatedAtRef = useRef(null);
   const writer = useMemo(() => createWorkoutDraft({
     key: `plan-workout-draft:${ownerUid}:${workoutId}`,
     storage: localStorage,
-    write: (snapshot) => api.patch(`/workouts/${workoutId}`, { exercises: snapshot }),
+    write: async (snapshot) => {
+      try {
+        const result = await api.patch(`/workouts/${workoutId}`, {
+          exercises: snapshot,
+          expectedUpdatedAt: updatedAtRef.current,
+        });
+        updatedAtRef.current = result?.updatedAt ?? updatedAtRef.current;
+        setConflict(false);
+      } catch (err) {
+        if (err.code === 'WORKOUT_CONFLICT') {
+          setConflict(true);
+          setError(err.message || 'Dieses Workout wurde auf einem anderen Gerät geändert.');
+        }
+        throw err;
+      }
+    },
     onState: setSaveState,
   }), [workoutId]);
   const exercisesRef = useRef([]);
   const saveTimerRef = useRef(null);
 
-  async function load() {
+  async function load({ keepDraft = true } = {}) {
     const d = await api.get(`/workouts/${workoutId}`);
     setWorkout(d.workout);
-    const restored = !d.workout.finished_at && writer.read();
+    updatedAtRef.current = d.workout.updatedAt || null;
+    setConflict(false);
+    const restored = keepDraft && !d.workout.finished_at && writer.read();
     const next = restored || d.workout.exercises;
     setExercises(next);
     exercisesRef.current = next;
     if (restored) writer.stage(restored);
     if (!d.workout.finished_at) {
       writeActiveWorkout({ id: workoutId, name: d.workout.name, started_at: d.workout.started_at }, ownerUid);
+    }
+  }
+
+  async function discardLocalAndReload() {
+    writer.clear();
+    setError('');
+    await load({ keepDraft: false });
+  }
+
+  async function overwriteRemote() {
+    setError('');
+    setConflict(false);
+    try {
+      const result = await api.patch(`/workouts/${workoutId}`, { exercises: exercisesRef.current });
+      updatedAtRef.current = result?.updatedAt ?? updatedAtRef.current;
+      writer.clear();
+      setSaveState('saved');
+    } catch (err) {
+      setError(err.message);
     }
   }
 
@@ -261,10 +299,22 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
         ),
       };
       await flushSave();
-      await api.patch(`/workouts/${workoutId}`, patch);
+      const result = await api.patch(`/workouts/${workoutId}`, {
+        ...patch,
+        expectedUpdatedAt: updatedAtRef.current,
+      });
+      updatedAtRef.current = result?.updatedAt ?? updatedAtRef.current;
       writer.clear();
       const { exercises: _ignored, ...meta } = patch;
       finished = { ...workout, ...meta, id: workoutId };
+    } catch (err) {
+      if (err.code === 'WORKOUT_CONFLICT') {
+        setConflict(true);
+        setError(err.message || 'Dieses Workout wurde auf einem anderen Gerät geändert.');
+        return;
+      }
+      setError(err.message);
+      return;
     } finally {
       setSaving(false);
     }
@@ -327,6 +377,17 @@ export default function WorkoutSession({ workoutId, onBack, onFinished }) {
 
   return (
     <fieldset disabled={saving} className="min-w-0 max-w-2xl mx-auto border-0 px-4 py-6">
+      {conflict && (
+        <div role="alert" className="mb-4 rounded-xl border border-fit-accent bg-fit-accent/10 p-3 text-sm">
+          <p>{error || 'Dieses Workout wurde auf einem anderen Gerät geändert.'}</p>
+          <p className="mt-1 text-fit-muted">Lokaler Entwurf bleibt erhalten, bis du übernimmst oder verwirfst.</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button type="button" className="min-h-[44px] rounded-xl bg-fit-accent px-3 text-sm font-semibold text-fit-bg" onClick={() => overwriteRemote()}>Lokal übernehmen</button>
+            <button type="button" className="min-h-[44px] rounded-xl border border-fit-line px-3 text-sm" onClick={() => discardLocalAndReload().catch((err) => setError(err.message))}>Remote laden</button>
+          </div>
+        </div>
+      )}
+      {!conflict && error && <p role="alert" className="mb-4 text-sm text-fit-red">{error}</p>}
       <div className="flex items-center gap-3 mb-6">
         <button onClick={async () => { try { await flushSave(); onBack(); } catch (err) { setError(err.message); } }} aria-label="Zurück" className="p-2 rounded-xl text-fit-muted hover:text-fit-ink hover:bg-fit-bg2 transition-all relative after:absolute after:-inset-2.5 after:content-['']">
           <ArrowLeft size={20} />

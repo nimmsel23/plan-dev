@@ -206,10 +206,12 @@ unbemerkter Verlust von Satzänderungen bei Remote-Fehlern und fehlende Startakt
 auf Plan-Einheiten. Ein gemeinsamer Vorlageneditor unterstützt jetzt Klienten-UIDs.
 Neue Coach-Pläne können als Entwurf zusammengestellt und bereitgestellt werden.
 
-Bekannte Grenzen: kein Mehrgeräte-Konfliktprotokoll, kein atomarer Start-Lock
-zwischen Browser-Tabs, noch kein persistenter Entwurf für ungespeicherte
-Vorlageneditor-Änderungen. Der lokale Satzentwurf ersetzt keinen vollständigen
-Offline-Backendbetrieb. Authentifizierte Cloud-Abnahme steht separat aus.
+Bekannte Grenzen: Start-Schutz und `updatedAt`-Konflikt sind umgesetzt; ein
+verbleibendes enges Race bleibt, wenn zwei Geräte gleichzeitig „kein offenes
+Workout“ sehen und beide create feuern, bevor die Listenantwort ankommt.
+Vorlageneditor-Entwürfe werden lokal persistiert (`routineDraft.js`, 2026-11).
+Der lokale Satzentwurf ersetzt keinen vollständigen Offline-Backendbetrieb.
+Authentifizierte Cloud-Abnahme steht separat aus.
 Atlas bleibt eine eigene App; gemeinsam sind Quelle und Referenzen, kein
 originübergreifender Gerätespeicher. Legacy-Checklisten werden als neue Workouts
 startbar, ihr bisheriger Hakenfortschritt wird nicht als Leistung umgeschrieben.

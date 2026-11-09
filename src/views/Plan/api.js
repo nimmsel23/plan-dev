@@ -21,6 +21,17 @@ async function localFetch(method, path, body) {
   if (!res.ok) {
     const error = new Error(`${method} ${path} → ${res.status}`);
     error.status = res.status;
+    try {
+      const payload = await res.json();
+      const detail = payload?.detail;
+      if (detail && typeof detail === 'object') {
+        if (detail.code) error.code = detail.code;
+        if (detail.active) error.active = detail.active;
+        if (detail.message) error.message = detail.message;
+      } else if (typeof detail === 'string') {
+        error.message = detail;
+      }
+    } catch { /* Antwort ohne JSON */ }
     throw error;
   }
   return res.json()

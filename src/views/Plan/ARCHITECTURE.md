@@ -122,20 +122,23 @@ Vertrag `@db`: `scripts/tests/db-barrel-contract.test.mjs` prüft alle Importe g
 `lib/startWorkout` serialisiert Starts im aktuellen Browser-Kontext und setzt
 beim Anlegen den benutzerbezogenen aktiven Workout-Zeiger. Definitiv gelöschte Workouts
 (404/not-found) geben den Zeiger frei; Verbindungsfehler tun das nicht. Bestehende aktive
-Einheiten werden fortgesetzt. `WorkoutList` findet verlorene Zeiger anhand
-unabgeschlossener Server-Workouts wieder. Eine serverseitige Sperre gegen
-parallele Starts auf mehreren Geräten gibt es noch nicht.
+Einheiten werden fortgesetzt. Vor jedem Create liest der Client die Server-Liste
+(`resolveStart`): offenes gleiches Ziel → fortsetzen, anderes Ziel → `ACTIVE_WORKOUT`,
+sonst anlegen. Firestore- und Python-`POST /workouts` erzwingen dieselbe Regel
+(Resume oder 409). `WorkoutList` findet verlorene Zeiger anhand unabgeschlossener
+Server-Workouts wieder.
 
 `WorkoutSession` hält lokale Satzänderungen. `lib/workoutDraft` schreibt sie
 sofort benutzer-/workoutbezogen in localStorage und sendet Remote-Schreibvorgänge
-seriell. Nur die Bestätigung der neuesten Revision löscht den Entwurf. Fehler
-lassen ihn für Retry/Reload bestehen. Strukturelle Änderungen und Abschluss
-warten auf ausstehende Schreibvorgänge. Firestore-Abschluss speichert Meta,
-Event-Log und Übungsdokumente in einem gemeinsamen Batch.
+seriell mit `expectedUpdatedAt`. Nur die Bestätigung der neuesten Revision löscht
+den Entwurf. Ein `WORKOUT_CONFLICT` lässt den Entwurf stehen und bietet „Lokal
+übernehmen“ oder „Remote laden“. Strukturelle Änderungen und Abschluss warten auf
+ausstehende Schreibvorgänge. Firestore-Abschluss speichert Meta, Event-Log und
+Übungsdokumente in einem gemeinsamen Batch und bumpt `updatedAt`.
 
 Der lokale Entwurf sichert Satzänderungen, keine vollständig offline ausführbare
 CRUD-App. Strukturänderungen, Starts und Abschlüsse brauchen einen erfolgreichen
-Backend-Schreibvorgang. Mehrgeräte-Konfliktauflösung ist weiterhin offen.
+Backend-Schreibvorgang.
 
 `completedSetPatch` akzeptiert nur konkrete gültige Leistungswerte; Zielbereiche
 wie „8–12“ werden nicht als absolvierte Wiederholungen gespeichert.
