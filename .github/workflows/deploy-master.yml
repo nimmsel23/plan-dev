@@ -54,6 +54,25 @@ jobs:
             echo "$repo @ $(git -C "$repo" rev-parse --short HEAD)"
           done
 
+      # fitness-dev hat das Python-Paket/KB entfernt — SOT ist nimmsel23/fitness.
+      # prebuild:firebase → build:kb-data braucht KB_DIR (sonst Live-Deploy rot).
+      - name: Checkout fitness KB (SOT)
+        uses: actions/checkout@v4
+        with:
+          repository: nimmsel23/fitness
+          ref: main
+          path: fitness-kb
+
+      - name: KB einhängen + FITNESS_KB_DIR
+        run: |
+          set -euo pipefail
+          mkdir -p fitness-dev/fitness/catalog
+          rm -rf fitness-dev/fitness/catalog/kb
+          ln -sfn "$GITHUB_WORKSPACE/fitness-kb" fitness-dev/fitness/catalog/kb
+          test -d fitness-dev/fitness/catalog/kb/exercises/6pack
+          echo "FITNESS_KB_DIR=$GITHUB_WORKSPACE/fitness-kb" >> "$GITHUB_ENV"
+          echo "KB @ $(git -C fitness-kb rev-parse --short HEAD)"
+
       - uses: pnpm/action-setup@v4
         with:
           version: 11.3.0
