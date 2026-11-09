@@ -75,13 +75,14 @@ lokal kannst du den Entwurf bewusst übernehmen oder den Remote-Stand laden.
   Einheiten ohne Tage rotieren wie bisher. Kopien übernehmen die Wochentage.
 - **Neu-Hinweis:** Stellt der Coach einen Plan bereit (oder erneut bereit), erscheint
   beim Klienten oben im Training ein Banner und ein Punkt am Reiter „Trainingspläne“.
-  Der Stand „gesehen“ liegt pro Gerät im localStorage. Echte Push-Nachrichten gibt es nicht.
+  Der Stand „gesehen“ liegt pro Gerät im localStorage.
 - **Push-Nachricht:** Der Klient aktiviert sie über die Karte „Benachrichtigung …“
   oben im Training (Browser-Erlaubnis nötig, nur im Firebase-Build). Die Cloud
-  Function `onPlanPublished` (`functions/index.js`, Logik in `functions/planPublished.js`)
+  Function `onPlanPublished` (`~/dev/backend/functions/fitness`, Logik in `planPublished.js`)
   sendet bei neuem `publishedAt` eines Coach-Plans einen Push an seine Geräte
-  (Token in `fitness/{uid}/settings/push`, Typ `plan` abschaltbar). Hinweis-Änderungen
-  oder Wochentage lösen nichts aus. Deploy: `firebase deploy --only functions:onPlanPublished`.
+  (Token in `fitness/{uid}/settings/push` → `apps.fitness`, Typ `plan` abschaltbar).
+  Hinweis-Änderungen oder Wochentage lösen nichts aus.
+  Deploy: `cd ~/dev/backend && firebase deploy --only functions:fitness:onPlanPublished`.
 - **An weiteren Klienten kopieren** legt den Plan samt Einheiten und Hinweis als
   Entwurf bei einem anderen Klienten an; dort prüfen und bereitstellen.
 

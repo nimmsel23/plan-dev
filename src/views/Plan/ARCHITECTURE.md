@@ -80,9 +80,9 @@ bieten `updateMacrocycle`.
 - `lib/newPlans.js` + Banner in `WorkoutList`: „Neu vom Coach“ je Gerät über
   `publishedAt` im localStorage.
 - Push: `PushOptIn` nutzt `usePushNotifications` (Token in `fitness/{uid}/settings/push`);
-  Cloud Function `onPlanPublished` (`functions/`, Entscheidung in `planPublished.js`)
-  sendet bei neuem `publishedAt` eines fremden Coach-Plans. Test:
-  `scripts/tests/functions-plan.test.mjs`.
+  Cloud Function `onPlanPublished` (`~/dev/backend/functions/fitness`,
+  Entscheidung in `planPublished.js`) sendet bei neuem `publishedAt` eines
+  fremden Coach-Plans. Test: `planPublished.test.js` im Backend.
 
 ## Versionierung veröffentlichter Pläne (2026-10-22)
 
