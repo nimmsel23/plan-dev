@@ -1,3 +1,9 @@
+## 2026-11-09 — Cloud Functions → ~/dev/backend/functions/fitness
+
+- `onPlanPublished` SOT jetzt Backend-Codebase `fitness`; lokales `functions/` nur noch `MIGRATED.md`.
+- `firebase.json` ohne functions-Block; Docs/ARCH auf Backend-Pfad.
+- Strava nicht Plan-Sache (bleibt Fitness-PWA im Backend). Test wandert mit.
+
 ## 2026-11-09 — Remote-vitalos gelöscht; Pre-Push ohne vitalos-Deploy
 
 - **CI:** Live-Deploy mountet `nimmsel23/fitness` als KB (prebuild/KB_DIR) — behebt roten Master-Deploy.
