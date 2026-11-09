@@ -1,18 +1,24 @@
 # Plan und seine Verbraucher
 
-Stand: 2026-10-30. Maßgebliche Entscheidung: Plan besitzt den gemeinsamen
-Trainingsplan-/Programmeditor und die Planlogik. Coach nutzt diesen Code über
-ein bewusst aktualisiertes Git-Submodul. Fitness bleibt ein weiterer Verbraucher.
+Stand: 2026-11-09. Plan ist die **Brücke** zwischen Fitness-Klient und Coach:
+geteilte Plan-UI und -Verträge liegen hier. Das Schmieden von Plänen für andere
+User und jedes Local-Backend gehören nach Coach. Fitness berührt Coach-Code
+nicht direkt; die Laptop-API ist eine Coach-Backdoor.
 
 ## Zuständigkeiten
 
 | Bereich | Eigentümer |
 | --- | --- |
-| PlanEditor, ProgramEditor, RoutineBuilder und Übungsvorgaben | Plan |
-| Programmentwürfe, Versionierung, Klientenzuweisung und Planadapter | Plan |
-| Coach-Zugriff, Klientenwahl, Navigation und Hosting | Coach |
-| Klientenoberfläche und Fitness-Integration | Fitness / jeweilige Klienten-App |
+| Geteilte Plan-UI (Editor, Feedback, Snapshots) als Brücken-Tab | Plan |
+| Schmieden für Klienten, Coach-Workspace, Local-Backend/Backdoor | Coach |
+| Programmentwürfe / Zuweisung (UI-Vertrag in Plan; Betrieb in Coach) | Coach hostet, Plan liefert Bausteine |
+| Klientenoberfläche und Fitness-Integration | Fitness (Verbraucher von Plan) |
+| Yuhonas Free Exercise DB (Pin) | Plan: `vendor/free-exercise-db` + `yuhonas.ref` |
 | Zentrale Firestore-Regeln | VitalOS |
+
+**Fork-Schuld in plan-dev:** `runtime/`, `alembic/`, `db/`, Fitness-CLIs und
+`npm start`→`plan-backend` stammen aus dem Fitness-Fork. Nicht ausbauen;
+Zielort ist `coach-dev` (Coach lädt `runtime` heute noch aus `modules/plan`).
 
 Entwicklungsquelle ist `/home/alpha/plan-dev` auf `dev`. Im Coach-Repo liegt
 `modules/plan` als Submodul von `nimmsel23/plan-dev`. Der Gitlink pinnt den Code;
@@ -95,7 +101,14 @@ Isolierte Tests/Builds ersetzen keine authentifizierte Cloud- oder Geräteabnahm
 ## Lokaler Laptop-Einstieg
 
 Coach stellt unter `http://127.0.0.1:9150/coach/local.html` denselben Editor ohne
-Firebase-Anmeldung bereit. `runtime/local_plans.py` besitzt lokale Entwürfe und
-Versionen; `runtime/plan_delivery.py` überträgt ausdrücklich freigegebene
-Snapshots. Die bestehende Klientenwurzel kommt aus klienten-python. Details:
-`coach-dev/docs/LOCAL-PLANNING.md`.
+Firebase-Anmeldung bereit. Das ist die Coach-Backdoor: `coach_local_plans.py`
+lädt noch `modules/plan/runtime` (`local_plans.py` / `plan_delivery.py`). Besitz
+und Weiterentwicklung dieses Backends liegen bei Coach; Plan hält die Dateien
+nur, bis der Umzug nach `coach-dev` erledigt ist. Klientenwurzel: klienten-python.
+Details: `coach-dev/docs/LOCAL-PLANNING.md`.
+
+## Yuhonas-Pin
+
+Submodul `vendor/free-exercise-db` (Branch `main`, aktuell in `yuhonas.ref`).
+Client-Bilder: jsDelivr am Pin (`src/lib/yuhonas.pin.js`), damit Firebase nicht
+~200MB spiegeln muss. Nach Submodul-Update: `node scripts/sync-yuhonas-pin.mjs`.

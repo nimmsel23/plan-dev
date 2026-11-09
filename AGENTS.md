@@ -1,10 +1,21 @@
 # Plan development and Fitness integration
 
-- `~/plan-dev` on `dev` is the canonical working checkout and source repository for the Plan mini-app.
-- Plan owns the shared training-plan/program editor and plan logic; Coach consumes the pinned `modules/plan` Git submodule.
-- Fitness resolves Plan through `vite-miniapp-submodules.mjs`: sibling `plan-app`/`plan-dev` first, then the historical nested `plan` path. Do not infer a current Fitness gitlink from old docs or copy editor fixes there.
-- Plan's pre-push hook validates exports/builds; it does not automatically update Coach's pointer or publish Fitness.
-- Standalone Plan, Coach, Fitness and VitalOS Shell release targets remain separate.
+- `~/plan-dev` on `dev` is the canonical working checkout for the Plan mini-app —
+  die **Brücke** zwischen Fitness-Klient und Coach, kein eigenes Local-Backend.
+- Geteilte UI/Planlogik (Editor, Snapshots, Feedback) lebt hier; **Schmieden für
+  andere User** und die Laptop-Backdoor gehören nach `coach-dev`. Fitness kommt
+  mit Coach-Code nicht direkt in Berührung.
+- Coach consumes the pinned `modules/plan` Git submodule. Fitness resolves Plan
+  through `vite-miniapp-submodules.mjs` (sibling `plan-app`/`plan-dev`).
+- Yuhonas Free Exercise DB: gepinntes Submodul `vendor/free-exercise-db` +
+  `yuhonas.ref` / `src/lib/yuhonas.pin.js`. Bilder weiter per jsDelivr am Pin
+  (kein Bundle der ~200MB). Pin nachziehen: Submodul updaten, dann
+  `node scripts/sync-yuhonas-pin.mjs`.
+- Fork-Schuld: alles Backendartige hier (`runtime/`, `alembic/`, `db/`,
+  `fitnessctl*`, `start`→`plan-backend`, Katalog-Symlinks) stammt aus dem
+  Fitness-Fork und gehört langfristig nach `coach-dev` — nicht weiter ausbauen.
+- Plan's pre-push hook validates exports/builds; it does not automatically update
+  Coach's pointer or publish Fitness. Release targets remain separate.
 - Ownership, data contracts and pointer updates: `docs/PLAN-COACH-INTEGRATION.md`.
 
 <!-- release-weg:start -->
@@ -29,14 +40,19 @@ Stand 2026-10-29. Ausführlich: `~/vitalos/docs/DEPLOYMENT.md` (GitHub: nimmsel2
 - Default-Branch des Repos ist `master`; die `.github/workflows/*.yml` auf `master` bestimmen das Live-Verhalten.
 <!-- release-weg:end -->
 
-## Plan ownership and Coach consumption (2026-10-30)
+## Plan ownership and Coach consumption (2026-11-09)
 
-Plan owns the shared training-plan editor, program composition, versioning and assignment logic.
-Coach consumes the code through its pinned `modules/plan` Git submodule. Change the source here,
-commit it, then deliberately advance Coach's pointer; do not maintain a second editor in Coach.
-Publish Plan commits before pushing a Coach pointer referencing them.
+Plan ist die Brücken-UI (geteilter Editor, Versionierung, Feedback). Coach hostet
+die Schmiede für Klientenpläne und das lokale Backend (`coach_local_plans` lädt
+heute noch `modules/plan/runtime` — Umzug nach Coach ist offen). Fitness zeigt
+denselben Plan-Tab für den Klienten, ohne Coach-Imports.
 
-Planbezogene Empfangsbestätigung und Feedback gehören ebenfalls Plan. Gemeinsamer Baustein: `src/views/Plan/components/PlanFeedback.jsx`; Daten-/Releasevertrag: [docs/PLAN-FEEDBACK.md](docs/PLAN-FEEDBACK.md). Zentralen Rules-Owner beibehalten.
+Change shared UI here, commit, then deliberately advance Coach's `modules/plan`
+pointer. Publish Plan commits before pushing a Coach pointer referencing them.
+Kein zweiter Editor in Coach; kein Local-Backend-Ausbau in plan-dev.
+
+Planbezogene Empfangsbestätigung und Feedback: `src/views/Plan/components/PlanFeedback.jsx`;
+Vertrag: [docs/PLAN-FEEDBACK.md](docs/PLAN-FEEDBACK.md). Rules-Owner: VitalOS.
 
 ## Org-Taskwarrior (global) — gilt fuer alle Agenten der VitalOS-Org
 
