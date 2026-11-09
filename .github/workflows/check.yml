@@ -44,6 +44,24 @@ jobs:
       - name: FITNESS_ROOT setzen
         run: echo "FITNESS_ROOT=$GITHUB_WORKSPACE/.fitness-dev" >> "$GITHUB_ENV"
 
+      # KB-SOT: nimmsel23/fitness (fitness-dev-Pin kann das Paket schon nicht mehr haben).
+      - name: Checkout fitness KB (SOT)
+        uses: actions/checkout@v4
+        with:
+          repository: nimmsel23/fitness
+          ref: main
+          path: fitness-kb
+
+      - name: KB einhängen + FITNESS_KB_DIR
+        run: |
+          set -euo pipefail
+          mkdir -p .fitness-dev/fitness/catalog
+          rm -rf .fitness-dev/fitness/catalog/kb
+          ln -sfn "$GITHUB_WORKSPACE/fitness-kb" .fitness-dev/fitness/catalog/kb
+          test -d .fitness-dev/fitness/catalog/kb/exercises/6pack
+          echo "FITNESS_KB_DIR=$GITHUB_WORKSPACE/fitness-kb" >> "$GITHUB_ENV"
+          echo "KB @ $(git -C fitness-kb rev-parse --short HEAD)"
+
       # 6pack-dev ist Quelle fuer @6pack/sixpack.css (vite siblingDir): als Nachbar neben dem Workspace klonen.
       - name: Nachbar 6pack-dev auschecken
         run: |
