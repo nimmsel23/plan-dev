@@ -1,3 +1,8 @@
+## 2026-11-09 — Vite-8-Vorbeuge: build.target modules → Browserliste
+
+- `vite.config.js`: `target: 'modules'` ersetzt durch `['es2020','edge88','firefox78','chrome87','safari14']` (Vite-8-Rolldown-kompatibel, wie fitness `87d349c`).
+- Vor dem nächsten Vite-8-Major, damit der Check nicht an `BUNDLER_INITIALIZE_ERROR` scheitert.
+
 ## 2026-11-09 — Backend-Breakthrough in ARCHITECTURE.md
 
 - `docs/ARCHITECTURE.md` + Root-`ARCHITECTURE.md`: Rollen KB/Coach/Plan/
