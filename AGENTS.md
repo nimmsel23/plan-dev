@@ -15,8 +15,8 @@
 - Fork-Schuld: Backendartiges (`runtime/`, `alembic/`, `db/`, …) stammt aus dem
   Fitness-Fork und gehört nach `coach-dev` — nicht weiter ausbauen. Kaputte
   Katalog-Symlinks/`fitnessctl*` → `archive/fitness-fork-schuld-2026-11-09/`.
-  Catalog-SOT: `coach-dev/fitness/catalog/` (`coach catalog`); Karte:
-  `~/dev/coach-dev/docs/OWNERSHIP-MAP.md`.
+  Python-Catalog: `coach-dev` (`coach catalog`); YAML-KB: `~/dev/fitness`.
+  Karte: `~/dev/coach-dev/docs/OWNERSHIP-MAP.md`.
 - Plan's pre-push hook validates exports/builds; it does not automatically update
   Coach's pointer or publish Fitness. Release targets remain separate.
 - Ownership, data contracts and pointer updates: `docs/PLAN-COACH-INTEGRATION.md`.
