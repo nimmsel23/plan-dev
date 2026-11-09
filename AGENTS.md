@@ -1,5 +1,6 @@
 # Plan development and Fitness integration
 
+- Scoped fertige Arbeit: **immer committen** (nicht auf explizites „commit“ warten).
 - `~/plan-dev` on `dev` is the canonical working checkout for the Plan mini-app —
   die **Brücke** zwischen Fitness-Klient und Coach, kein eigenes Local-Backend.
 - Geteilte UI/Planlogik (Editor, Snapshots, Feedback) lebt hier; **Schmieden für
@@ -11,9 +12,11 @@
   `yuhonas.ref` / `src/lib/yuhonas.pin.js`. Bilder weiter per jsDelivr am Pin
   (kein Bundle der ~200MB). Pin nachziehen: Submodul updaten, dann
   `node scripts/sync-yuhonas-pin.mjs`.
-- Fork-Schuld: alles Backendartige hier (`runtime/`, `alembic/`, `db/`,
-  `fitnessctl*`, `start`→`plan-backend`, Katalog-Symlinks) stammt aus dem
-  Fitness-Fork und gehört langfristig nach `coach-dev` — nicht weiter ausbauen.
+- Fork-Schuld: Backendartiges (`runtime/`, `alembic/`, `db/`, …) stammt aus dem
+  Fitness-Fork und gehört nach `coach-dev` — nicht weiter ausbauen. Kaputte
+  Katalog-Symlinks/`fitnessctl*` → `archive/fitness-fork-schuld-2026-11-09/`.
+  Catalog-SOT: `coach-dev/fitness/catalog/` (`coach catalog`); Karte:
+  `~/dev/coach-dev/docs/OWNERSHIP-MAP.md`.
 - Plan's pre-push hook validates exports/builds; it does not automatically update
   Coach's pointer or publish Fitness. Release targets remain separate.
 - Ownership, data contracts and pointer updates: `docs/PLAN-COACH-INTEGRATION.md`.

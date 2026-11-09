@@ -97,10 +97,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   reicht, `vitalos` muss dafür nicht angerührt werden.
   Push von `vitalos` passiert aus `~/vitalos/fitness-app` heraus (`git push`),
   nicht aus `~/dev/fitness-dev` — von dort ist `vitalos` ja nicht ausgecheckt.
-- Live-KB-Pfad ist `fitness/catalog/kb/`. `catalog` ist Symlink darauf
-  (`catalog -> fitness/catalog`), `fitness_cli` Symlink auf `fitness` — kein
-  separater Alt-Baum mehr, alle drei Pfade sind identisch. Details zur
-  Katalog-Struktur: `../fitness/catalog/CLAUDE.md`.
+- Live-KB-/Catalog-SOT liegt **nicht** mehr in plan-dev: `~/dev/coach-dev/fitness/catalog/`
+ (`coach catalog`). Alte Symlinks `catalog`/`fitness_cli` sind archiviert
+ (`archive/fitness-fork-schuld-2026-11-09/`). Karte:
+ `~/dev/coach-dev/docs/OWNERSHIP-MAP.md`.
 - CLI-Binary heißt `fitness-catalog` (uv-Tool unter
   `~/.local/share/uv/tools/fitness-agent/bin/`), NICHT `fitness-agent` — die
   Skill-Doku ist hier veraltet. Domain-Dispatcher `fitness agent <cmd>` ruft
@@ -289,3 +289,34 @@ gibt den deutschen Anzeigenamen zurück (`"Rücken"`).
 - ⏳ npm workspaces (root + pwa/ + arena/ als Workspace-Pakete)
 - ⏳ Coach-Tab-Gesamtaufräumung (`views/Coach/`, 5 Sub-Tabs, ~1000 Zeilen) —
   noch nicht begonnen, Details + Zielbild in `../src/CLAUDE.md`
+
+## Org-Taskwarrior (global) — gilt fuer alle Agenten der VitalOS-Org
+
+Verbindlich fuer alle Agenten (Vibe, Claude, Codex, Gemini) in Org-Kontexten
+(Owner-Weisung 2026-11-07):
+
+1. EINE globale Org-Task-DB — KEINE eigenen Rollen- oder Repo-DBs mehr:
+   `TASKRC=~/.local/state/vitalos-org/taskrc` (DB liegt daneben in `task/`).
+   Alte Repo-DBs sind archiviert unter `~/.local/state/vitalos-org/archive-repodb/`.
+2. Daniels private Taskwarrior-DB (`~/.task`, u. a. Hotlist `+hot`) bleibt
+   TABU fuer Schreibzugriffe — nur lesend (CEO-Runde: Task `status:pending +hot`).
+3. Rolle = Tag: Jeder Agent taggt seine eigenen Aufgaben mit seiner Rolle:
+   `+ceo`, `+cto`, `+al`, `+pm`, `+alpha`, `+betta` …
+4. Abteilung/Repo = project: `project:fitness-dev`, `project:journal-dev`,
+   `project:vitalos-prod`, `project:dotfiles`, `project:aos` …
+5. Prio-Encoder (in der Org-taskrc verankert):
+   - `+hit` und `+br` sind EIN Tier (Hits = Big Rocks, Koeffizient 8.0) —
+     hoechste Dringlichkeit, `+hit` = `+br`.
+   - `+lr` 2.0 (Little Rocks).
+   - `+hot` 1.0 — NUR Potential/Sichtbarkeit, wird NIE automatisch ausgefuehrt;
+     ob ein Potential jetzt anfaellt, entscheidet der Door War (Sonntagsrunde).
+   - `+s` -1.0 (Sand, Zeitverschwendungsroutine).
+   - `+go` ist KEINE Prioritaet und bewirkt nichts — Freigaben laufen ueber
+     die Rollen (CTO-Freigabeprozess), nicht ueber Urgency.
+6. Aufgaben IMMER per UUID anfassen (`task <uuid> modify|done|info`), NIE per
+   ID — IDs renummerieren sich nach jedem `done` (Fehltreffer-Gefahr).
+7. Guard: orgsh und die Runner verweigern den Lauf, wenn die Org-taskrc fehlt —
+   kein stiller Rueckfall auf die Privat-DB.
+8. Uebersicht/Rang: `TASKRC=~/.local/state/vitalos-org/taskrc \
+   ~/.org/venv/bin/python ~/aos/bin/aos door plan quadrants --json`
+   (Eisenhower-Sicht Q1–Q4).
