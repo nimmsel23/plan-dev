@@ -4,9 +4,9 @@
 
 # Catalog/Ownership (2026-11-09)
 
-- [ ] `~/dev/fitness` (KB-Git) und `fitness-dev/fitness/` Python-Fork weiter
-  nicht pflegen; langfristig Archiv/Deprecation wenn Coach-KB allein reicht.
-- [ ] Coach-dev + plan-dev Ownership-Doku committen/pushen wenn freigegeben.
+- [ ] Coach-`catalog/kb/` Drift gegen `~/dev/fitness` angleichen (2 Inbox-
+  Drafts weichen ab); langfristig Submodul/Subtree statt Doppelbaum.
+- [ ] `fitness-dev/fitness/` Python-Fork nicht weiterpflegen.
 
 # NEXT.md — fitness-dev (repo-lokal)
 
