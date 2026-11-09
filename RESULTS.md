@@ -1,3 +1,7 @@
+## 2026-11-09 — deps: minor/patch Upgrades
+
+- `npm-check-updates --target minor` + Lockfile; `packageManager` bleibt pnpm@11.3.0; `@firebase/util` ^1.12.1.
+
 ## 2026-11-09 — Node Tooling (Biome/knip/engines/smoke)
 
 - `engines.node: >=22.13`, Scripts `tooling:biome|knip|check`.
