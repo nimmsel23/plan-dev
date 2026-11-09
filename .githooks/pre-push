@@ -3,14 +3,11 @@ set -euo pipefail
 
 cd "$(git rev-parse --show-toplevel)"
 
-# Validate the Plan artifact before publishing dev. The Firebase production
-# deploy is reserved for the standalone VitalOS branch; Fitness integration is
-# handled explicitly by `npm run deploy:fitness`.
+# Build-Verifikation auf `dev`. Standalone-Live = CI auf master; Shell-Pin = vos-release.
 SKIP='(^|/)(AGENTS\.md|README([^/]*)?\.md)$|(^|/)docs/|\.(md|mdx|markdown|txt|bak|bak2)$|^dist(-plan|-firebase)?/'
 DEPLOY_TRIGGER='^(src/|plan\.html$|public/|6pack/|Skills/|fitness/catalog/kb/|scripts/|vite\.config\.(js|ts|mjs)$|tailwind\.config\.cjs$|postcss\.config\.cjs$|package\.json$|pnpm-lock\.yaml$|firebase\.json$|firebase\.config\.js$|\.github/workflows/deploy-plan\.yml$)'
 
 should_build_dev=false
-should_deploy_vos=false
 
 while read -r local_ref local_sha remote_ref remote_sha; do
   [[ -n "${local_ref:-}" ]] || continue
@@ -26,12 +23,7 @@ while read -r local_ref local_sha remote_ref remote_sha; do
 
   if [[ "$branch" == "dev" ]] && printf '%s\n' "$relevant" | grep -Eq "$DEPLOY_TRIGGER"; then
     should_build_dev=true
-  fi
-
-  if [[ "$branch" == "vitalos" ]]; then
-    if printf '%s\n' "$relevant" | grep -Eq "$DEPLOY_TRIGGER"; then
-      should_deploy_vos=true
-    fi
+    echo "💡 Release: dev → master (Auto-Promote / vos-release-pr plan); Shell-Pin mit plan-release / vos-ship. Doku: ~/vitalos/docs/DEPLOYMENT.md" >&2
   fi
 done
 
@@ -49,14 +41,4 @@ if [[ "$should_build_dev" == true ]]; then
     exit 1
   fi
   echo "✅ Plan-Build-Verifikation OK (dist-plan/ aktuell)."
-fi
-
-if [[ "$should_deploy_vos" == true ]]; then
-  echo "🚀 Plan Standalone: relevante Änderungen auf vitalos — baue und deploye hosting:plan…"
-  if ! pnpm run firebase; then
-    echo "❌ Plan-Firebase-Deploy fehlgeschlagen — Push wird abgebrochen." >&2
-    echo "   Bei absichtlichem Override: git push --no-verify" >&2
-    exit 1
-  fi
-  echo "✅ Plan Standalone live auf Firebase Hosting aktualisiert."
 fi

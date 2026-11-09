@@ -16,7 +16,7 @@ wenn keine `ARCHITECTURE.md` oder `AUDIT.md` mitgeändert wurde.
 - Push mit relevanten App-Änderungen auf `dev`: baut Plan mit
   `pnpm run build:firebase` als lokale Verifikation. Der GitHub-Workflow
   veröffentlicht danach den 24-Stunden-Preview.
-- Push mit relevanten App-Änderungen auf `vitalos`: führt
+- Push mit relevanten App-Änderungen auf `master` (CI; lokal kein Auto-Deploy mehr): führt
   `pnpm run firebase` aus und deployt Plan Standalone auf Firebase Hosting
   (`hosting:plan`, `https://vos-plan.web.app`). Firestore-Rules werden hier
   nicht deployed.
@@ -32,5 +32,5 @@ Fehler bricht den Push ab; `git push --no-verify` überspringt den Hook.
   Commit als Fitness-Submodul-Gitlink, baut Fitness und pusht dessen `dev`-
   Branch.
 - `npm run deploy:vos`: ruft `vos-release plan` auf. Der Release-Workflow
-  übernimmt Plan in `vitalos/plan-app`; der Push auf Plan-`vitalos` löst den
+  übernimmt Plan in `Meta plan-app Pin`; der Push auf Plan-`master` löst den
   Standalone Firebase-Deploy aus.
