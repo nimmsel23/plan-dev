@@ -3,7 +3,6 @@ import { RefreshCw } from 'lucide-react'
 import Session from './views/Session/index.jsx'
 import Learn   from '@learn/views/Learn/index.jsx'
 import WeeklyReview from './views/WeeklyReview/index.jsx'
-import Touren from './views/Touren/index.jsx'
 import Settings from './views/Settings/index.jsx'
 import Anamnese from './views/Anamnese/index.jsx'
 import Fokus from './views/Fokus/index.jsx'
@@ -517,7 +516,6 @@ export default function App() {
                       {tab === 'session'  && <Session key={sessionDate || 'today'} initialDate={sessionDate} initialDraft={sessionDraft} onInspectExercise={inspectExercise} onOpenSession={openSession} recentDays={recentDays} coverageThreshold={coverageThreshold} subTab={subTab} onDateChange={setSessionDate} onSubNav={navigateSub} planView={planView} planId={planId} onPlanRouteChange={(view, id) => { setPlanView(view); setPlanId(id); }} gateAutoOpenFlag={gateAutoOpenFlag} onGateAutoOpenConsumed={() => setGateAutoOpenFlag(false)} />}
                       {tab === 'review'   && <WeeklyReview onOpenSession={openSession} onInspectExercise={inspectExercise} muscleLanguage={muscleLanguage} taxonomy={taxonomy} gender={gender} recentDays={recentDays} subTab={subTab} onSubNav={navigateSub} />}
                       {tab === 'learn'    && <Learn subTab={subTab} />}
-                      {tab === 'touren'   && <Touren onOpenSession={openSession} />}
                       {tab === 'inbox'    && (user ? <Inbox /> : (
                         <div className="card mx-auto max-w-2xl p-6 text-center">
                           <h2 className="text-lg font-black tracking-tight">Inbox nur mit Login</h2>

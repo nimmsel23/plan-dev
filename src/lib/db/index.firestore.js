@@ -12,7 +12,6 @@ export * from "./firestore/macrocycles.js";
 export * from "./firestore/analysis.js";
 export * from "./firestore/user.js";
 export * from "./firestore/slotTemplates.js";
-export * from "./firestore/tours.js";
 export * from "./firestore/utils.js";
 
 // Shared utilities always available in both modes

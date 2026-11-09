@@ -1,4 +1,4 @@
-import { Dumbbell, Brain, BarChart3, Settings2, CalendarDays, ClipboardList, History, LibraryBig, Microscope, HelpCircle, Layers, Zap, Crosshair, TimerReset, Sparkles, Bike } from "lucide-react";
+import { Dumbbell, Brain, BarChart3, Settings2, CalendarDays, ClipboardList, History, LibraryBig, Microscope, HelpCircle, Layers, Zap, Crosshair, TimerReset, Sparkles } from "lucide-react";
 
 const baseItems = [
   { id: 'session',  label: 'Training', Icon: Dumbbell,  sub: [
@@ -25,15 +25,6 @@ const baseItems = [
     { id: 'anatomy',   label: 'Anatomie', Icon: Microscope },
     { id: 'quiz',      label: 'Quiz',     Icon: HelpCircle },
   ]},
-  // Eigener Haupt-Tab, kein Subtab von WeeklyReview/Muscles — Radtouren waren
-  // bisher nur ein kleines Cardio-Addon im Session-Modal, sollen aber als
-  // vollwertiger, gleichrangiger Bereich neben dem Krafttraining stehen
-  // (User-Klarstellung 2026-09-23, siehe views/Touren/index.jsx). Bewusst
-  // NACH den ersten 3 baseItems eingefügt (session/review/learn) — die
-  // getNavItems()-Slices unten (slice(0,3)/slice(3)) setzen genau diese
-  // Kopf-Reihenfolge voraus, um den dynamischen Fokus/Anamnese-Eintrag
-  // an der richtigen Stelle einzuschieben.
-  { id: 'touren',   label: 'Radtouren', Icon: Bike },
   { id: 'settings', label: 'Setup',    Icon: Settings2 },
 ];
 

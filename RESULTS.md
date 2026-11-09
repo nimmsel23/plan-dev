@@ -1,3 +1,8 @@
+## 2026-11-09 — Touren/Strava aus Plan entfernt
+
+- Nav/App-Route, Strava-Adapter, tours-DB-Barrel und `docs/STRAVA_SETUP.md` weg.
+- Cardio-Logging in der Session bleibt; Radtouren-UI nur noch Fitness-PWA.
+
 ## 2026-11-09 — Cloud Functions → ~/dev/backend/functions/fitness
 
 - `onPlanPublished` SOT jetzt Backend-Codebase `fitness`; lokales `functions/` nur noch `MIGRATED.md`.

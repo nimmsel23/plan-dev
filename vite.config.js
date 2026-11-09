@@ -71,7 +71,6 @@ export default defineConfig(async ({ mode }) => {
 
         '@src':                resolve(__dirname, './src'),
         '@db':                 resolve(__dirname, isFirebase ? './src/lib/db/index.firestore.app.js' : './src/lib/db/index.js'),
-        '@tours-strava':       resolve(__dirname, isFirebase ? './src/lib/tours/adapters/live/strava.firestore.js' : './src/lib/tours/adapters/live/strava.js'),
         '@kb':                 KB_DIR, // Fitness-KB: genau eine Quelle (coach-dev/fitness/catalog/kb), keine Kopie in plan-dev
         '@fitness-db':         resolve(__dirname, './src/lib/db'),
         '@utils':              resolve(__dirname, './src/lib/utils.js'),

@@ -15,9 +15,6 @@ import { fitnessRoot, overlayPath } from './overlay.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const SRC = path.join(root, 'src');
 const home = os.homedir();
-// Touren-Funktionen gehören zur Plan-Shell, nicht zu den eingebetteten Plan-Views.
-const SHELL_ONLY = /(^|\/)(Touren|lib\/tours)\//;
-
 const own = ['src/lib/db/index.js', 'src/lib/db/index.firestore.app.js'].map((p) => path.join(root, p));
 const consumers = [
   path.join(fitnessRoot, 'src/lib/db/index.js'),
@@ -39,7 +36,6 @@ function ast(file) {
 function importedFromDb() {
   const out = new Map();
   for (const file of walk(SRC)) {
-    if (SHELL_ONLY.test(path.relative(SRC, file))) continue;
     for (const node of ast(file).body) {
       const isImp = node.type === 'ImportDeclaration' || (node.type === 'ExportNamedDeclaration' && node.source);
       if (!isImp || node.source?.value !== '@db') continue;
