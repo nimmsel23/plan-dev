@@ -1,3 +1,11 @@
+## 2026-11-09 — Mehrgeräte-Startschutz + Workout-Versionskonflikt
+
+- `resolveStart` / `findUnfinishedWorkout` in `startTarget.js`: vor Create Server-Liste prüfen (resume / ACTIVE_WORKOUT / create).
+- `startWorkout.js` nutzt die Server-Liste auch ohne lokalen Zeiger; Firestore-`createWorkout` und Python-`POST /workouts` (`coach-dev`) erzwingen dieselbe Regel.
+- Satz-Patches tragen `expectedUpdatedAt`; Konflikt → `WORKOUT_CONFLICT` mit UI „Lokal übernehmen“ / „Remote laden“ in `WorkoutSession`.
+- Tests in `plan-client.test.mjs` grün; TODO-Häkchen (Entwurf `8051c55f`, Versionierung, Mehrgerät) nachgezogen.
+- Hinweis: enges Create-Race zweier gleichzeitiger Leerliste-Antworten bleibt; kein Taskwarrior für MD-Backlog-Punkte.
+
 ## 2026-11-08 — dev-Divergenz aufgelöst, Org-Task-Konvention publiziert
 
 - Hängender lokaler `dev`-Commit `51356589` (Org-Taskwarrior-Konvention in `AGENTS.md`/`GEMINI.md`, Vorgängerlauf) hing hinter 23 `origin/dev`-Commits zurück; per Cherry-Pick als `d9d3dfb7` auf `origin/dev` gehoben und fast-forward gepusht (kein Force, kein `master`-Push).
