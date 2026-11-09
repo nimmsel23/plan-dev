@@ -1,5 +1,6 @@
 ## 2026-11-09 — Remote-vitalos gelöscht; Pre-Push ohne vitalos-Deploy
 
+- **CI:** Live-Deploy mountet `nimmsel23/fitness` als KB (prebuild/KB_DIR) — behebt roten Master-Deploy.
 `origin/vitalos` entfernt. Pre-Push: kein lokaler Firebase-Deploy mehr auf Branch vitalos; Reminder/Build auf `dev`.
 
 ## 2026-11-09 — Shell-Pin auf origin/master (CI/AGENTS)
