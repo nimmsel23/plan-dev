@@ -62,6 +62,7 @@ jobs:
           repository: nimmsel23/fitness
           ref: main
           path: fitness-kb
+          submodules: recursive
 
       - name: KB einhängen + FITNESS_KB_DIR
         run: |
