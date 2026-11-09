@@ -35,6 +35,6 @@ completed	success	PR-AutoMerge (Dependabot -> dev)	PR-AutoMerge (Dependabot -> d
 - Arbeitsbaum: 3 uncommittete Pfade
 
 _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
-- Erledigt: Offene Mehrgerät-App-Änderung auf `dev` committed+gepusht (`resolveStart`/`startWorkout`, Firestore `updatedAt`/`expectedUpdatedAt`, Konflikt-UI WorkoutSession, Docs/Tests); `node --test scripts/tests/plan-client.test.mjs` 7/7. Fremdes `docs/CLAUDE.md` + `archive/*` unangetastet.
+- Erledigt: Mehrgerät-App auf `dev` als `4d3af9f1` (`resolveStart`/`startWorkout`, Firestore `updatedAt`/`expectedUpdatedAt`, Konflikt-UI WorkoutSession, Docs/Tests); `node --test scripts/tests/plan-client.test.mjs` 7/7; Push folgt im selben Lauf.
 - Offen/Weiter: Authentifizierte Firebase-Abnahme; `coach-dev` `fitness/api/routers/workouts.py` noch uncommitted (Server-Guard-Parität); Org-Task AutoMerge-Stabilitätswache `922f1cf0` fällig 2026-11-10; Draft-PR #43; `vos-release-pr plan`.
 - Blocker: keine.
