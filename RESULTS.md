@@ -1,3 +1,12 @@
+## 2026-11-09 — Yuhonas-Submodul + Ownership-Klarstellung
+
+- `vendor/free-exercise-db` als flaches Submodul gepinnt (`yuhonas.ref` /
+  `src/lib/yuhonas.pin.js`); CDN-Bilder am Commit statt floating `@main`.
+  Sync: `node scripts/sync-yuhonas-pin.mjs`.
+- Ownership nachgeschärft: Plan = Brücke Fitness↔Coach, kein Local-Backend-
+  Ausbau; Schmiede + Laptop-Backdoor → Coach. Fork-Reste (`runtime/`, alembic,
+  fitnessctl, …) als Schuld dokumentiert (`AGENTS.md`, `PLAN-COACH-INTEGRATION.md`).
+
 ## 2026-11-09 — AL: Mehrgerät-App-Stand auf origin/dev
 
 - Offene lokale Mehrgerät-Änderung (`resolveStart`, Firestore-Guard, `updatedAt`/`expectedUpdatedAt`, Konflikt-UI) inkl. AL-LOG committed und nach `origin/dev` gepusht; `plan-client` 7/7.
