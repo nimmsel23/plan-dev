@@ -1,4 +1,6 @@
 - ~~Vite-8 Vorbeuge~~: build.target modules → Browserliste.
+- ~~Org-Task `922f1cf0` Stabilitätswache~~: 2 grüne Tage + Mo-Schedule belegt, closed 2026-11-09.
+- Offen AL: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py`; Draft-PR #43; `vos-release-pr plan`.
 # CI-Agent — offener Betriebspunkt
 
 - [ ] `GEMINI_API_KEY` und `SYNC_TOKEN` als Actions-Secrets fuer diesen Repo-Zweig einrichten/prüfen; einen absichtlich roten Check bis zum grünen Promote/Deploy beobachten.
