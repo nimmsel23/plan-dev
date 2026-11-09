@@ -1,3 +1,7 @@
+## 2026-11-09 — kb-dir: fitness-app Nachbar für VitalOS-Meta
+
+- `scripts/lib/kb-dir.mjs`: Kandidat `../fitness-app/fitness/catalog/kb` (Shell-CI / Meta-Checkout).
+
 ## 2026-11-09 — kb-dir: Coach-Nested-Pfade
 
 - `scripts/lib/kb-dir.mjs`: Kandidaten `../../fitness/catalog/kb` und `../../.fitness-dev/...` für Checkout unter coach-dev/modules/plan.
