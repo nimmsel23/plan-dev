@@ -1,5 +1,6 @@
 - ~~Vite-8 Vorbeuge~~: build.target modules → Browserliste.
 - ~~Org-Task `922f1cf0` Stabilitätswache~~: 2 grüne Tage + Mo-Schedule belegt, closed 2026-11-09.
+- ~~Functions → backend~~: `onPlanPublished` SOT in `~/dev/backend/functions/fitness`; Deploy noch: `firebase deploy --only functions:fitness:onPlanPublished`.
 - Offen AL: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py`; Draft-PR #43; `vos-release-pr plan`.
 # CI-Agent — offener Betriebspunkt
 
