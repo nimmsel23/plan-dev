@@ -82,8 +82,8 @@ export function getUid() {
   return currentUid;
 }
 
-const DESKTOP_FITNESS_API_BASE = "http://127.0.0.1:6100/fitness";
-const FUNNEL_FITNESS_API_BASE = "https://ideapad.tail7a15d6.ts.net/fitness/fitness";
+const DESKTOP_FITNESS_API_BASE = "http://127.0.0.1:9150/fitness";
+const FUNNEL_FITNESS_API_BASE = "https://ideapad.tail7a15d6.ts.net/fitness";
 const LOCAL_FITNESS_API_STORAGE_KEY = "fitness-local-api-base";
 
 function cleanApiBase(value) {
