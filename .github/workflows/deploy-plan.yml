@@ -12,7 +12,7 @@
 # PR-Weg (wie fitness-dev): PR -> eigener PR-Channel mit Kommentar, dev-Push -> Channel dev.
 #
 # PREVIEW statt Live (Regel 2026-10-16): echte Prod-URLs (vos-*.web.app) werden nur noch
-# aus dem Branch `vitalos` der Meta-Repo-Checkouts (~/vitalos/*-app) deployt. Dieser
+# aus den Meta-Repo-Pins (`*-app` auf origin/master) (~/vitalos/*-app) deployt. Dieser
 # Workflow veröffentlicht auf dem Branch `dev` ausschließlich einen 24h-Preview-Channel `dev`.
 
 name: Preview Plan
@@ -41,7 +41,7 @@ on:
       - '!**/*.bak*'
       - '!docs/**'
   pull_request:
-    branches: [vitalos, master, dev, coach]
+    branches: [master, dev, coach]
     paths:
       - 'src/**'
       - 'plan.html'

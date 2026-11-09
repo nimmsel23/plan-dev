@@ -8,7 +8,7 @@
 #
 # Auslöser: push auf master und workflow_dispatch (automerge.yml) -> baut und deployt live (nur master).
 # Push auf `ci-test/**` -> reiner Build-Test (Nachbarn von dev), KEIN Deploy.
-# Release-Branch `vitalos` und die Submodul-Pfade im Meta-Repo bleiben unberührt.
+# Shell-Pin im Meta-Repo bleibt bewusst: Pointer-Bump via vos-release/vos-ship, kein Auto-Push auf einen vitalos-Branch.
 
 name: Live Deploy (Plan master)
 
@@ -29,7 +29,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write   # nur für das Vorspulen des Branches vitalos (letzter Schritt)
+  contents: read
 
 jobs:
   deploy:
@@ -104,16 +104,4 @@ jobs:
             --project fitness-aos --non-interactive
 
 
-      - name: Branch vitalos auf master vorspulen (Fast-Forward, Release-Branch der Shell)
-        if: env.DO_DEPLOY == 'true' && success()
-        continue-on-error: true
-        working-directory: plan-dev
-        run: |
-          set -euo pipefail
-          git fetch origin vitalos
-          if git merge-base --is-ancestor origin/vitalos HEAD; then
-            git push origin HEAD:refs/heads/vitalos
-            echo "vitalos -> $(git rev-parse --short HEAD)"
-          else
-            echo "::warning::vitalos enthält Commits, die nicht in master sind — kein Fast-Forward, bitte manuell abgleichen"
-          fi
+

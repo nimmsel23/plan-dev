@@ -1,3 +1,8 @@
+## 2026-11-09 — Shell-Pin auf origin/master (CI/AGENTS)
+
+CI: kein Auto-Vorspulen von `vitalos` mehr; Merge-Agent nur `master`; PR-Checks
+auf `[master, dev]`. AGENTS Release-Weg: `dev → master` + Shell-Pin.
+
 ## 2026-11-09 — AL: AutoMerge-Stabilitätswache `922f1cf0`
 
 - Org-Task closed: 2 grüne Tage (08.+09.11.) Auto-Promote u.a. `42445811954` /
