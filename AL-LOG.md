@@ -35,6 +35,6 @@ completed	success	PR-AutoMerge (Dependabot -> dev)	PR-AutoMerge (Dependabot -> d
 - Arbeitsbaum: 3 uncommittete Pfade
 
 _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
-- Erledigt: Org-Task `922f1cf0` Stabilitätswache closed — 2 grüne Tage (08.+09.11.): Auto-Promote u.a. `42445811954`/`42587948080`/`42643223616`; PR-AutoMerge schedule Mo idle-grün `42551887610`/`42608497148` (0 offene Dependabot-PRs); letzter Squash-Merge #42 `a83e332a` (07.11., CI.md 9.1/9.5).
+- Erledigt: Org-Task `922f1cf0` Stabilitätswache closed — 2 grüne Tage (08.+09.11.): Auto-Promote u.a. `42445811954`/`42587948080`/`42643223616`; PR-AutoMerge Mo idle-grün `42551887610`/`42608497148` (0 Dependabot-PRs); Squash #42 `a83e332a`. Beleg-Push `12b89331` (+ auto RESULTS/NEXT): Check `42652399714`, Auto-Promote `42652518341`, Live Deploy `42652543602`.
 - Offen/Weiter: Authentifizierte Firebase-Abnahme Mehrgerät; `coach-dev` `workouts.py` uncommitted; Draft-PR #43; `vos-release-pr plan`. Org-Queue `project:plan-dev` leer.
 - Blocker: keine. `archive/*` unangetastet.
