@@ -16,8 +16,8 @@ Stand: 2026-11-09. Ehrliche Bestandsaufnahme (Repo + App), kein Wunschdenken.
 
 - Plan-Editor, ProgramEditor, RoutineBuilder, TrainingPlans, PlanFeedback
 - Als Miniapp/Overlay in Fitness; als `modules/plan` Pin in Coach
-- Yuhonas: Submodul `vendor/free-exercise-db` + Pin `yuhonas.ref` /
-  `src/lib/yuhonas.pin.js` (`f00c92c7…`), Bilder per jsDelivr am Commit
+- Yuhonas: Submodul + Pin = Atlas-Pflaster (Git-Original); Expert-KB bleibt
+  `kb/exercises` (Coach-Inbox-Gate), Apps bekommen freigegebene KB per Build-JS
 - Mehrgerät: `resolveStart`, `expectedUpdatedAt`, Konflikt-UI (Nov 2026)
 
 ## Backend / Daten (bewusst fremd)
