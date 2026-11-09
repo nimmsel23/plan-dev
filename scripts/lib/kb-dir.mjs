@@ -11,6 +11,9 @@ const candidates = [
   process.env.FITNESS_KB_DIR,
   join(root, '..', 'coach-dev', rel),
   join(root, '..', 'fitness-dev', rel),
+  // coach-dev nested: modules/plan → ../../fitness/catalog/kb bzw. ../../.fitness-dev/...
+  join(root, '..', '..', rel),
+  join(root, '..', '..', '.fitness-dev', rel),
   join(root, '.fitness-dev', rel),
 ].filter(Boolean);
 

@@ -1,3 +1,7 @@
+## 2026-11-09 — kb-dir: Coach-Nested-Pfade
+
+- `scripts/lib/kb-dir.mjs`: Kandidaten `../../fitness/catalog/kb` und `../../.fitness-dev/...` für Checkout unter coach-dev/modules/plan.
+
 ## 2026-11-09 — Vite-8-Vorbeuge: build.target modules → Browserliste
 
 - `vite.config.js`: `target: 'modules'` ersetzt durch `['es2020','edge88','firefox78','chrome87','safari14']` (Vite-8-Rolldown-kompatibel, wie fitness `87d349c`).
