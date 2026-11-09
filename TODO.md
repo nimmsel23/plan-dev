@@ -77,9 +77,9 @@ Coach-Trainingspläne im selben Logger für Klienten nutzbar machen.
 - [x] Lokaler Satzentwurf, serielle Remote-Writes, Retry und atomarer Firestore-Abschluss.
 - [x] Isolierte Daten-/Adapter-/Router-/Proxytests und Browserdurchlauf.
 - [ ] Authentifizierter Coach-/Klienten-Durchlauf auf Firebase mit isolierten Testkonten.
-- [ ] Mehrgeräte-Konfliktauflösung und serverseitiger Schutz vor parallelen Starts.
-- [ ] Persistenter Entwurf für noch ungespeicherte Vorlageneditor-Änderungen.
-- [ ] Versionierung und Aktualisieren bereits veröffentlichter Plan-Snapshots.
+- [x] 2026-11-09: Mehrgeräte-Konfliktauflösung und serverseitiger Schutz vor parallelen Starts (`resolveStart`, `updatedAt`/`expectedUpdatedAt`, Firestore + Python).
+- [x] 2026-11: Persistenter Entwurf für noch ungespeicherte Vorlageneditor-Änderungen (`8051c55f`).
+- [x] 2026-10: Versionierung und Aktualisieren bereits veröffentlichter Plan-Snapshots.
 
 Produktziel: `INSPIRATION.md`. Bedienung: `docs/PLAN-WORKFLOW.md`.
 
