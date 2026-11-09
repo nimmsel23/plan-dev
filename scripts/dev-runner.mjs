@@ -8,15 +8,21 @@ function run(cmd, args, env = {}) {
     shell: false,
     env: { ...process.env, ...env },
   })
-  p.on('error', err => { console.error(`[${cmd}]`, err.message); process.exit(1) })
+  p.on('error', (err) => {
+    console.error(`[${cmd}]`, err.message)
+    process.exit(1)
+  })
   return p
 }
 
 function portInUse(port) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const c = createConnection({ port, host: '127.0.0.1' })
-    c.on('connect', () => { c.destroy(); resolve(true) })
-    c.on('error',   () => resolve(false))
+    c.on('connect', () => {
+      c.destroy()
+      resolve(true)
+    })
+    c.on('error', () => resolve(false))
   })
 }
 
@@ -27,10 +33,23 @@ const alreadyRunning = await portInUse(API_PORT)
 if (alreadyRunning) {
   console.log(`[dev-runner] plan-backend/server.mjs already running on :${API_PORT} — skipping nodemon`)
 } else {
-  run('node', ['node_modules/.bin/nodemon', '--watch', '../plan-backend', '--ext', 'mjs', '--signal', 'SIGTERM', '../plan-backend/server.mjs'])
+  run('node', [
+    'node_modules/.bin/nodemon',
+    '--watch',
+    '../plan-backend',
+    '--ext',
+    'mjs',
+    '--signal',
+    'SIGTERM',
+    '../plan-backend/server.mjs',
+  ])
 }
 
 const vite = run('node', ['node_modules/.bin/vite'], { VITE_API_BASE: '' })
 
-process.on('SIGTERM', () => { vite.kill() })
-process.on('SIGINT',  () => { vite.kill() })
+process.on('SIGTERM', () => {
+  vite.kill()
+})
+process.on('SIGINT', () => {
+  vite.kill()
+})

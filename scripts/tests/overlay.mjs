@@ -33,7 +33,12 @@ export function installNodeOverlay() {
       try {
         return nextResolve(specifier, context)
       } catch (error) {
-        if (error?.code !== 'ERR_MODULE_NOT_FOUND' || !specifier.startsWith('.') || !context.parentURL?.startsWith('file:')) throw error
+        if (
+          error?.code !== 'ERR_MODULE_NOT_FOUND' ||
+          !specifier.startsWith('.') ||
+          !context.parentURL?.startsWith('file:')
+        )
+          throw error
         const target = resolve(dirname(fileURLToPath(context.parentURL)), specifier)
         const alt = overlayPath(target)
         if (alt === target) throw error

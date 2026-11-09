@@ -11,7 +11,7 @@ const args = process.argv.slice(2)
 // muss deshalb je nach cwd auf ein anderes Default-Ziel zeigen, sonst landet
 // man versehentlich im (hier falschen) Firebase-Flow, der interaktiv auf
 // die Firebase-CLI wartet und wie ein Hang aussieht.
-const DEV_SOURCE     = `${process.env.HOME}/fitness-dev`
+const DEV_SOURCE = `${process.env.HOME}/fitness-dev`
 const STAGING_SOURCE = `${process.env.HOME}/fitness`
 
 let mode = 'firebase' // Default (gilt für fitness-app / alles außerhalb der beiden Pfade unten)

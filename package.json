@@ -41,7 +41,12 @@
     "build:catalog": "python3 scripts/build-catalog.py",
     "deploy:preview": "pnpm run build:firebase && node scripts/deploy-preview.mjs",
     "deploy:prev": "pnpm run deploy:preview",
-    "build:prev": "pnpm run deploy:preview"
+    "build:prev": "pnpm run deploy:preview",
+    "tooling:biome": "pnpm dlx @biomejs/biome@2.6.6 check --formatter-enabled=true --linter-enabled=false --no-errors-on-unmatched scripts",
+    "tooling:knip": "pnpm dlx knip@6.44.2 --no-progress",
+    "tooling:check": "pnpm run tooling:biome && pnpm run tooling:knip",
+    "test": "node --test scripts/smoke.test.mjs",
+    "tooling:biome:lint": "pnpm dlx @biomejs/biome@2.6.6 check --formatter-enabled=true --linter-enabled=true --no-errors-on-unmatched scripts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -81,5 +86,8 @@
   },
   "allowScripts": {
     "better-sqlite3@12.10.0": true
+  },
+  "engines": {
+    "node": ">=22.13"
   }
 }

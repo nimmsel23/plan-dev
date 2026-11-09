@@ -84,6 +84,14 @@ jobs:
           node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json'));for(const k of ['dependencies','devDependencies','optionalDependencies'])delete p[k]?.['@vos/cross-app-aliases'];fs.writeFileSync('package.json',JSON.stringify(p,null,2)+'\n')"
           pnpm install --frozen-lockfile --ignore-scripts --config.node-linker=hoisted
 
+      - name: Tooling (Biome format scripts/)
+        run: pnpm run tooling:biome
+
+      - name: Tooling (knip report)
+        continue-on-error: true
+        run: pnpm run tooling:knip
+
+
       - name: KB-Daten generieren
         run: pnpm run build:kb-data
 
