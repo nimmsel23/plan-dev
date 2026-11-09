@@ -20,7 +20,7 @@ const REPO_ROOT = join(__dirname, '..');
 const EXERCISES_DIR = join(KB_DIR, 'exercises');
 const OUT_DIR = join(REPO_ROOT, 'src/lib/db/firestore');
 
-const UNREVIEWED_FILES = new Set(['unreviewed_wger.yml', 'unreviewed_yuhonas.yml']);
+const UNREVIEWED_FILES = new Set(['unreviewed_wger.yml']);
 
 // Kategorie -> Split-Bucket. Alles andere (core, strength, stretching, ...)
 // gehört zu keinem der drei Split-Tage und wird ausgelassen.
