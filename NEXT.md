@@ -2,6 +2,12 @@
 
 - [ ] `GEMINI_API_KEY` und `SYNC_TOKEN` als Actions-Secrets fuer diesen Repo-Zweig einrichten/prüfen; einen absichtlich roten Check bis zum grünen Promote/Deploy beobachten.
 
+# Catalog/Ownership (2026-11-09)
+
+- [ ] `~/dev/fitness` (KB-Git) und `fitness-dev/fitness/` Python-Fork weiter
+  nicht pflegen; langfristig Archiv/Deprecation wenn Coach-KB allein reicht.
+- [ ] Coach-dev + plan-dev Ownership-Doku committen/pushen wenn freigegeben.
+
 # NEXT.md — fitness-dev (repo-lokal)
 
 Aktive Arbeitsliste für dieses Repo. Wird vom `PreCompact`-Hook
