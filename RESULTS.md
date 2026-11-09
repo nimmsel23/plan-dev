@@ -3,8 +3,8 @@
 - Kaputte Symlinks `catalog`/`fitness_cli` + `fitnessctl*` /
   `fitness-agent.skill` / `refactor_catalog.py` →
   `archive/fitness-fork-schuld-2026-11-09/`. `fitness.ref` bleibt am Root (CI).
-- Catalog gehört Coach (`coach catalog`); siehe
-  `~/dev/coach-dev/docs/OWNERSHIP-MAP.md`.
+- Python-Catalog: Coach (`coach catalog`). YAML-KB-Daten-SOT: `~/dev/fitness`
+  (siehe `~/dev/coach-dev/docs/OWNERSHIP-MAP.md`).
 
 ## 2026-11-09 — Yuhonas-Submodul + Ownership-Klarstellung
 
