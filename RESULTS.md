@@ -1,3 +1,8 @@
+## 2026-11-09 — AL: Mehrgerät-App-Stand auf origin/dev
+
+- Offene lokale Mehrgerät-Änderung (`resolveStart`, Firestore-Guard, `updatedAt`/`expectedUpdatedAt`, Konflikt-UI) inkl. AL-LOG committed und nach `origin/dev` gepusht; `plan-client` 7/7.
+- Unangetastet: fremdes `docs/CLAUDE.md`, `archive/*`. Parallel offen: `coach-dev` `workouts.py` noch uncommitted.
+
 ## 2026-11-09 — Mehrgeräte-Startschutz + Workout-Versionskonflikt
 
 - `resolveStart` / `findUnfinishedWorkout` in `startTarget.js`: vor Create Server-Liste prüfen (resume / ACTIVE_WORKOUT / create).
