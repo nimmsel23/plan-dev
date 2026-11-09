@@ -16,8 +16,8 @@ Stand: 2026-11-09. Ehrliche Bestandsaufnahme (Repo + App), kein Wunschdenken.
 
 - Plan-Editor, ProgramEditor, RoutineBuilder, TrainingPlans, PlanFeedback
 - Als Miniapp/Overlay in Fitness; als `modules/plan` Pin in Coach
-- Yuhonas-Pin speist den **Atlas-Mirror** (aktive DB → IndexedDB am Gerät);
-  Expert-KB bleibt `kb/exercises` (Inbox-Gate) → Build-JS
+- Yuhonas-Pin für stabilen Übungsbetrieb (Pflaster); Expert-KB = `kb/exercises`
+  (Inbox-Gate) → Build-JS — Catalog nicht Plan-Kern
 - Mehrgerät: `resolveStart`, `expectedUpdatedAt`, Konflikt-UI (Nov 2026)
 
 ## Backend / Daten (bewusst fremd)
