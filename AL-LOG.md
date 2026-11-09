@@ -35,6 +35,6 @@ completed	success	PR-AutoMerge (Dependabot -> dev)	PR-AutoMerge (Dependabot -> d
 - Arbeitsbaum: 3 uncommittete Pfade
 
 _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
-- Erledigt: Mehrgerät `4d3af9f1` + AL-LOG `9b37e4c5` → `origin/dev` (`f6a478ae..9b37e4c5`); plan-client 7/7; Kette grün: Check `42587874194`, Preview `42587874150`, Auto-Promote `42587948080`, Live Deploy `42587967804`.
-- Offen/Weiter: Authentifizierte Firebase-Abnahme; `coach-dev` `fitness/api/routers/workouts.py` noch uncommitted (Server-Guard-Parität); Org-Task AutoMerge-Stabilitätswache `922f1cf0` fällig 2026-11-10; Draft-PR #43; `vos-release-pr plan`.
-- Blocker: keine. Fremdes `docs/CLAUDE.md` + `archive/*` unangetastet.
+- Erledigt: Org-Task `922f1cf0` Stabilitätswache closed — 2 grüne Tage (08.+09.11.): Auto-Promote u.a. `42445811954`/`42587948080`/`42643223616`; PR-AutoMerge schedule Mo idle-grün `42551887610`/`42608497148` (0 offene Dependabot-PRs); letzter Squash-Merge #42 `a83e332a` (07.11., CI.md 9.1/9.5).
+- Offen/Weiter: Authentifizierte Firebase-Abnahme Mehrgerät; `coach-dev` `workouts.py` uncommitted; Draft-PR #43; `vos-release-pr plan`. Org-Queue `project:plan-dev` leer.
+- Blocker: keine. `archive/*` unangetastet.
