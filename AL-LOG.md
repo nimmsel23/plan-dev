@@ -64,6 +64,6 @@ completed	success	Auto-Promote dev -> master (Check (Plan))	Auto-Promote dev -> 
 - Arbeitsbaum: sauber
 
 _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
-- Erledigt: Draft-PR #43 (Merge-Agent, veraltet `vitalos master`) per CI.md über `dev` geroutet — `38312b3d` (TARGET `master`, fitness-Stand); PR geschlossen. Kette grün: Check `42754265411`, Auto-Promote `42754339048`, Live Deploy `42754358981`, Gemini `42754339052`.
-- Offen/Weiter: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py` (nicht in plan-dev); `vos-release-pr plan`. Org-Queue `project:plan-dev` leer.
-- Blocker: keine.
+- Erledigt: `vos-release-pr plan` obsolet — kein Release-PR; `origin/dev`≡`origin/master` @ `d5f015ce` (Auto-Promote, Live Deploy `42754358981`). Shell-Pin Owner-Gate Org-Task `35b1a180` (+ceo, `vos-ship plan`; plan-app `6340baac`, ~24 hinter master). Morgen: #43 → `38312b3d` / Check `42754265411`.
+- Offen/Weiter: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py` (nicht in plan-dev); Shell-Pin `35b1a180`. Fremdes WIP `scripts/portal.mjs` (nur Format) gemeldet, unangetastet.
+- Blocker: Shell-Pin braucht Owner (`vos-ship plan`); Firebase-Abnahme braucht authentifizierte Konten.
