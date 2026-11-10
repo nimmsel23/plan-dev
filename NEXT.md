@@ -1,7 +1,7 @@
 - ~~Vite-8 Vorbeuge~~: build.target modules → Browserliste.
 - ~~Org-Task `922f1cf0` Stabilitätswache~~: 2 grüne Tage + Mo-Schedule belegt, closed 2026-11-09.
 - ~~Functions → backend~~: `onPlanPublished` SOT in `~/dev/backend/functions/fitness`; Deploy noch: `firebase deploy --only functions:fitness:onPlanPublished`.
-- Offen AL: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py`; Draft-PR #43; `vos-release-pr plan`.
+- Offen AL: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py`; `vos-release-pr plan`. ~~Draft-PR #43~~ → `38312b3d` + closed.
 # CI-Agent — offener Betriebspunkt
 
 - [ ] `GEMINI_API_KEY` und `SYNC_TOKEN` als Actions-Secrets fuer diesen Repo-Zweig einrichten/prüfen; einen absichtlich roten Check bis zum grünen Promote/Deploy beobachten.
