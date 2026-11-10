@@ -38,3 +38,32 @@ _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen sta
 - Erledigt: Org-Task `922f1cf0` Stabilitätswache closed — 2 grüne Tage (08.+09.11.): Auto-Promote u.a. `42445811954`/`42587948080`/`42643223616`; PR-AutoMerge Mo idle-grün `42551887610`/`42608497148` (0 Dependabot-PRs); Squash #42 `a83e332a`. Beleg-Push `12b89331` (+ auto RESULTS/NEXT): Check `42652399714`, Auto-Promote `42652518341`, Live Deploy `42652543602`.
 - Offen/Weiter: Authentifizierte Firebase-Abnahme Mehrgerät; `coach-dev` `workouts.py` uncommitted; Draft-PR #43; `vos-release-pr plan`. Org-Queue `project:plan-dev` leer.
 - Blocker: keine. `archive/*` unangetastet.
+
+## 2026-11-10 (Dienstag) — Abteilungsleiter-Lauf
+
+_Automatik (vos-al-log Vorlage 2026-11-10):_
+- Commits seit 2026-11-08: 60dab8fe fix(plan): static imports only — no React.lazy/dynamic import
+3ee935be fix(vite): Rolldown-safe manualChunks path normalize
+07a66ee6 chore(deps): major upgrades to React 19 / Vite 8 / Firebase 13
+4672365e chore(deps): minor/patch upgrades (age-safe pins)
+6c62e9ac chore(tooling): engines, Biome scripts-format, knip, smoke in Check
+8924a437 chore: drop Touren/Strava leftovers from Plan
+45f123e2 chore(functions): hand Cloud Functions off to backend fitness
+7f46f38a docs: auto-update NEXT.md
+8d222256 docs: auto-update RESULTS.md
+17c80be6 fix(ci): Fitness-KB Checkout mit submodules (Yuhonas vendor)
+d170043c docs: RESULTS — CI Deploy-Cleanup 2026-11-09
+d2bed028 fix(ci): Live-Deploy mountet Fitness-KB (prebuild braucht KB_DIR)
+8dcfd067 refactor(bulk): load yuhonas from vendor free-exercise-db JSON
+bdae7446 fix(api): align funnel fitness API base with :9150 serve path
+86d21c2c fix(ci): Fitness-KB aus nimmsel23/fitness mounten (nicht fitness-dev-Pin)
+- Offene PRs: 43	ci: Merge-Agent für automatische PR-Merges (kein Abweisen von PRs)	vibe/pr-merge-agent-aac181	DRAFT	2026-11-07T16:56:09Z
+- CI (letzte Läufe): completed	success	Gemini CI Agent	Gemini CI Agent	master	workflow_run	42736820439	10s	2026-11-10T01:35:10Z
+completed	success	Live Deploy (Plan master)	Live Deploy (Plan master)	master	workflow_dispatch	42736787256	1m12s	2026-11-10T01:34:54Z
+completed	success	Auto-Promote dev -> master (Check (Plan))	Auto-Promote dev -> master (Check (Plan))	master	workflow_run	42736772045	10s	2026-11-10T01:34:46Z
+- Arbeitsbaum: sauber
+
+_Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
+- Erledigt: Draft-PR #43 (Merge-Agent, veraltet `vitalos master`) per CI.md über `dev` geroutet — `38312b3d` (TARGET `master`, fitness-Stand); PR geschlossen. Kette grün: Check `42754265411`, Auto-Promote `42754339048`, Live Deploy `42754358981`, Gemini `42754339052`.
+- Offen/Weiter: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py` (nicht in plan-dev); `vos-release-pr plan`. Org-Queue `project:plan-dev` leer.
+- Blocker: keine.
