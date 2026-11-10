@@ -138,7 +138,7 @@ export default defineConfig(async ({ mode }) => {
           manualChunks(id) {
             const m = id.match(/[\\/]node_modules[\\/](?:\.pnpm[\\/][^\\/]+[\\/]node_modules[\\/])?((?:@[^\\/]+[\\/])?[^\\/]+)/)
             if (!m) return undefined
-            const pkg = m[1].replace(/\\/g, '/')
+            const pkg = m[1].split('\\').join('/')
             if (pkg === 'react' || pkg === 'react-dom' || pkg === 'scheduler') return 'react'
             if (pkg === 'lucide-react') return 'icons'
             if (pkg === 'react-body-highlighter') return 'bodymap'
