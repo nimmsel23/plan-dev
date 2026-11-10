@@ -1,3 +1,5 @@
+- 2026-11-10: chore(deps) major stack align — React 19 / Vite 8.3.6 / plugin-react 6.2.1 / Firebase 13 (age-safe pins, pnpm-workspace overrides).
+
 ## 2026-11-09 — deps: minor/patch Upgrades
 
 - `npm-check-updates --target minor` + Lockfile; `packageManager` bleibt pnpm@11.3.0; `@firebase/util` ^1.12.1.

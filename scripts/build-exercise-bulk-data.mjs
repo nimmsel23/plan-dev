@@ -4,7 +4,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import yaml from 'js-yaml'
+import * as yaml from 'js-yaml'
 import { KB_DIR } from './lib/kb-dir.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
