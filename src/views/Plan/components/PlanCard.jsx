@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Plus, Target, Trash2, CheckCircle2, Play, ChevronDown, Copy, Undo2, Pencil } from 'lucide-react';
 import { getMacrocycle, deleteMacrocycle, addRoutine, updateRoutine, deleteRoutine, getUid, publishMacrocycle, updateMacrocycle } from '@db';
 import { createPlanApi } from '../api.js';
@@ -14,8 +14,8 @@ import TemplateTargetForm from './TemplateTargetForm.jsx';
 import WeekSlider from '../../../components/WeekSlider.jsx';
 import { copyPlanToClient } from '../lib/copyPlan.js';
 import { WEEKDAY_LABELS, weekdayIndex, toggleWeekday, hasSchedule, weekGrid, todaysOpenRoutines } from '../lib/weekSchedule.js';
+import PlanFeedback from './PlanFeedback.jsx';
 
-const PlanFeedback = lazy(() => import('./PlanFeedback.jsx'));
 const cloudMode = ['firebase', 'plan', 'coach'].includes(import.meta.env.MODE);
 
 // Strong-artige Kurzvorschau: "3 Übungen · Bankdrücken, Rudern +1" (Singular/Plural korrekt).
@@ -113,7 +113,7 @@ export default function PlanCard({ plan, templates, workouts, clientUid, clients
       {canEdit && <button disabled={busy} onClick={() => setEditing(true)} className="mb-4 min-h-[48px] w-full rounded-xl bg-fit-accent p-3 text-sm font-semibold text-fit-bg"><Pencil size={16} className="mr-2 inline" />Trainingstage und Übungen bearbeiten</button>}
       {!clientUid && view.description && <p className="mb-4 whitespace-pre-wrap rounded-xl border border-fit-accent/30 bg-fit-accent/10 p-3 text-sm"><span className="mb-1 block text-xs font-semibold text-fit-accent">{fromCoach ? 'Hinweis von deinem Coach' : 'Hinweis'}</span>{view.description}</p>}
       {!clientUid && view.headVersion > 0 && <p className="mb-3 text-[11px] text-fit-muted">Version {view.headVersion}{view.headMessage ? ` · ${view.headMessage}` : ''}{detail.publishedAt ? ` · ${new Date(detail.publishedAt).toLocaleDateString('de-AT')}` : ''}</p>}
-      {cloudMode && (fromCoach || clientUid) && view.headVersion > 0 && <Suspense fallback={<p role="status">Plan-Rückmeldungen laden…</p>}><PlanFeedback key={`${uid}:${plan.id}:${view.headVersion}`} clientUid={uid} plan={clientView(detail)} coach={!!clientUid} /></Suspense>}
+      {cloudMode && (fromCoach || clientUid) && view.headVersion > 0 && <PlanFeedback key={`${uid}:${plan.id}:${view.headVersion}`} clientUid={uid} plan={clientView(detail)} coach={!!clientUid} />}
       {clientUid && <label className="mb-4 block text-xs font-semibold text-fit-muted">Hinweis für den Klienten<textarea aria-label="Hinweis für den Klienten" rows={3} maxLength={2000} placeholder="Ziel, Ablauf, worauf zu achten ist …" value={note ?? detail.description ?? ''} onChange={(e) => setNote(e.target.value)} onBlur={blurSaveNote} className="mt-1 w-full rounded-xl border border-fit-line bg-fit-bg p-3 text-sm font-normal text-fit-ink" /></label>}
       {clientUid && <PlanVersions plan={detail} uid={uid} busy={busy} onPublish={(message) => act(async () => { if (note !== null) await saveNote(); if (!await publishMacrocycle(uid, plan.id, { message, author: getUid() })) throw new Error('Bereitstellen fehlgeschlagen.'); await load(); onReload?.(); })} onRestored={() => { load(); onReload?.(); }} />}
       {clientUid && detail.status !== 'draft' && <button disabled={busy} onClick={() => { if (confirm('Plan zurück in den Entwurf setzen? Der Klient sieht ihn dann nicht mehr.')) act(async () => { if (!await updateMacrocycle(uid, plan.id, { status: 'draft' })) throw new Error('Zurückziehen fehlgeschlagen.'); await load(); onReload?.(); }); }} className="mb-3 flex items-center gap-1.5 text-xs text-fit-muted underline"><Undo2 size={13} /> Zurück in den Entwurf setzen</button>}

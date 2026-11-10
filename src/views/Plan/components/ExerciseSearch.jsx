@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { Search, X, Info, Plus, Check } from 'lucide-react';
-const defaultSearch = async (q) => (await import('../api.js')).api.get(`/exercises?q=${encodeURIComponent(q)}&limit=80`);
+import { api } from '../api.js';
 import { muskelDe } from '../../../lib/kb/muscles.js';
 import ExercisePhotoStrip from '../../../components/ExercisePhotoStrip.jsx';
 import CatalogDetail from './CatalogDetail.jsx';
+
+const defaultSearch = async (q) => api.get(`/exercises?q=${encodeURIComponent(q)}&limit=80`);
 
 export default function ExerciseSearch({ onAdd, exclude = [], searchExercises = defaultSearch, resetKey }) {
   const [q, setQ] = useState('');

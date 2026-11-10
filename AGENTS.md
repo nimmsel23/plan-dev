@@ -55,6 +55,10 @@ Kein zweiter Editor in Coach; kein Local-Backend-Ausbau in plan-dev.
 Planbezogene Empfangsbestätigung und Feedback: `src/views/Plan/components/PlanFeedback.jsx`;
 Vertrag: [docs/PLAN-FEEDBACK.md](docs/PLAN-FEEDBACK.md). Rules-Owner: VitalOS.
 
+**Keine Dynamic Imports** (Owner 2026-11-10, gilt auch weil Fitness diesen Code
+einbindet): kein `React.lazy` / `import()` für Views oder API — immer statisch.
+Sonst stirbt der Plan-Tab in Fitness am Vite-Preload-Marker.
+
 ## Org-Taskwarrior (global) — gilt fuer alle Agenten der VitalOS-Org
 
 Verbindlich fuer alle Agenten (Vibe, Claude, Codex, Gemini) in Org-Kontexten
