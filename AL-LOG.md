@@ -64,6 +64,6 @@ completed	success	Auto-Promote dev -> master (Check (Plan))	Auto-Promote dev -> 
 - Arbeitsbaum: sauber
 
 _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
-- Erledigt: `vos-release-pr plan` obsolet — kein Release-PR; `origin/dev`≡`origin/master` @ `d5f015ce` (Auto-Promote, Live Deploy `42754358981`). Shell-Pin Owner-Gate Org-Task `35b1a180` (+ceo, `vos-ship plan`; plan-app `6340baac`, ~24 hinter master). Morgen: #43 → `38312b3d` / Check `42754265411`.
+- Erledigt: `vos-release-pr plan` obsolet — kein Release-PR; Shell-Pin Owner-Gate Org-Task `35b1a180` (+ceo, `vos-ship plan`; plan-app `6340baac`, ~24 hinter master). Beleg-Push `821d37e6`: Check `42852421869`, Auto-Promote `42852632985`, Live Deploy `42852665395` (`origin/dev`≡`origin/master`). Morgen: #43 → `38312b3d`.
 - Offen/Weiter: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py` (nicht in plan-dev); Shell-Pin `35b1a180`. Fremdes WIP `scripts/portal.mjs` (nur Format) gemeldet, unangetastet.
 - Blocker: Shell-Pin braucht Owner (`vos-ship plan`); Firebase-Abnahme braucht authentifizierte Konten.
