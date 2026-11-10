@@ -1,5 +1,7 @@
 # 2026-11-10
 
+- AL (Abend): `vos-release-pr plan` geschlossen/obsolet — kein offener Release-PR, `origin/dev`≡`origin/master` @ `d5f015ce`. Shell-Pin eskaliert Org-Task `35b1a180` (+ceo): plan-app Pin `6340baac` (~24 hinter master) → Owner `vos-ship plan`. Fremdes WIP `scripts/portal.mjs` unangetastet.
+
 - AL: Draft-PR #43 (Merge-Agent) über `dev` geroutet — `38312b3d` (`TARGET_BRANCHES: master`); PR closed. Check `42754265411`, Auto-Promote `42754339048`, Live Deploy `42754358981`.
 
 - Vite 8: manualChunks function form for Rolldown.
