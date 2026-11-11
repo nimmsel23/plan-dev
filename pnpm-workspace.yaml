@@ -18,3 +18,4 @@ overrides:
   "framer-motion": "14.10.1"
   "@firebase/util": "^1.12.1"
   "@grpc/grpc-js@<1.13.6": "^1.14.6"
+  "minimatch@>=7.0.0 <11.0.1": "^11.0.1"
