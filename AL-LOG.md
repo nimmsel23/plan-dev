@@ -96,3 +96,4 @@ _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen sta
 - Erledigt: Shell-Pin Org-Task `35b1a180` closed — Meta plan-app `b0d44d47` ≡ tip (vitalos `a6c53d9`); Beleg `ab8c9899` → Check `43056125626`, Auto-Promote `43056271994`, Live Deploy `43056296727`. Org-Queue leer.
 - Offen/Weiter: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py` (nicht plan-dev). Fremdes WIP `scripts/portal.mjs`/`docs/apps.*` unangetastet. Hinweis CTO: Deploy VitalOS Shell rot seit `a6c53d9` (`42992634220` u.a.).
 - Blocker: Firebase-Abnahme braucht authentifizierte Konten.
+- AUTOMATION: Shell-Pin Meta `ls-tree origin/master plan-app` vs plan `origin/master` manuell — Einzeiler/`vos-overview plan` im AL-Einstieg — ~3–5 min/Lauf.
