@@ -93,6 +93,6 @@ completed	success	Merge-Agent	Merge-Agent	master	schedule	42931856848	7s	2026-11
 - Arbeitsbaum: 1 uncommittete Pfade
 
 _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
-- Erledigt: CI-Secrets-Check — `GEMINI_API_KEY` + `SYNC_TOKEN` gesetzt; NEXT CI-Agent geschlossen (`3742fbc6`/`5f4552e4`/`75c7478f`). Kette: Check `42957852259`, Auto-Promote `42957955605`, Live Deploy `42957971123` (`origin/dev`≡`origin/master`). Org-Task `35b1a180` annotiert (Pin `6340baac` vs master jetzt Tip).
-- Offen/Weiter: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py` (nicht plan-dev); Shell-Pin Org-Task `35b1a180` (Meta-Pin `6340baac`, ~28 hinter master). Fremdes WIP `scripts/portal.mjs` unangetastet.
-- Blocker: Shell-Pin braucht Owner (`vos-ship plan`, +ceo); Firebase-Abnahme braucht authentifizierte Konten.
+- Erledigt: Shell-Pin Org-Task `35b1a180` closed — Meta `origin/master` plan-app `b0d44d47` ≡ plan `origin/master`/`origin/dev` (Bump vitalos `a6c53d9`, 6340baac→b0d44d47); `vos-ship` obsolet. Org-Queue `project:plan-dev` leer.
+- Offen/Weiter: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py` (nicht plan-dev). Fremdes WIP `scripts/portal.mjs`/`docs/apps.*` unangetastet. Hinweis CTO: Deploy VitalOS Shell rot seit `a6c53d9` (`42992634220` u.a.).
+- Blocker: Firebase-Abnahme braucht authentifizierte Konten.
