@@ -234,9 +234,9 @@ Firestore paths remain unchanged.
 PlanEditor now requires an explicit saveDraft callback and accepts actorUid and
 catalogSearch. It no longer imports auth or Firestore; PlanCard supplies its
 existing persistence and ExerciseSearch lazily loads the cloud adapter only when
-no catalog search is injected. runtime/local_plans.py owns atomic client drafts,
+no catalog search is injected. Coach's plan_runtime/local_plans.py owns atomic client drafts,
 immutable local versions, stale-write protection and Markdown export.
-runtime/plan_delivery.py publishes only an explicitly released snapshot; Coach
+Coach's plan_runtime/plan_delivery.py publishes only an explicitly released snapshot; Coach
 supplies registry location, HTTP endpoints and optional server credentials.
 ClientForge conversion is an explicit import and never overwrites its source file.
 

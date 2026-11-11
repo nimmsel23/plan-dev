@@ -16,9 +16,10 @@ nicht direkt; die Laptop-API ist eine Coach-Backdoor.
 | Yuhonas Free Exercise DB (Pin) | Plan: `vendor/free-exercise-db` + `yuhonas.ref` |
 | Zentrale Firestore-Regeln | VitalOS |
 
-**Fork-Schuld in plan-dev:** `runtime/`, `alembic/`, `db/`, Fitness-CLIs und
+**Fork-Schuld in plan-dev:** `alembic/`, `db/`, Fitness-CLIs und
 `npm start`→`plan-backend` stammen aus dem Fitness-Fork. Nicht ausbauen;
-Zielort ist `coach-dev` (Coach lädt `runtime` heute noch aus `modules/plan`).
+Zielort ist `coach-dev`. `runtime/` ist umgezogen (`coach-dev/plan_runtime/`,
+coach-dev#14) und liegt nur noch in `archive/runtime/`.
 
 Entwicklungsquelle ist `/home/alpha/plan-dev` auf `dev`. Im Coach-Repo liegt
 `modules/plan` als Submodul von `nimmsel23/plan-dev`. Der Gitlink pinnt den Code;
@@ -102,9 +103,9 @@ Isolierte Tests/Builds ersetzen keine authentifizierte Cloud- oder Geräteabnahm
 
 Coach stellt unter `http://127.0.0.1:9150/coach/local.html` denselben Editor ohne
 Firebase-Anmeldung bereit. Das ist die Coach-Backdoor: `coach_local_plans.py`
-lädt noch `modules/plan/runtime` (`local_plans.py` / `plan_delivery.py`). Besitz
-und Weiterentwicklung dieses Backends liegen bei Coach; Plan hält die Dateien
-nur, bis der Umzug nach `coach-dev` erledigt ist. Klientenwurzel: klienten-python.
+lädt die Coach-eigene `plan_runtime/` (`local_plans.py` / `plan_delivery.py`).
+Besitz und Weiterentwicklung dieses Backends liegen bei Coach; plan-dev hält
+nur noch das Archiv `archive/runtime/`. Klientenwurzel: klienten-python.
 Details: `coach-dev/docs/LOCAL-PLANNING.md`.
 
 ## Yuhonas-Pin
