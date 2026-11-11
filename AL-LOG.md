@@ -67,3 +67,32 @@ _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen sta
 - Erledigt: `vos-release-pr plan` obsolet — kein Release-PR; Shell-Pin Owner-Gate Org-Task `35b1a180` (+ceo, `vos-ship plan`; plan-app `6340baac`, ~24 hinter master). Beleg-Push `821d37e6`: Check `42852421869`, Auto-Promote `42852632985`, Live Deploy `42852665395` (`origin/dev`≡`origin/master`). Morgen: #43 → `38312b3d`.
 - Offen/Weiter: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py` (nicht in plan-dev); Shell-Pin `35b1a180`. Fremdes WIP `scripts/portal.mjs` (nur Format) gemeldet, unangetastet.
 - Blocker: Shell-Pin braucht Owner (`vos-ship plan`); Firebase-Abnahme braucht authentifizierte Konten.
+
+## 2026-11-11 (Mittwoch) — Abteilungsleiter-Lauf
+
+_Automatik (vos-al-log Vorlage 2026-11-11):_
+- Commits seit 2026-11-08: 73ca7bfb docs(al-log): AL-Lauf 2026-11-10 Abend — CI-Kette nach vos-release-pr-Klärung
+821d37e6 docs(al-log): AL-Lauf 2026-11-10 Abend — vos-release-pr obsolet, Shell-Pin 35b1a180
+a45ebff8 docs: auto-update RESULTS.md
+832e9d3e docs: auto-update NEXT.md
+d5f015ce docs(al-log): AL-Lauf 2026-11-10 — Merge-Agent #43 via 38312b3d
+4a6a0c30 docs: auto-update NEXT.md
+38312b3d ci: Merge-Agent auf dev (TARGET master, Shell-Pin-konform)
+60dab8fe fix(plan): static imports only — no React.lazy/dynamic import
+3ee935be fix(vite): Rolldown-safe manualChunks path normalize
+07a66ee6 chore(deps): major upgrades to React 19 / Vite 8 / Firebase 13
+4672365e chore(deps): minor/patch upgrades (age-safe pins)
+6c62e9ac chore(tooling): engines, Biome scripts-format, knip, smoke in Check
+8924a437 chore: drop Touren/Strava leftovers from Plan
+45f123e2 chore(functions): hand Cloud Functions off to backend fitness
+7f46f38a docs: auto-update NEXT.md
+- Offene PRs: (keine offenen PRs / gh nicht verfuegbar)
+- CI (letzte Läufe): completed	success	Auto-Promote dev -> master (Check (Plan))	Auto-Promote dev -> master (Check (Plan))	master	schedule	42942597582	10s	2026-11-11T01:57:17Z
+completed	success	PR-AutoMerge (Dependabot -> dev)	PR-AutoMerge (Dependabot -> dev)	master	schedule	42937225423	6s	2026-11-11T01:12:27Z
+completed	success	Merge-Agent	Merge-Agent	master	schedule	42931856848	7s	2026-11-11T00:30:15Z
+- Arbeitsbaum: 1 uncommittete Pfade
+
+_Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
+- Erledigt: CI-Secrets-Check — `GEMINI_API_KEY` + `SYNC_TOKEN` in `nimmsel23/plan-dev` gesetzt (`gh secret list`); Merge-Agent schedule `42931856848` grün. NEXT CI-Agent-Punkt geschlossen (`3742fbc6`/`5f4552e4`). Tagesinventur: Check-dev zuletzt `42853083635` grün; Auto-Promote schedule `42942597582` grün; `origin/dev`≡`origin/master` @ `73ca7bfb` (vor diesem Push).
+- Offen/Weiter: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py` (nicht plan-dev); Shell-Pin Org-Task `35b1a180` (Meta-Pin `6340baac` → `origin/master` `73ca7bfb`, ~28 Commits). Fremdes WIP `scripts/portal.mjs` unangetastet.
+- Blocker: Shell-Pin braucht Owner (`vos-ship plan`, +ceo); Firebase-Abnahme braucht authentifizierte Konten.
