@@ -93,6 +93,6 @@ completed	success	Merge-Agent	Merge-Agent	master	schedule	42931856848	7s	2026-11
 - Arbeitsbaum: 1 uncommittete Pfade
 
 _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
-- Erledigt: CI-Secrets-Check — `GEMINI_API_KEY` + `SYNC_TOKEN` in `nimmsel23/plan-dev` gesetzt (`gh secret list`); Merge-Agent schedule `42931856848` grün. NEXT CI-Agent-Punkt geschlossen (`3742fbc6`/`5f4552e4`). Tagesinventur: Check-dev zuletzt `42853083635` grün; Auto-Promote schedule `42942597582` grün; `origin/dev`≡`origin/master` @ `73ca7bfb` (vor diesem Push).
-- Offen/Weiter: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py` (nicht plan-dev); Shell-Pin Org-Task `35b1a180` (Meta-Pin `6340baac` → `origin/master` `73ca7bfb`, ~28 Commits). Fremdes WIP `scripts/portal.mjs` unangetastet.
+- Erledigt: CI-Secrets-Check — `GEMINI_API_KEY` + `SYNC_TOKEN` gesetzt; NEXT CI-Agent geschlossen (`3742fbc6`/`5f4552e4`/`75c7478f`). Kette: Check `42957852259`, Auto-Promote `42957955605`, Live Deploy `42957971123` (`origin/dev`≡`origin/master`). Org-Task `35b1a180` annotiert (Pin `6340baac` vs master jetzt Tip).
+- Offen/Weiter: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py` (nicht plan-dev); Shell-Pin Org-Task `35b1a180` (Meta-Pin `6340baac`, ~28 hinter master). Fremdes WIP `scripts/portal.mjs` unangetastet.
 - Blocker: Shell-Pin braucht Owner (`vos-ship plan`, +ceo); Firebase-Abnahme braucht authentifizierte Konten.
