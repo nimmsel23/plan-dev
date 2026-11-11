@@ -1,5 +1,7 @@
 # 2026-11-11
 
+- AL (Abend): Shell-Pin Org-Task `35b1a180` closed — Meta `origin/master` plan-app `b0d44d47` ≡ plan `origin/master`/`dev` (Bump vitalos `a6c53d9`, 6340baac→b0d44d47); `vos-ship` nicht nötig. Org-Queue `project:plan-dev` leer. Fremdes WIP `scripts/portal.mjs`/`docs/apps.*` unangetastet. Hinweis: Deploy VitalOS Shell rot seit `a6c53d9` (`42992634220`) → CTO.
+
 - AL: CI-Secrets-Abgleich — `GEMINI_API_KEY` (seit 2026-11-07) + `SYNC_TOKEN` (seit 2026-11-09) in `nimmsel23/plan-dev` gesetzt; Merge-Agent schedule `42931856848` grün. NEXT CI-Agent-Punkt geschlossen. Shell-Pin `35b1a180` weiter +ceo (Meta-Pin `6340baac`, `origin/master` `73ca7bfb`, ~28 hinter). Fremdes `scripts/portal.mjs` unangetastet.
 
 # 2026-11-10
