@@ -1,5 +1,7 @@
 # Plan development and Fitness integration
 
+**Simplicity (Owner 2026-11-11):** So simpel wie möglich. Ausnahme nur `vitalos/prod`. CI-Spine: Check → automerge-pr → automerge → Deploy (CI.md §1).
+
 - Scoped fertige Arbeit: **immer committen** (nicht auf explizites „commit“ warten).
 - `~/plan-dev` on `dev` is the canonical working checkout for the Plan mini-app —
   die **Brücke** zwischen Fitness-Klient und Coach, kein eigenes Local-Backend.
