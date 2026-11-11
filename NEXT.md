@@ -4,7 +4,7 @@
 - Offen AL: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py`. ~~Draft-PR #43~~ → `38312b3d` + closed. ~~`vos-release-pr plan`~~ obsolet (`origin/dev`≡`origin/master` @ `d5f015ce`, Auto-Promote). Shell-Pin Owner: Org-Task `35b1a180` (`vos-ship plan`, plan-app @ `6340baac`, ~24 hinter master).
 # CI-Agent — offener Betriebspunkt
 
-- [ ] `GEMINI_API_KEY` und `SYNC_TOKEN` als Actions-Secrets fuer diesen Repo-Zweig einrichten/prüfen; einen absichtlich roten Check bis zum grünen Promote/Deploy beobachten.
+- [x] `GEMINI_API_KEY` und `SYNC_TOKEN` als Actions-Secrets prüfen — beide gesetzt (`gh secret list`, Stand 2026-11-11); Merge-Agent schedule grün `42931856848`, kein absichtlicher Rot-Test nötig.
 
 # Catalog/Ownership (2026-11-09)
 
