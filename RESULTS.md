@@ -1,3 +1,7 @@
+# 2026-11-11
+
+- AL: CI-Secrets-Abgleich — `GEMINI_API_KEY` (seit 2026-11-07) + `SYNC_TOKEN` (seit 2026-11-09) in `nimmsel23/plan-dev` gesetzt; Merge-Agent schedule `42931856848` grün. NEXT CI-Agent-Punkt geschlossen. Shell-Pin `35b1a180` weiter +ceo (Meta-Pin `6340baac`, `origin/master` `73ca7bfb`, ~28 hinter). Fremdes `scripts/portal.mjs` unangetastet.
+
 # 2026-11-10
 
 - AL (Abend): `vos-release-pr plan` geschlossen/obsolet — kein offener Release-PR, `origin/dev`≡`origin/master` @ `d5f015ce`. Shell-Pin eskaliert Org-Task `35b1a180` (+ceo): plan-app Pin `6340baac` (~24 hinter master) → Owner `vos-ship plan`. Fremdes WIP `scripts/portal.mjs` unangetastet.
