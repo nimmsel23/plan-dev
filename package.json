@@ -74,7 +74,9 @@
     "@firebase/rules-unit-testing": "^6.0.0",
     "@tailwindcss/postcss": "^4.3.5",
     "@vitejs/plugin-react": "6.2.1",
+    "acorn": "^8.19.0",
     "autoprefixer": "^10.6.2",
+    "esbuild": "^0.28.2",
     "eslint": "^10.14.0",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^17.14.0",
@@ -89,6 +91,5 @@
   },
   "engines": {
     "node": ">=22.13"
-  },
-  "optionalDependencies": {}
+  }
 }
