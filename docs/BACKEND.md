@@ -172,3 +172,14 @@ Node-Routen hatten ein verifiziertes 1:1-Pendant. Details + Kontext zur
 laufenden "server.mjs → Frontend-only"-Migration: Claude-Memory
 `project_server_mjs_frontend_only_migration`. Stand 2026-08-31: bewusst
 noch nicht gefixt.
+
+## Destillat aus der RESULTS.md (2026-11-12)
+
+Kurzfassung dauerhaft relevanten Wissens aus dem früheren Arbeitslog, thematisch einsortiert vom thin-results-Dienst.
+
+## Parität und Proxy-Stand (2026-08-31 bis 2026-09-05)
+
+- Die Node-Routen wurden gegen `fitness/api/routers/*.py` abgeglichen. Eine Route hat kein Python-Gegenstück: `GET/POST /fitness/coach/habit-cycle/:clientUid`. Diese Lücke ist offen.
+- Die Proxy-Routen `/fitness/coach/macrocycles/*` sind in `server.mjs` ergänzt. Der Python-Router war bereits vollständig. Dadurch funktioniert der Makrozyklus auch im lokalen Dev-Server.
+- Inbox-Proxies: `reenrich`, `link-source`, `duplicates`, `merge-duplicates`, `merge-candidates`. Die CORS-Antwort setzt Methods und Headers, damit JSON-POST-Preflights durchgehen.
+- Swagger/OpenAPI: Routen laufen über `OpenAPIHono` und `createRoute()`. Hilfsfunktionen sind `defineJsonRoute()` und `looseObjectSchema`. Plain Hono bleibt nur für `/openapi.json`, `/docs` und den SPA-Fallback.

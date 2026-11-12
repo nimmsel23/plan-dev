@@ -355,3 +355,44 @@ phasen-angepasste Vorgabe (5→3 Sätze, RIR 2→4), freie Einheitenwahl, „Mit
 kein horizontaler Überlauf, keine Browserfehler. Seit dem Nachtrag auch im Browser: „Wie letztes Mal übernehmen“ (echte `ExerciseCard`, füllt nur leere Felder). Zusätzlich im Browser: TemplateLauncher gegen das Test-Backend (Vorlage anlegen, listen, Entwurf bauen). Weiter nur Unit-getestet: (früher) im
 `ExerciseCard`, Einfügen in eine bestehende Tages-Session (`useSession`) – dafür müsste der Harness den gesamten Session-Editor mit
 Session-Backend mounten.
+
+## Destillat aus der RESULTS.md (2026-11-12)
+
+Kurzfassung dauerhaft relevanten Wissens aus dem früheren Arbeitslog, thematisch einsortiert vom thin-results-Dienst.
+
+## Mehrgeräte-Start und Konfliktschutz (2026-11-09)
+
+- `resolveStart` und `findUnfinishedWorkout` (`startTarget.js`) prüfen vor dem Anlegen die Server-Liste: Fortsetzen, `ACTIVE_WORKOUT` oder Neuanlage.
+- `startWorkout.js` nutzt die Server-Liste auch ohne lokalen Zeiger. Firestore-`createWorkout` und Python-`POST /workouts` (coach-dev) erzwingen dieselbe Regel.
+- Satz-Patches tragen `expectedUpdatedAt`. Bei Konflikt kommt `WORKOUT_CONFLICT`. Die UI bietet „Lokal übernehmen“ oder „Remote laden“ (`WorkoutSession`).
+- Bekannte Lücke: Ein enges Create-Race bleibt, wenn zwei gleichzeitige Antworten eine leere Liste liefern.
+- Tests: `plan-client.test.mjs` (7/7).
+
+## Lokale Planablage, Freigabe und Import (2026-10-31 bis 2026-11-01)
+
+- Der Editor ist von Firebase entkoppelt. Speicher- und Suchanbindung werden injiziert. Die lokale Planablage schreibt atomar, legt Versionssnapshots an und schützt vor Konflikten.
+- Auslieferung nur über ausdrückliche lokale Freigabe, nie über den ungesicherten Entwurf. Die Vorprüfung nennt betroffene Trainingstage und Übungen. Leere Satzlisten gelten als „Vorgaben offen“ und bleiben unvollständig. Nichts wird automatisch ergänzt.
+- Testimport alter Pläne: Unvollständige Übungsvorgaben bleiben offen, ohne erfundene Standardsätze. Pausen bleiben als Text sichtbar.
+- ClientForge-Import und Markdown-Export erhalten bestehende Quellen. Idempotenz und Schutz fremder Zielpläne sind in `runtime/test_plan_delivery.py` getestet.
+- Veröffentlichte Versionen und Trainingshistorie sind eigenständige Snapshots.
+
+## Editor-Ownership, Dokument und Muskelbezug (2026-10-30 bis 2026-11-01)
+
+- Plan besitzt die Programmkomposition und den mobilen Editor (`ProgramEditor`), den Coach mitnutzt. Neue Pläne speichern Übungs-Snapshots direkt. Alte Vorlagenreferenzen bleiben lesbar. Die Publikation läuft transaktional. Entwurfsspeicherung lehnt veraltete Arbeitskopien ab.
+- `PlanDocument`: strukturierte Tagesblätter mit Satz-, Wiederholungs-, Gewichts- und Pausenspalten. Warm-up und Finisher sind getrennt. Drucken bzw. PDF läuft über ein isoliertes A4-Dokument. Die Vorschau nutzt dieselbe Darstellung.
+- Workout-Highlighter und Ausführung nutzen die vorhandenen Adapter. Muskelrollen werden nie aus Übungsnamen abgeleitet.
+
+## Rückmeldung am Plan (2026-11-01)
+
+- `PlanFeedback` mit Host-Firebase-Adapter. `planResponses` ist versiongebunden.
+- Der Klient bestätigt den Empfang ausdrücklich. Die Bestätigung ist unveränderlich und trägt die Serverzeit. Der Coach antwortet am selben Plan. Eine Coach-Bestätigung gibt es nicht. Details: `docs/PLAN-FEEDBACK.md`.
+- `PlanDeliveryOverview` zeigt Entwürfe, bereitgestellte Pläne, Empfang und offenen Antwortbedarf. Der Store wartet auf beide Listener, bevor er Statusaussagen trifft.
+
+## Fälligkeit und Lesebestätigung (Plan-Tab, 2026-10-23)
+
+- Fälligkeitsfenster ±24 h (`lib/occurrences.js`): ab dem Vortag möglich, am Tag fällig, danach offen oder überfällig. Es gibt kein „verpasst“. Offenes bleibt offen. Zusatztraining holt das älteste offene Vorkommen nach. Backlog bis 28 Tage (`BACKLOG_DAYS`) bzw. ab Veröffentlichung.
+- Lesebestätigung: Der Klient legt je Version einmalig ein unveränderliches Receipt an. Der Coach sieht „gelesen“ bzw. „noch nicht gelesen“ im Versionspanel.
+
+## Shell-Übernahme (2026-10-16)
+
+- Einklappbare Desktop-Sidebar, Safe-Area-Header, mobile Navigation mit vier Plan-Tabs plus Mehr. Defaults sind vital bzw. vital-light. Akzentbuttons nutzen den Theme-Kontrast.

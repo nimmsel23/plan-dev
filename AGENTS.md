@@ -91,3 +91,13 @@ Verbindlich fuer alle Agenten (Vibe, Claude, Codex, Gemini) in Org-Kontexten
 8. Uebersicht/Rang: `TASKRC=~/.local/state/vitalos-org/taskrc \
    ~/.org/venv/bin/python ~/aos/bin/aos door plan quadrants --json`
    (Eisenhower-Sicht Q1–Q4).
+
+## Destillat aus der RESULTS.md (2026-11-12)
+
+Kurzfassung dauerhaft relevanten Wissens aus dem früheren Arbeitslog, thematisch einsortiert vom thin-results-Dienst.
+
+## Branch- und Merge-Regeln (Stand 2026-11-10)
+
+- Shell-Pins zeigen auf `origin/master`. Arbeitsbranch ist `dev`. Der Weg ist `dev` → `master` (Auto-Promote). Danach pinnt `vos-release` bzw. `vos-ship` `origin/master` und bumpt den Meta-Pointer.
+- CI: Kein Auto-Vorspulen von `vitalos`. Der Merge-Agent arbeitet nur auf `master`. PR-Checks laufen auf `[master, dev]`.
+- Draft-PRs gegen `dev` sind falsch geroutet, wenn `TARGET_BRANCHES` nur `master` enthält. Vorfall: PR #43, 2026-11-10. Vor dem Öffnen den Zielbranch prüfen.

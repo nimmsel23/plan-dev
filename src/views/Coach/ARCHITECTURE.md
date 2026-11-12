@@ -49,3 +49,13 @@ Command Center für Coach-seitige Exercise-Freigabe, Klienten-Betreuung und Kata
 - **Feedback**: `saveCoachFeedback()` speichert Kommentare direkt in der entsprechenden Klienten-Dokument-Referenz.
 - **Katalog**: `searchExercises()`, `getAnatomy()`, `saveExercise()` arbeiten direkt mit `fitness/kb/exercises` und `fitness/kb/anatomy`.
 - **Plan-Zuweisung**: `assignPlanToClient(coachUid, clientUid, plan)` — Firestore schreibt per `setDoc` (merge) auf `fitness/{clientUid}/wf_workouts/{planId}` (neue ID via `doc(collection(...)).id` falls `plan.id` fehlt); Local-Build ruft `POST /fitness/coach/plans/:clientUid` (`server.mjs`) auf, das nach `~/.aos/fitness/users/<clientUid>/plans/<planId>.json` schreibt. Beide Backends teilen sich dieselbe Funktionssignatur (`src/lib/db/{firestore,local}/assignedPlans.js`). Klienten-seitiges Abarbeiten des zugewiesenen Plans läuft außerhalb dieses View-Ordners in `src/views/Plan/AssignedPlans.jsx` (Training-Tab, kein eigener Coach-Unterpunkt).
+
+## Destillat aus der RESULTS.md (2026-11-12)
+
+Kurzfassung dauerhaft relevanten Wissens aus dem früheren Arbeitslog, thematisch einsortiert vom thin-results-Dienst.
+
+## Design „Hidden Chamber“ (2026-08-31)
+
+- Die Farbwerte liegen in `src/styles/coach-console.css`, scoped unter `.coach-console`. Sie überschreiben die bestehenden `fit-*`-Custom-Properties. Komponenten wurden deshalb nicht einzeln umgebaut.
+- Die Theme-Klasse sitzt auf dem `app-shell`-Container und nur bei `tab === 'coach'`. Sonst bliebe die Sidebar im alten Theme.
+- Exercise-Requests erscheinen als Karten-Grid (`cc-card-grid`) mit farbigen Ghost-Buttons. Katalog-Browser und Klienten-Panel nutzen `cc-panel` bzw. `cc-dossier`.

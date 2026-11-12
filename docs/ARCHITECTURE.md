@@ -520,3 +520,22 @@ Das Projekt nutzt eine **Safe-Production-Pipeline**, um Entwicklung und Releases
 *   `npm run build:firebase`: Cloud-Build mit Firestore-Mapping, Output nach `../fitness/dist-firebase`.
 *   `npm run preview-firebase`: Build + Erstellung einer 1-Stunden-Preview-URL.
 *   `npm run deploy-firebase`: Build + Live-Release (Hosting + Firestore Rules/Indexes).
+
+## Destillat aus der RESULTS.md (2026-11-12)
+
+Kurzfassung dauerhaft relevanten Wissens aus dem früheren Arbeitslog, thematisch einsortiert vom thin-results-Dienst.
+
+## Ownership, Quellen, Stack und PWA (Stand 2026-11-12)
+
+- Plan ist die Brücke Fitness↔Coach und baut kein Local-Backend aus. Schmiede und Laptop-Backdoor gehören zu Coach. Fork-Reste (`runtime/`, alembic, fitnessctl u. a.) sind dokumentierte Schuld, siehe AGENTS.md und PLAN-COACH-INTEGRATION.md.
+- Cloud Functions: `onPlanPublished` liegt in der Backend-Codebase `fitness` (`~/dev/backend/functions/fitness`). Das lokale `functions/` enthält nur `MIGRATED.md`. `firebase.json` hat keinen functions-Block.
+- Strava ist keine Plan-Sache. Radtouren leben in der Fitness-PWA bzw. im Backend. Cardio-Logging in der Session bleibt erhalten.
+- KB-Quelle: Die YAML-KB-Daten-SOT ist das separate Repo `nimmsel23/fitness` (lokal `~/dev/fitness`). `scripts/lib/kb-dir.mjs` sucht Kandidaten inklusive `../fitness-app/fitness/catalog/kb` (Shell-CI/Meta-Checkout) und `../../fitness/catalog/kb` (Coach-Checkout).
+- Yuhonas: `vendor/free-exercise-db` ist ein flaches Submodul mit Pin (`yuhonas.ref`, `src/lib/yuhonas.pin.js`). CDN-Bilder werden am Commit gepinnt, nicht an `@main`. Sync per `node scripts/sync-yuhonas-pin.mjs`.
+- Stack: React 19, Vite 8.3.6, plugin-react 6.2.1, Firebase 13 (pnpm-workspace-overrides), `packageManager` pnpm@11.3.0, `engines.node >=22.13`. Scripts `tooling:biome|knip|check`. Der Check-Workflow prüft Biome-Format auf `scripts/`, knip läuft als Report mit `continue-on-error`. `@originjs/vite-plugin-federation` und `dist-federation/` sind entfernt.
+- PWA/Service Worker: Splash, SW und Register stammen aus `@vos/mini-app-shell`. Die SSOT liegt in `~/vitalos/packages/mini-app-shell`. Die Kopie unter `scripts/mini-app-shell/` nicht editieren. Sync: `node ~/vitalos/packages/mini-app-shell/cli.mjs vendor scripts/mini-app-shell [--check]`, Konfiguration in `mini-app.json`. Der Cache ist pro Build versioniert (`vos-plan-v<build>`), der Dateiname bleibt `plan-sw.js`.
+- Offline-Cache: Der API-Cache ist versionsunabhängig und migriert. Asset-Precache ist standardmäßig aktiv. Eine fehlgeschlagene Installation ersetzt den laufenden Worker nicht. IndexedDB und localStorage bleiben unberührt.
+- Splash blockiert nicht auf ein SW-Update. Er verschwindet nach dem App-Start, mindestens nach 200 ms und höchstens nach 12 s, nur falls der App-Root nicht bereit wird.
+- Session-Konfliktmodell, vierte Schicht: Der Frontend-Runtime-Draft (localStorage, `sessionRuntimeStore.js`) gewinnt, bis ein Save bestätigt ist. Das ist reiner Zeit-Vorrang, bewusst ohne rev-Vergleich, damit Reload oder Offline nie wie Datenverlust wirkt.
+- Coach-Inbox local-first: Die Firebase-Inbox liest zuerst den lokalen Server `LOCAL_FITNESS_API_BASE`. Auflösung: localStorage `fitness-local-api-base`, dann `VITE_LOCAL_FITNESS_API_BASE`, dann der Funnel-Default, sonst `http://127.0.0.1:6100/fitness`. Firestore dient nur als Cache bzw. Offline-Warteschlange (`sync_status: pending_local`). Freigabe und Reenrich laufen ausschließlich lokal, ohne Cloud-Fallback, damit keine Expert-Einträge ohne YAML-Herkunft entstehen.
+- Build-Grenze: Der Fitness-Build importiert keine Fuel-Module. `UserProfile` nutzt den Fitness-`UserContext`. Die alten Fuel-History-Exports sind leere Stubs.

@@ -122,3 +122,30 @@ Kein Zeit-Debounce mehr (seit 2026-07). `scheduleAutoSave()` setzt nur das `dirt
   ]
 }
 ```
+
+## Destillat aus der RESULTS.md (2026-11-12)
+
+Kurzfassung dauerhaft relevanten Wissens aus dem früheren Arbeitslog, thematisch einsortiert vom thin-results-Dienst.
+
+## Datenvertrag und Stolpersteine (2026-07 bis 2026-09)
+
+- `GET /sessions` liefert volle Session-Objekte (`sessionMode`, `activity`, `effort`, `exercises`), nicht nur Metadaten. Sonst lädt der Editor leer und überschreibt beim nächsten Save (Datenverlust-Vorfall 2026-07-12). Gilt für `server.mjs`, `fitness/catalog/api/api.py` und das Firestore-Pendant `listSessionsForDate`.
+- Dirty-Flush: `flushDirty()` läuft vor Datumswechsel (`changeDate`), Session-Wechsel (`selectSession`), neuem Workout und beim Unmount. `handleDeleteSession` setzt `setDirty(false)`, sonst legt der Flush die gelöschte Session wieder an.
+- `savingRef`-Guard: Der Draft-Effect setzt `syncState` nicht zurück, während ein Save läuft.
+- Datumsbindung: Gate und Coach-Habit-Screen (`TodayPlan.jsx`) erscheinen nur bei `date === localToday()`. Die Ursache des hängenden Oktober-Datums war, dass `isTodayTab` nur `subTab` prüfte. Bei Datums-Deep-Links ist `subTab` leer.
+- Kraft/Ausdauer-Wechsel: Enthält die offene Session bereits Übungen oder Aktivität, legt `switchSessionMode` eine neue Session an (`sessionHasLoggedWorkout()`). Nur eine leere Session wechselt in place.
+- Datenfelder: RPE als Top-Level `effort`, Ort als `location`, Dauer als `duration`. Nie in `notes` packen. CLI: `fitness-log add --effort`, `--location`, `--duration`.
+- Multi-Session: SQLite-Spalte `session_id`. Firestore-Pfad `sessions/{date}__{id}`. `sync.py` parst die Suffixe. Das Tages-Markdown bleibt bei `YYYY-MM-DD.md`.
+- `moveSessionToDate` muss `sessionId` an `saveSession` und `deleteSession` weitergeben. Sonst werden benannte Zusatz-Sessions dupliziert statt verschoben.
+- Bekannte Grenze: `moveSessionToDate` kann die Hauptsession des Zieldatums überschreiben und lässt bei Multi-Session-Tagen Suffix-Sessions als Waisen zurück (Stand 2026-07-12).
+
+## Aufteilung und Bedienung (2026-09-05 bis 2026-09-24)
+
+- `useSession.js` koordiniert Mini-Hooks: `useSessionHistory`, `useSessionRuntimeSync`, `useSessionCrud`, `useSessionExport`, `useExerciseList`, `useSessionActivity`, `useSessionSlots`, `useSessionGateController`. Der Rückgabevertrag bleibt stabil.
+- `SessionModalsLayer.jsx` führt einen `activeModal`-State (`null` | `sidebar` | `settings` | `gate`).
+- `ActivityAddon` und `ActivitySection` bleiben bewusst getrennt. Sie haben unterschiedliche Defaults (9 bzw. 10 Typen). Nicht zusammenführen. Activity-Typen liegen als Einzelmodule unter `src/constants/activities/` mit Barrel.
+- `stepReps` und `stepWeight` bleiben bewusst getrennt. Sie parsen unterschiedlich.
+- Session-Pill-Label kommt aus `classifySession()` (SSOT).
+- Tastatur: Alt+←/→ wechselt die Tabs, ESC schließt das oberste Modal (`useEscapeKey`). Im Set-Grid springt Enter von Reps zu Weight und dann zur nächsten Zeile. ↑/↓ wechseln in derselben Spalte.
+- Datumsleiste (`useDayStrip`): alle Tage in einem `overflow-x-auto`-Container, Scrollbar über `.no-scrollbar` ausgeblendet.
+- `SessionGateCard` ist als „Mission-Konsole“ neu gestaltet. Props (`onStart`, `onStop`, `onSubNav`) und Verhalten blieben gleich. Keyframes liegen in `styles.css`.

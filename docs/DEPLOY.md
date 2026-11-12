@@ -58,3 +58,19 @@ samt `.gitmodules` sind entfernt; beide sind eigene Repos und liegen bei Bedarf 
 neben `plan-dev` (`~/dev/coach-dev`, `~/dev/6pack-dev`). Nicht wieder als Submodul einhängen — ein
 verschachtelter Klon veraltet unbemerkt und verfälscht Builds. `6pack/` (Daten/Build-Skripte) ist ein
 normaler Ordner im Repo und bleibt.
+
+## Destillat aus der RESULTS.md (2026-11-12)
+
+Kurzfassung dauerhaft relevanten Wissens aus dem früheren Arbeitslog, thematisch einsortiert vom thin-results-Dienst.
+
+## Release- und Build-Stolpersteine (Stand 2026-11-12)
+
+- Nach Änderungen an Modul-`package.json` scheitert `vos-release` am Lockfile. Abhilfe: `pnpm install --no-frozen-lockfile --lockfile-only` im Root, `pnpm-lock.yaml` mitcommitten. `pnpm update <pkg>` bläht das Lockfile nur auf und behebt den Fehler nicht.
+- `@vos/cross-app-aliases` wird in fuel-dev und habits-dev als `optionalDependencies` mit fixierter Version `1.0.0` geführt, nicht als `file:../vitalos/...`-Pfad. Der Pfad löst nur im Standalone-Checkout auf. Die Vite-Configs haben einen Try/Catch-Fallback.
+- Der Live-Deploy mountet das KB-Repo `nimmsel23/fitness` (prebuild, `KB_DIR`). Ohne diese Quelle bricht der Master-Deploy (Fix 2026-11-09).
+- Der Pre-Push-Hook führt seit 2026-11-09 auf Branch `vitalos` keinen lokalen Firebase-Deploy mehr aus. Build und Reminder laufen auf `dev`.
+- Der geerbte fitness-`deploy.sh` ist für Plan gesperrt. Plan überschreibt nie `/opt/fitness` und konfiguriert keine Fitness-Dienste um.
+- Automerge der Release-PRs scheitert gelegentlich. Dann manuell: `gh pr merge <nr> --merge -R nimmsel23/<repo>`.
+- Dependabot: Alerts und Security-Updates sind aktiv. Wöchentliche Versions-Updates für Actions, npm/pnpm und Python zielen auf `dev`. Minor und Patch sind gruppiert. Die vendorte mini-app-shell wird an ihrer Quelle gepflegt.
+- Gemini-CI-Agent (`.github/ci-agent/repair.mjs`): `gh pr list` nur mit unterstützten JSON-Feldern aufrufen (`baseRepository` ist unbekannt) und den Head-Filter `nimmsel23:<branch>` nutzen. Quellreparaturen gehen auf den betroffenen Branch. Reparaturen für Zielbranches laufen über einen PR und werden erst nach grünem Check gemergt. Der Agent schreibt keine Lockfiles um.
+- Vite 8 (Rolldown): `build.target` als Browserliste statt `'modules'` setzen (`es2020`, `edge88`, `firefox78`, `chrome87`, `safari14`). `manualChunks` in Function-Form schreiben. So vermeidet man `BUNDLER_INITIALIZE_ERROR`.

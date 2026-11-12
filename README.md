@@ -115,3 +115,15 @@ Kurz zu den Invarianten:
 - ✅ `fitness` CLI (Python/Typer) via `fitnessctl`
 - ⏳ Anatomie-Lehre für alle Übungen
 - ⏳ PWA Offline-Unterstützung
+
+## Destillat aus der RESULTS.md (2026-11-12)
+
+Kurzfassung dauerhaft relevanten Wissens aus dem früheren Arbeitslog, thematisch einsortiert vom thin-results-Dienst.
+
+## Commands: CLI-Stand (2026-09-08 bis 2026-09-09)
+
+- `fitness-log` ist die Konsole für Kraft: `show`, `add` (mit `--effort`/`--rpe`, `--location`, `--duration`) und `wizard`. Cardio läuft über `fitness activity log`.
+- `fitness coach log-client-workout` loggt Klienten-Workouts (Klienten-Workspace `~/Klienten/<id>/`). Der Befehl lag früher unter `runtime/` bzw. `catalog/`.
+- `fitness-strength` ist in `fitness-log` aufgegangen. `fitness/commands/` ist aufgelöst. Jedes Modul ist ein Subpackage (`log/`, `tui/`, `activity/`, `mail/`, `sync/`). Der Entry-Point liegt in `bin/fitness-log`.
+- `fitness/runtime/session_store.py` ist der zentrale Session-Resolver (`session_path`, `iter_session_files`, `user_dirs`). Lege Session-Pfade nicht mehr selbst an.
+- `fitness/muscles.py`: `muscle_label()` liefert echte KB-Muskelnamen. Grobe Buckets nur für Gruppenansichten.
