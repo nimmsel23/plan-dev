@@ -14,6 +14,8 @@
 
 ## Notizen (aktiv)
 
+- 2026-11-12 AL: `automerge-pr.yml` Dependabot base=master→dev Retarget portiert (`437eaea4`, Org `c1f9b6ce` / journal SSOT).
+
 - Shell-Pin: plan-app-Pointer `b0d44d47` entspricht `origin/master` (2026-11-11). Bei jedem Release erneut prüfen.
 - Org-Queue `project:plan-dev` ist laut 2026-11-11 leer.
 - Fremdes WIP (`scripts/portal.mjs`, `docs/apps.*`) wurde nicht angefasst. Nur eigene Dateien stagen.

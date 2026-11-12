@@ -97,3 +97,32 @@ _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen sta
 - Offen/Weiter: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py` (nicht plan-dev). Fremdes WIP `scripts/portal.mjs`/`docs/apps.*` unangetastet. Hinweis CTO: Deploy VitalOS Shell rot seit `a6c53d9` (`42992634220` u.a.).
 - Blocker: Firebase-Abnahme braucht authentifizierte Konten.
 - AUTOMATION: Shell-Pin Meta `ls-tree origin/master plan-app` vs plan `origin/master` manuell — Einzeiler/`vos-overview plan` im AL-Einstieg — ~3–5 min/Lauf.
+
+## 2026-11-12 (Donnerstag) — Abteilungsleiter-Lauf
+
+_Automatik (vos-al-log Vorlage 2026-11-12):_
+- Commits seit 2026-11-08: f41aa343 chore(deps): add esbuild+acorn for @db barrel contract test
+09c8ea6e docs: thin-results Destillat; restore WorkoutTimerCard for build
+faa3c955 ci: restore Gemini repair + Merge-Agent (full automation)
+931a9ac6 chore(archive): runtime/ nach archive/runtime/ (umgezogen nach coach-dev/plan_runtime)
+2cf0e312 deps: minimatch-Override >=11.0.1 (GHSA-g3hv-75wg-m249)
+95fb42bf docs(agents): simplicity pointer — CI.md §1 spine
+d38bd90a ci: drop Gemini repair and Merge-Agent (simplicity)
+7198aac4 docs(al-log): AUTOMATION-Hinweis Shell-Pin-Delta-Check
+728cede2 docs(al-log): AL-Lauf 2026-11-11 Abend — CI-Kette nach Shell-Pin-Close
+ab8c9899 docs(al-log): AL-Lauf 2026-11-11 Abend — Shell-Pin 35b1a180 closed
+18698fab docs: auto-update RESULTS.md
+871d5302 docs: auto-update NEXT.md
+b0d44d47 docs(al-log): AL-Lauf 2026-11-11 — CI-Kette nach Secrets-Check
+75c7478f docs(al-log): AL-Lauf 2026-11-11 — CI-Secrets belegt, Shell-Pin 35b1a180
+5f4552e4 docs: auto-update RESULTS.md
+- Offene PRs: (keine offenen PRs / gh nicht verfuegbar)
+- CI (letzte Läufe): completed	success	Auto-Promote dev -> master (Check (Plan))	Auto-Promote dev -> master (Check (Plan))	master	schedule	43225990886	9s	2026-11-12T13:18:11Z
+completed	success	Gemini CI Agent	Gemini CI Agent	master	workflow_run	43210047307	8s	2026-11-12T11:32:38Z
+completed	success	Live Deploy (Plan master)	Live Deploy (Plan master)	master	workflow_dispatch	43210021836	1m26s	2026-11-12T11:32:27Z
+- Arbeitsbaum: 3 uncommittete Pfade
+
+_Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
+- Erledigt: CTO-Nachtauftrag Port Org `c1f9b6ce` — `automerge-pr.yml` Dependabot base=master→dev Retarget (journal SSOT `375e122` / fitness `8c29238`) als `437eaea4`; Check `43255962157` / Auto-Promote `43256096734` / Live Deploy `43256125101`. Fremdes WIP `scripts/portal.mjs`/`docs/apps.*` unangetastet.
+- Offen/Weiter: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py` (nicht plan-dev). Org-Queue `project:plan-dev` leer.
+- Blocker: Firebase-Abnahme braucht authentifizierte Konten.

@@ -1,7 +1,7 @@
 - ~~Vite-8 Vorbeuge~~: build.target modules → Browserliste.
 - ~~Org-Task `922f1cf0` Stabilitätswache~~: 2 grüne Tage + Mo-Schedule belegt, closed 2026-11-09.
 - ~~Functions → backend~~: `onPlanPublished` SOT in `~/dev/backend/functions/fitness`; Deploy noch: `firebase deploy --only functions:fitness:onPlanPublished`.
-- Offen AL: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py`. ~~Draft-PR #43~~ → `38312b3d` + closed. ~~`vos-release-pr plan`~~ obsolet (`origin/dev`≡`origin/master` @ `d5f015ce`, Auto-Promote). ~~Shell-Pin `35b1a180`~~ closed 2026-11-11 (Meta plan-app `b0d44d47` ≡ tip via vitalos `a6c53d9`).
+- Offen AL: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py`. ~~Draft-PR #43~~ → `38312b3d` + closed. ~~`vos-release-pr plan`~~ obsolet (`origin/dev`≡`origin/master` @ `d5f015ce`, Auto-Promote). ~~Shell-Pin `35b1a180`~~ closed 2026-11-11 (Meta plan-app `b0d44d47` ≡ tip via vitalos `a6c53d9`). ~~`automerge-pr` Retarget Port `c1f9b6ce`~~ `437eaea4` (2026-11-12).
 # CI-Agent — offener Betriebspunkt
 
 - [x] `GEMINI_API_KEY` und `SYNC_TOKEN` als Actions-Secrets prüfen — beide gesetzt (`gh secret list`, Stand 2026-11-11); Merge-Agent schedule grün `42931856848`, kein absichtlicher Rot-Test nötig.
