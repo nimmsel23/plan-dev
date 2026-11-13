@@ -1,0 +1,355 @@
+{
+ "evidence": {
+  "generated_at": "2026-11-13T00:09:28+00:00",
+  "repo": "nimmsel23/plan-dev",
+  "meta": {
+   "name": "plan-dev",
+   "description": null,
+   "html_url": "https://github.com/nimmsel23/plan-dev",
+   "pushed_at": "2026-11-13T00:09:09Z",
+   "default_branch": "master",
+   "visibility": "public",
+   "pages_url": null
+  },
+  "package": {
+   "name": "plan",
+   "version": "3.0.0"
+  },
+  "branches": {
+   "main": "master",
+   "has_dev": true,
+   "dev_behind": 0,
+   "dev_ahead": 1,
+   "oldest_unpromoted": "2026-11-13T01:09:06+01:00",
+   "dev_head": "9e2436dc 2026-11-13T01:09:06+01:00",
+   "master_head": "f6d2669e 2026-11-12T17:14:04+01:00"
+  },
+  "commits": [
+   {
+    "sha": "9e2436dc",
+    "date": "2026-11-13T01:09:06+01:00",
+    "author": "Alpha",
+    "subject": "feat(ci): Living Dashboard als GitHub Page"
+   },
+   {
+    "sha": "f6d2669e",
+    "date": "2026-11-12T17:14:04+01:00",
+    "author": "Alpha",
+    "subject": "docs(al-log): AL-Lauf 2026-11-12 — automerge-pr Retarget Port"
+   },
+   {
+    "sha": "437eaea4",
+    "date": "2026-11-12T17:11:32+01:00",
+    "author": "Alpha",
+    "subject": "ci(automerge-pr): Dependabot base=master → base=dev retarget (journal SSOT)"
+   },
+   {
+    "sha": "f41aa343",
+    "date": "2026-11-12T12:31:02+01:00",
+    "author": "Alpha",
+    "subject": "chore(deps): add esbuild+acorn for @db barrel contract test"
+   },
+   {
+    "sha": "09c8ea6e",
+    "date": "2026-11-12T12:29:09+01:00",
+    "author": "Alpha",
+    "subject": "docs: thin-results Destillat; restore WorkoutTimerCard for build"
+   },
+   {
+    "sha": "faa3c955",
+    "date": "2026-11-12T02:19:21+01:00",
+    "author": "Alpha",
+    "subject": "ci: restore Gemini repair + Merge-Agent (full automation)"
+   },
+   {
+    "sha": "931a9ac6",
+    "date": "2026-11-11T21:01:14Z",
+    "author": "nimmdaniel",
+    "subject": "chore(archive): runtime/ nach archive/runtime/ (umgezogen nach coach-dev/plan_runtime)"
+   },
+   {
+    "sha": "2cf0e312",
+    "date": "2026-11-11T20:55:17Z",
+    "author": "nimmdaniel",
+    "subject": "deps: minimatch-Override >=11.0.1 (GHSA-g3hv-75wg-m249)"
+   },
+   {
+    "sha": "95fb42bf",
+    "date": "2026-11-11T19:14:23+01:00",
+    "author": "Alpha",
+    "subject": "docs(agents): simplicity pointer — CI.md §1 spine"
+   },
+   {
+    "sha": "d38bd90a",
+    "date": "2026-11-11T19:11:40+01:00",
+    "author": "Alpha",
+    "subject": "ci: drop Gemini repair and Merge-Agent (simplicity)"
+   },
+   {
+    "sha": "7198aac4",
+    "date": "2026-11-11T17:16:13+01:00",
+    "author": "Alpha",
+    "subject": "docs(al-log): AUTOMATION-Hinweis Shell-Pin-Delta-Check"
+   },
+   {
+    "sha": "728cede2",
+    "date": "2026-11-11T17:15:54+01:00",
+    "author": "Alpha",
+    "subject": "docs(al-log): AL-Lauf 2026-11-11 Abend — CI-Kette nach Shell-Pin-Close"
+   },
+   {
+    "sha": "ab8c9899",
+    "date": "2026-11-11T17:13:11+01:00",
+    "author": "Alpha",
+    "subject": "docs(al-log): AL-Lauf 2026-11-11 Abend — Shell-Pin 35b1a180 closed"
+   },
+   {
+    "sha": "18698fab",
+    "date": "2026-11-11T17:12:59+01:00",
+    "author": "Alpha",
+    "subject": "docs: auto-update RESULTS.md"
+   },
+   {
+    "sha": "871d5302",
+    "date": "2026-11-11T17:12:54+01:00",
+    "author": "Alpha",
+    "subject": "docs: auto-update NEXT.md"
+   },
+   {
+    "sha": "b0d44d47",
+    "date": "2026-11-11T05:16:48+01:00",
+    "author": "Alpha",
+    "subject": "docs(al-log): AL-Lauf 2026-11-11 — CI-Kette nach Secrets-Check"
+   },
+   {
+    "sha": "75c7478f",
+    "date": "2026-11-11T05:13:43+01:00",
+    "author": "Alpha",
+    "subject": "docs(al-log): AL-Lauf 2026-11-11 — CI-Secrets belegt, Shell-Pin 35b1a180"
+   },
+   {
+    "sha": "5f4552e4",
+    "date": "2026-11-11T05:13:02+01:00",
+    "author": "Alpha",
+    "subject": "docs: auto-update RESULTS.md"
+   },
+   {
+    "sha": "3742fbc6",
+    "date": "2026-11-11T05:12:56+01:00",
+    "author": "Alpha",
+    "subject": "docs: auto-update NEXT.md"
+   },
+   {
+    "sha": "73ca7bfb",
+    "date": "2026-11-10T17:17:40+01:00",
+    "author": "Alpha",
+    "subject": "docs(al-log): AL-Lauf 2026-11-10 Abend — CI-Kette nach vos-release-pr-Klärung"
+   }
+  ],
+  "activity": [
+   {
+    "day": "2026-10-24",
+    "n": 0
+   },
+   {
+    "day": "2026-10-25",
+    "n": 3
+   },
+   {
+    "day": "2026-10-26",
+    "n": 0
+   },
+   {
+    "day": "2026-10-27",
+    "n": 0
+   },
+   {
+    "day": "2026-10-28",
+    "n": 2
+   },
+   {
+    "day": "2026-10-29",
+    "n": 7
+   },
+   {
+    "day": "2026-10-30",
+    "n": 4
+   },
+   {
+    "day": "2026-10-31",
+    "n": 11
+   },
+   {
+    "day": "2026-11-01",
+    "n": 13
+   },
+   {
+    "day": "2026-11-02",
+    "n": 6
+   },
+   {
+    "day": "2026-11-03",
+    "n": 2
+   },
+   {
+    "day": "2026-11-04",
+    "n": 3
+   },
+   {
+    "day": "2026-11-05",
+    "n": 52
+   },
+   {
+    "day": "2026-11-06",
+    "n": 23
+   },
+   {
+    "day": "2026-11-07",
+    "n": 24
+   },
+   {
+    "day": "2026-11-08",
+    "n": 2
+   },
+   {
+    "day": "2026-11-09",
+    "n": 42
+   },
+   {
+    "day": "2026-11-10",
+    "n": 10
+   },
+   {
+    "day": "2026-11-11",
+    "n": 13
+   },
+   {
+    "day": "2026-11-12",
+    "n": 5
+   },
+   {
+    "day": "2026-11-13",
+    "n": 1
+   }
+  ],
+  "workflows": [
+   {
+    "name": "Check (Plan)",
+    "branch": "dev",
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-13T00:09:10Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43334740283",
+    "sha": "9e2436d"
+   },
+   {
+    "name": "PR-AutoMerge (Dependabot -> dev)",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-12T23:32:05Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43329658641",
+    "sha": "f6d2669"
+   },
+   {
+    "name": "Merge-Agent",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-12T22:43:38Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43322541120",
+    "sha": "f6d2669"
+   },
+   {
+    "name": "Auto-Promote dev -> master (Check (Plan))",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-12T21:07:57Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43307167894",
+    "sha": "f6d2669"
+   },
+   {
+    "name": "Live Deploy (Plan master)",
+    "branch": "master",
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-12T16:15:01Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43256581636",
+    "sha": "f6d2669"
+   },
+   {
+    "name": "Gemini CI Agent",
+    "branch": "master",
+    "event": "workflow_run",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-12T16:14:51Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43256549351",
+    "sha": "437eaea"
+   },
+   {
+    "name": "Preview Plan",
+    "branch": "dev",
+    "event": "push",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-12T11:31:28Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43209881141",
+    "sha": "f41aa34"
+   }
+  ],
+  "issues": [],
+  "pulls": [],
+  "live_sites": [
+   "https://vos-plan.web.app"
+  ]
+ },
+ "assessment": {
+  "status": "green",
+  "signals": [],
+  "ai": {
+   "headline": "Aktive Entwicklung auf dev-Branch; CI-Workflow läuft",
+   "lage": "Der `dev`-Branch ist mit einem neuen Feature-Commit (`9e2436dc`) dem `master`-Branch um einen Commit voraus. Ein `Check (Plan)` Workflow läuft aktuell auf `dev`. Zuletzt wurden CI-Automatisierungen angepasst und Dokumentationen aktualisiert.",
+   "auffaelligkeiten": [
+    {
+     "level": "hoch",
+     "text": "Der `Check (Plan)` Workflow auf `dev` (run `43334740283`, sha `9e2436d`) ist aktuell `in_progress`."
+    },
+    {
+     "level": "mittel",
+     "text": "Die CI-Konfiguration für `Gemini repair` und `Merge-Agent` wurde am 2026-11-11 erst entfernt (`d38bd90a`) und am 2026-11-12 wiederhergestellt (`faa3c955`), was auf eine instabile Automatisierungsstrategie hindeutet."
+    },
+    {
+     "level": "info",
+     "text": "Der neue `PreCompact`-Hook wurde nur mit simuliertem Fake-Input getestet, noch nicht gegen einen echten Compact-Trigger."
+    },
+    {
+     "level": "info",
+     "text": "Die Browser-Durchklick-Verifikation von Session-Tab-Rebuild Phase 3 Stück 4 und Phase 4 Stück 1 wurde mehrfach angemahnt, aber nie durchgeführt."
+    },
+    {
+     "level": "info",
+     "text": "Zwei identische leere Yoga-Headstand-Inbox-Drafts (`inbox_20260831_161715_3b9447`, `inbox_20260831_161759_cc51fb`) sind ein Duplikat."
+    }
+   ],
+   "naechste_schritte": [
+    "Verifizieren des laufenden \"Check (Plan)\" Workflows auf `dev` (run `43334740283`).",
+    "Überprüfen des ersten echten Laufs des `PreCompact`-Hooks.",
+    "Durchführen der Browser-Durchklick-Verifikation für Session-Tab-Rebuild Phase 3/4."
+   ],
+   "veraendert": "",
+   "fragen": [
+    "Welcher der beiden identischen Yoga-Headstand-Inbox-Drafts (`inbox_20260831_161715_3b9447`, `inbox_20260831_161759_cc51fb`) soll gelöscht werden?",
+    "Wie soll der `Coach-catalog/kb/` Drift gegen `~/dev/fitness` langfristig gelöst werden (Submodul/Subtree statt Doppelbaum)?"
+   ],
+   "model": "gemini-2.5-flash"
+  },
+  "ai_at": "2026-11-13T00:09:31+00:00"
+ }
+}
