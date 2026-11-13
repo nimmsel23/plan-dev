@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-13T16:13:00+00:00",
+  "generated_at": "2026-11-13T16:15:39+00:00",
   "repo": "nimmsel23/plan-dev",
   "meta": {
    "name": "plan-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/plan-dev",
-   "pushed_at": "2026-11-13T16:12:40Z",
+   "pushed_at": "2026-11-13T16:15:19Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/plan-dev/"
@@ -20,11 +20,17 @@
    "has_dev": true,
    "dev_behind": 0,
    "dev_ahead": 1,
-   "oldest_unpromoted": "2026-11-13T17:12:33+01:00",
-   "dev_head": "e1a405c1 2026-11-13T17:12:33+01:00",
-   "master_head": "d4dbff26 2026-11-13T05:12:03+01:00"
+   "oldest_unpromoted": "2026-11-13T17:15:16+01:00",
+   "dev_head": "9df0ded4 2026-11-13T17:15:16+01:00",
+   "master_head": "e1a405c1 2026-11-13T17:12:33+01:00"
   },
   "commits": [
+   {
+    "sha": "9df0ded4",
+    "date": "2026-11-13T17:15:16+01:00",
+    "author": "Alpha",
+    "subject": "docs(al-log): CI-Belege für Pages-Prüfung"
+   },
    {
     "sha": "e1a405c1",
     "date": "2026-11-13T17:12:33+01:00",
@@ -138,12 +144,6 @@
     "date": "2026-11-11T05:16:48+01:00",
     "author": "Alpha",
     "subject": "docs(al-log): AL-Lauf 2026-11-11 — CI-Kette nach Secrets-Check"
-   },
-   {
-    "sha": "75c7478f",
-    "date": "2026-11-11T05:13:43+01:00",
-    "author": "Alpha",
-    "subject": "docs(al-log): AL-Lauf 2026-11-11 — CI-Secrets belegt, Shell-Pin 35b1a180"
    }
   ],
   "activity": [
@@ -229,7 +229,7 @@
    },
    {
     "day": "2026-11-13",
-    "n": 4
+    "n": 5
    }
   ],
   "workflows": [
@@ -239,18 +239,48 @@
     "event": "push",
     "status": "in_progress",
     "conclusion": null,
-    "created_at": "2026-11-13T16:12:43Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43460405592",
+    "created_at": "2026-11-13T16:15:21Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43460858312",
+    "sha": "9df0ded"
+   },
+   {
+    "name": "Live Deploy (Plan master)",
+    "branch": "master",
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-13T16:13:46Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43460585013",
     "sha": "e1a405c"
    },
    {
     "name": "PR-AutoMerge (Dependabot -> dev)",
     "branch": "master",
-    "event": "schedule",
+    "event": "workflow_run",
+    "status": "completed",
+    "conclusion": "skipped",
+    "created_at": "2026-11-13T16:13:37Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43460559281",
+    "sha": "d4dbff2"
+   },
+   {
+    "name": "Auto-Promote dev -> master (Check (Plan))",
+    "branch": "master",
+    "event": "workflow_run",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-13T15:18:11Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43451229335",
+    "created_at": "2026-11-13T16:13:37Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43460559259",
+    "sha": "d4dbff2"
+   },
+   {
+    "name": "Gemini CI Agent",
+    "branch": "master",
+    "event": "workflow_run",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-13T16:13:37Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43460558988",
     "sha": "d4dbff2"
    },
    {
@@ -262,36 +292,6 @@
     "created_at": "2026-11-13T10:47:54Z",
     "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43411868472",
     "sha": "d4dbff2"
-   },
-   {
-    "name": "Auto-Promote dev -> master (Check (Plan))",
-    "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-13T09:35:22Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43402576205",
-    "sha": "d4dbff2"
-   },
-   {
-    "name": "Live Deploy (Plan master)",
-    "branch": "master",
-    "event": "workflow_dispatch",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-13T04:12:58Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43364042958",
-    "sha": "d4dbff2"
-   },
-   {
-    "name": "Gemini CI Agent",
-    "branch": "master",
-    "event": "workflow_run",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-13T04:12:50Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43364028396",
-    "sha": "9e2436d"
    },
    {
     "name": "Preview Plan",
@@ -314,38 +314,30 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Dev-Branch 1 Commit voraus; Check (Plan) Workflow für e1a405c1 läuft",
-   "lage": "Der `dev`-Branch ist mit Commit `e1a405c1` (docs(al-log): Pages-CI-Punkt geprüft) einen Commit vor `master` (d4dbff26). Der `Check (Plan)` Workflow für `e1a405c` auf `dev` ist aktuell in Bearbeitung. Das Living Dashboard wurde mit Commit `9e2436dc` als GitHub Page implementiert.",
+   "headline": "Dev-Branch 1 Commit voraus; Check (Plan) Workflow für 9df0ded4 läuft",
+   "lage": "Der `dev`-Branch ist mit Commit `9df0ded4` (docs(al-log): CI-Belege für Pages-Prüfung) einen Commit vor `master` (`e1a405c1`). Der `Check (Plan)` Workflow für `9df0ded` auf `dev` ist aktuell in Bearbeitung. Der `master`-Branch wurde mit Commit `e1a405c1` (docs(al-log): Pages-CI-Punkt geprüft) aktualisiert und erfolgreich deployed.",
    "auffaelligkeiten": [
     {
-     "level": "hoch",
-     "text": "Der `Check (Plan)` Workflow (run `43460405592`) für den neuesten `dev`-Commit `e1a405c` ist `in_progress`."
+     "level": "info",
+     "text": "Der Workflow \"Live Deploy (Plan master)\" für Commit e1a405c1 auf master wurde erfolgreich abgeschlossen."
     },
     {
      "level": "info",
-     "text": "Der `dev`-Branch ist mit `e1a405c1` einen Commit vor `master`."
-    },
-    {
-     "level": "mittel",
-     "text": "Der neue `PreCompact`-Hook wurde nur simuliert getestet; ein erster echter Lauf muss verifiziert werden (`NEXT.md`)."
-    },
-    {
-     "level": "mittel",
-     "text": "Die Browser-Durchklick-Verifikation für Session-Tab-Rebuild Phase 3/4 wurde mehrfach angemahnt, aber nicht durchgeführt (`NEXT.md`)."
+     "text": "Der Workflow \"Auto-Promote dev -> master (Check (Plan))\" für Commit d4dbff26 wurde erfolgreich abgeschlossen."
     }
    ],
    "naechste_schritte": [
     "Verifizieren des ersten echten Laufs des `PreCompact`-Hooks.",
-    "Durchführen der Browser-Durchklick-Verifikation für Session-Tab-Rebuild Phase 3/4.",
+    "Durchführen der Browser-Durchklick-Verifikation von Session-Tab-Rebuild Phase 3 Stück 4 + Phase 4 Stück 1.",
     "Prüfen der Runtime-DBs und `tw-data` pro Klient vor breitem Rollout."
    ],
-   "veraendert": "Der `dev`-Branch ist nun mit Commit `e1a405c1` einen Commit vor `master`, und der zugehörige `Check (Plan)` Workflow läuft.",
+   "veraendert": "Der `master`-Branch wurde auf Commit `e1a405c1` aktualisiert und der `dev`-Branch auf `9df0ded4` weiterentwickelt.",
    "fragen": [
-    "Welcher der beiden identischen leeren Yoga-Headstand-Inbox-Drafts soll tombstoned/gelöscht werden?",
-    "Soll der `fitness-dev/fitness/` Python-Fork nicht mehr weitergepflegt werden?"
+    "Welcher der beiden identischen leeren Yoga-Headstand-Inbox-Drafts soll gelöscht werden?",
+    "Soll der `coach-catalog/kb/` Drift langfristig durch Submodul/Subtree statt Doppelbaum gelöst werden?"
    ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-13T16:13:02+00:00"
+  "ai_at": "2026-11-13T16:15:42+00:00"
  }
 }
