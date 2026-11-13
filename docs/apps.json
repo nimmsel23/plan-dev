@@ -10,7 +10,10 @@
       "accent": "#5b8cff",
       "site": "vos-plan",
       "url": "https://vos-plan.web.app",
-      "tab": null
+      "tab": null,
+      "bundledAuthDomain": "fitness-aos.firebaseapp.com"
     }
-  ]
+  ],
+  "pages": "https://nimmsel23.github.io/plan-dev/",
+  "bundledAuthDomain": "fitness-aos.firebaseapp.com"
 }
