@@ -126,3 +126,33 @@ _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen sta
 - Erledigt: CTO-Nachtauftrag Port Org `c1f9b6ce` — `automerge-pr.yml` Dependabot base=master→dev Retarget (journal SSOT `375e122` / fitness `8c29238`) als `437eaea4`; Check `43255962157` / Auto-Promote `43256096734` / Live Deploy `43256125101`. Fremdes WIP `scripts/portal.mjs`/`docs/apps.*` unangetastet.
 - Offen/Weiter: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py` (nicht plan-dev). Org-Queue `project:plan-dev` leer.
 - Blocker: Firebase-Abnahme braucht authentifizierte Konten.
+
+## 2026-11-13 (Freitag) — Abteilungsleiter-Lauf
+
+_Automatik (vos-al-log Vorlage 2026-11-13):_
+- Commits seit 2026-11-08: 64cffc99 chore(portal): portal.mjs + docs/apps.* aus vitalos vos-portal --all synchronisiert
+9e2436dc feat(ci): Living Dashboard als GitHub Page
+f6d2669e docs(al-log): AL-Lauf 2026-11-12 — automerge-pr Retarget Port
+437eaea4 ci(automerge-pr): Dependabot base=master → base=dev retarget (journal SSOT)
+f41aa343 chore(deps): add esbuild+acorn for @db barrel contract test
+09c8ea6e docs: thin-results Destillat; restore WorkoutTimerCard for build
+faa3c955 ci: restore Gemini repair + Merge-Agent (full automation)
+931a9ac6 chore(archive): runtime/ nach archive/runtime/ (umgezogen nach coach-dev/plan_runtime)
+2cf0e312 deps: minimatch-Override >=11.0.1 (GHSA-g3hv-75wg-m249)
+95fb42bf docs(agents): simplicity pointer — CI.md §1 spine
+d38bd90a ci: drop Gemini repair and Merge-Agent (simplicity)
+7198aac4 docs(al-log): AUTOMATION-Hinweis Shell-Pin-Delta-Check
+728cede2 docs(al-log): AL-Lauf 2026-11-11 Abend — CI-Kette nach Shell-Pin-Close
+ab8c9899 docs(al-log): AL-Lauf 2026-11-11 Abend — Shell-Pin 35b1a180 closed
+18698fab docs: auto-update RESULTS.md
+- Offene PRs: (keine offenen PRs / gh nicht verfuegbar)
+- CI (letzte Läufe): completed	success	Merge-Agent	Merge-Agent	master	schedule	43355719609	8s	2026-11-13T02:57:53Z
+completed	success	Auto-Promote dev -> master (Check (Plan))	Auto-Promote dev -> master (Check (Plan))	master	schedule	43347928676	9s	2026-11-13T01:51:11Z
+completed	success	Gemini CI Agent	Gemini CI Agent	master	workflow_run	43335282778	11s	2026-11-13T00:13:07Z
+- Arbeitsbaum: sauber
+
+_Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
+- Erledigt: dev-Check rot seit `64cffc99` (Check `43335129780`: Biome-Format `scripts/portal.mjs`, Auto-Promote skipped `43335204370`) → `biome.json` schließt die vos-portal-Kopie `scripts/portal.mjs` aus (Fremd-SOT `~/vitalos/scripts/vos-portal.mjs`, wird bei jedem Sync überschrieben). Beleg der Folgekette: ABTEILUNG.md.
+- Offen/Weiter: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py`. Org-Queue `project:plan-dev` leer.
+- Blocker: Firebase-Abnahme braucht authentifizierte Konten.
+- AUTOMATION: vos-portal verteilt unformatierte `portal.mjs` in Repos mit Biome-Check — `vos-portal.mjs` in vitalos einmal Biome-konform (single quotes, no semis) formatieren oder Repos-weit ausnehmen (CTO) — spart je Sync einen roten Check pro Repo.
