@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-13T12:33:53+00:00",
+  "generated_at": "2026-11-13T16:13:00+00:00",
   "repo": "nimmsel23/plan-dev",
   "meta": {
    "name": "plan-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/plan-dev",
-   "pushed_at": "2026-11-13T07:12:27Z",
+   "pushed_at": "2026-11-13T16:12:40Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/plan-dev/"
@@ -19,12 +19,18 @@
    "main": "master",
    "has_dev": true,
    "dev_behind": 0,
-   "dev_ahead": 0,
-   "oldest_unpromoted": null,
-   "dev_head": "d4dbff26 2026-11-13T05:12:03+01:00",
+   "dev_ahead": 1,
+   "oldest_unpromoted": "2026-11-13T17:12:33+01:00",
+   "dev_head": "e1a405c1 2026-11-13T17:12:33+01:00",
    "master_head": "d4dbff26 2026-11-13T05:12:03+01:00"
   },
   "commits": [
+   {
+    "sha": "e1a405c1",
+    "date": "2026-11-13T17:12:33+01:00",
+    "author": "Alpha",
+    "subject": "docs(al-log): Pages-CI-Punkt geprüft"
+   },
    {
     "sha": "d4dbff26",
     "date": "2026-11-13T05:12:03+01:00",
@@ -138,12 +144,6 @@
     "date": "2026-11-11T05:13:43+01:00",
     "author": "Alpha",
     "subject": "docs(al-log): AL-Lauf 2026-11-11 — CI-Secrets belegt, Shell-Pin 35b1a180"
-   },
-   {
-    "sha": "5f4552e4",
-    "date": "2026-11-11T05:13:02+01:00",
-    "author": "Alpha",
-    "subject": "docs: auto-update RESULTS.md"
    }
   ],
   "activity": [
@@ -229,10 +229,30 @@
    },
    {
     "day": "2026-11-13",
-    "n": 3
+    "n": 4
    }
   ],
   "workflows": [
+   {
+    "name": "Check (Plan)",
+    "branch": "dev",
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-13T16:12:43Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43460405592",
+    "sha": "e1a405c"
+   },
+   {
+    "name": "PR-AutoMerge (Dependabot -> dev)",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-13T15:18:11Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43451229335",
+    "sha": "d4dbff2"
+   },
    {
     "name": "Merge-Agent",
     "branch": "master",
@@ -251,16 +271,6 @@
     "conclusion": "success",
     "created_at": "2026-11-13T09:35:22Z",
     "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43402576205",
-    "sha": "d4dbff2"
-   },
-   {
-    "name": "PR-AutoMerge (Dependabot -> dev)",
-    "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-13T06:31:05Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43379250701",
     "sha": "d4dbff2"
    },
    {
@@ -284,16 +294,6 @@
     "sha": "9e2436d"
    },
    {
-    "name": "Check (Plan)",
-    "branch": "dev",
-    "event": "push",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-13T04:12:11Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43363954492",
-    "sha": "d4dbff2"
-   },
-   {
     "name": "Preview Plan",
     "branch": "dev",
     "event": "push",
@@ -314,20 +314,24 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Master und Dev synchronisiert auf d4dbff26; alle CI-Workflows erfolgreich",
-   "lage": "Der `dev`-Branch ist nun mit dem `master`-Branch auf Commit `d4dbff26` synchronisiert. Der `Check (Plan)` Workflow (run `43363954492`) für `d4dbff26` auf `dev` wurde erfolgreich abgeschlossen, gefolgt vom `Auto-Promote dev -> master (Check (Plan))` und dem `Live Deploy (Plan master)` für diesen Stand.",
+   "headline": "Dev-Branch 1 Commit voraus; Check (Plan) Workflow für e1a405c1 läuft",
+   "lage": "Der `dev`-Branch ist mit Commit `e1a405c1` (docs(al-log): Pages-CI-Punkt geprüft) einen Commit vor `master` (d4dbff26). Der `Check (Plan)` Workflow für `e1a405c` auf `dev` ist aktuell in Bearbeitung. Das Living Dashboard wurde mit Commit `9e2436dc` als GitHub Page implementiert.",
    "auffaelligkeiten": [
     {
-     "level": "info",
-     "text": "Der neue `PreCompact`-Hook wurde bisher nur simuliert getestet; ein erster echter Lauf steht noch zur Verifikation aus."
+     "level": "hoch",
+     "text": "Der `Check (Plan)` Workflow (run `43460405592`) für den neuesten `dev`-Commit `e1a405c` ist `in_progress`."
     },
     {
      "level": "info",
-     "text": "Die Browser-Durchklick-Verifikation für Session-Tab-Rebuild Phase 3/4 ist noch nicht durchgeführt worden."
+     "text": "Der `dev`-Branch ist mit `e1a405c1` einen Commit vor `master`."
     },
     {
-     "level": "info",
-     "text": "Zwei identische leere Yoga-Headstand-Inbox-Drafts sind als Duplikat identifiziert und müssen bereinigt werden."
+     "level": "mittel",
+     "text": "Der neue `PreCompact`-Hook wurde nur simuliert getestet; ein erster echter Lauf muss verifiziert werden (`NEXT.md`)."
+    },
+    {
+     "level": "mittel",
+     "text": "Die Browser-Durchklick-Verifikation für Session-Tab-Rebuild Phase 3/4 wurde mehrfach angemahnt, aber nicht durchgeführt (`NEXT.md`)."
     }
    ],
    "naechste_schritte": [
@@ -335,12 +339,13 @@
     "Durchführen der Browser-Durchklick-Verifikation für Session-Tab-Rebuild Phase 3/4.",
     "Prüfen der Runtime-DBs und `tw-data` pro Klient vor breitem Rollout."
    ],
-   "veraendert": "Der `dev`-Branch ist nicht mehr zwei Commits vor `master`, sondern beide Branches sind auf Commit `d4dbff26` synchronisiert, nachdem der `Auto-Promote` Workflow erfolgreich lief und `Check (Plan)` für `d4dbff26` erfolgreich abgeschlossen wurde.",
+   "veraendert": "Der `dev`-Branch ist nun mit Commit `e1a405c1` einen Commit vor `master`, und der zugehörige `Check (Plan)` Workflow läuft.",
    "fragen": [
-    "Welcher der beiden identischen leeren Yoga-Headstand-Inbox-Drafts soll gelöscht werden?"
+    "Welcher der beiden identischen leeren Yoga-Headstand-Inbox-Drafts soll tombstoned/gelöscht werden?",
+    "Soll der `fitness-dev/fitness/` Python-Fork nicht mehr weitergepflegt werden?"
    ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-13T12:33:56+00:00"
+  "ai_at": "2026-11-13T16:13:02+00:00"
  }
 }
