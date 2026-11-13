@@ -152,6 +152,6 @@ completed	success	Gemini CI Agent	Gemini CI Agent	master	workflow_run	4333528277
 - Arbeitsbaum: sauber
 
 _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
-- Erledigt: NEXT-Pages-Punkt geprüft und auf aktuelle Workflow-Konfiguration umgestellt; GitHub-Pages-API bestätigt Workflow-Publishing, Dashboard-Run `43363954863` (`dev`) grün.
+- Erledigt: NEXT-Pages-Punkt geprüft/abgelöst; Pages-API bestätigt Workflow-Publishing. `e1a405c1` → Check `43460405592`, Auto-Promote `43460559259`, Live Deploy `43460585013`; Dashboard `43460406388` grün.
 - Offen/Weiter: Firebase-Mehrgeräteabnahme; authentifizierte Konten nötig. `coach-dev` `workouts.py` außerhalb plan-dev.
 - Blocker: Firebase-Mehrgeräteabnahme benötigt authentifizierte Coach-/Klientenkonten.
