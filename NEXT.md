@@ -535,5 +535,5 @@ pruefen.
 
 - [ ] Einen echten roten, code-behebbaren CI-Lauf beobachten und bestätigen, dass Reparatur-Commit, grüner Check und vorgesehener Promote/Deploy enden.
 - [ ] Fehler außerhalb des Codes (fehlende Deploy-Credentials, externe Dienste, Runner-Ausfälle) separat als Diagnose melden; keine ungeprüften Änderungen an Secrets oder Deploy-Konfiguration.
-- [ ] GitHub Pages fuer `plan-dev` auf Branch `dev`, Ordner `/docs` prüfen/aktivieren; Pages-Admin-Einstellungen sind über die aktuelle GitHub-Schnittstelle nicht erreichbar.
+- [x] 2026-11-13: GitHub-Pages-Prüfung abgeschlossen — Pages nutzt Workflow-Publishing (`gh api repos/nimmsel23/plan-dev/pages`); Living Dashboard läuft bei `dev`-Pushes (Run `43363954863`, success). Der alte Branch-/`/docs`-Punkt ist durch die Workflow-Konfiguration abgelöst.
 - [ ] Gemini-Reparaturpfad nach dem Feld-Fix anhand eines isolierten roten Checks verifizieren: Diagnose, Commit, Check-Neustart und nachgelagerter Deploy.

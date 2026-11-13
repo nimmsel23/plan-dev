@@ -152,7 +152,6 @@ completed	success	Gemini CI Agent	Gemini CI Agent	master	workflow_run	4333528277
 - Arbeitsbaum: sauber
 
 _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
-- Erledigt: dev-Check rot seit `64cffc99` (Check `43335129780`: Biome-Format `scripts/portal.mjs`, Auto-Promote skipped `43335204370`) → `biome.json` schließt die vos-portal-Kopie `scripts/portal.mjs` aus (Fremd-SOT `~/vitalos/scripts/vos-portal.mjs`, wird bei jedem Sync überschrieben). Beleg der Folgekette: ABTEILUNG.md.
-- Offen/Weiter: Firebase-Abnahme Mehrgerät; coach-dev `workouts.py`. Org-Queue `project:plan-dev` leer.
-- Blocker: Firebase-Abnahme braucht authentifizierte Konten.
-- AUTOMATION: vos-portal verteilt unformatierte `portal.mjs` in Repos mit Biome-Check — `vos-portal.mjs` in vitalos einmal Biome-konform (single quotes, no semis) formatieren oder Repos-weit ausnehmen (CTO) — spart je Sync einen roten Check pro Repo.
+- Erledigt: NEXT-Pages-Punkt geprüft und auf aktuelle Workflow-Konfiguration umgestellt; GitHub-Pages-API bestätigt Workflow-Publishing, Dashboard-Run `43363954863` (`dev`) grün.
+- Offen/Weiter: Firebase-Mehrgeräteabnahme; authentifizierte Konten nötig. `coach-dev` `workouts.py` außerhalb plan-dev.
+- Blocker: Firebase-Mehrgeräteabnahme benötigt authentifizierte Coach-/Klientenkonten.
