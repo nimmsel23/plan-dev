@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-13T16:15:39+00:00",
+  "generated_at": "2026-11-14T11:42:44+00:00",
   "repo": "nimmsel23/plan-dev",
   "meta": {
    "name": "plan-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/plan-dev",
-   "pushed_at": "2026-11-13T16:15:19Z",
+   "pushed_at": "2026-11-14T07:07:11Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/plan-dev/"
@@ -19,10 +19,10 @@
    "main": "master",
    "has_dev": true,
    "dev_behind": 0,
-   "dev_ahead": 1,
-   "oldest_unpromoted": "2026-11-13T17:15:16+01:00",
+   "dev_ahead": 0,
+   "oldest_unpromoted": null,
    "dev_head": "9df0ded4 2026-11-13T17:15:16+01:00",
-   "master_head": "e1a405c1 2026-11-13T17:12:33+01:00"
+   "master_head": "9df0ded4 2026-11-13T17:15:16+01:00"
   },
   "commits": [
    {
@@ -148,10 +148,6 @@
   ],
   "activity": [
    {
-    "day": "2026-10-24",
-    "n": 0
-   },
-   {
     "day": "2026-10-25",
     "n": 3
    },
@@ -230,17 +226,41 @@
    {
     "day": "2026-11-13",
     "n": 5
+   },
+   {
+    "day": "2026-11-14",
+    "n": 0
    }
   ],
   "workflows": [
    {
-    "name": "Check (Plan)",
-    "branch": "dev",
-    "event": "push",
-    "status": "in_progress",
-    "conclusion": null,
-    "created_at": "2026-11-13T16:15:21Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43460858312",
+    "name": "Auto-Promote dev -> master (Check (Plan))",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-14T10:58:35Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43587780105",
+    "sha": "9df0ded"
+   },
+   {
+    "name": "PR-AutoMerge (Dependabot -> dev)",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-14T10:13:10Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43584224233",
+    "sha": "9df0ded"
+   },
+   {
+    "name": "Merge-Agent",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-14T05:09:42Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43560163854",
     "sha": "9df0ded"
    },
    {
@@ -249,29 +269,9 @@
     "event": "workflow_dispatch",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-13T16:13:46Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43460585013",
-    "sha": "e1a405c"
-   },
-   {
-    "name": "PR-AutoMerge (Dependabot -> dev)",
-    "branch": "master",
-    "event": "workflow_run",
-    "status": "completed",
-    "conclusion": "skipped",
-    "created_at": "2026-11-13T16:13:37Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43460559281",
-    "sha": "d4dbff2"
-   },
-   {
-    "name": "Auto-Promote dev -> master (Check (Plan))",
-    "branch": "master",
-    "event": "workflow_run",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-13T16:13:37Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43460559259",
-    "sha": "d4dbff2"
+    "created_at": "2026-11-13T16:16:16Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43461025435",
+    "sha": "9df0ded"
    },
    {
     "name": "Gemini CI Agent",
@@ -279,19 +279,19 @@
     "event": "workflow_run",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-13T16:13:37Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43460558988",
-    "sha": "d4dbff2"
+    "created_at": "2026-11-13T16:16:08Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43461000157",
+    "sha": "e1a405c"
    },
    {
-    "name": "Merge-Agent",
-    "branch": "master",
-    "event": "schedule",
+    "name": "Check (Plan)",
+    "branch": "dev",
+    "event": "push",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-13T10:47:54Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43411868472",
-    "sha": "d4dbff2"
+    "created_at": "2026-11-13T16:15:21Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43460858312",
+    "sha": "9df0ded"
    },
    {
     "name": "Preview Plan",
@@ -314,16 +314,28 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Dev-Branch 1 Commit voraus; Check (Plan) Workflow für 9df0ded4 läuft",
-   "lage": "Der `dev`-Branch ist mit Commit `9df0ded4` (docs(al-log): CI-Belege für Pages-Prüfung) einen Commit vor `master` (`e1a405c1`). Der `Check (Plan)` Workflow für `9df0ded` auf `dev` ist aktuell in Bearbeitung. Der `master`-Branch wurde mit Commit `e1a405c1` (docs(al-log): Pages-CI-Punkt geprüft) aktualisiert und erfolgreich deployed.",
+   "headline": "Dev- und Master-Branches synchronisiert; alle CI-Workflows erfolgreich",
+   "lage": "Der `dev`-Branch ist nun mit `master` synchronisiert, beide stehen auf Commit `9df0ded4`. Alle relevanten CI-Workflows, einschließlich `Auto-Promote dev -> master (Check (Plan))` und `Check (Plan)` für `dev`, wurden erfolgreich abgeschlossen.",
    "auffaelligkeiten": [
     {
      "level": "info",
-     "text": "Der Workflow \"Live Deploy (Plan master)\" für Commit e1a405c1 auf master wurde erfolgreich abgeschlossen."
+     "text": "Der `dev`-Branch ist mit dem `master`-Branch synchronisiert (beide auf `9df0ded4`)."
     },
     {
      "level": "info",
-     "text": "Der Workflow \"Auto-Promote dev -> master (Check (Plan))\" für Commit d4dbff26 wurde erfolgreich abgeschlossen."
+     "text": "Der `Check (Plan)` Workflow für `9df0ded` auf `dev` wurde erfolgreich abgeschlossen."
+    },
+    {
+     "level": "mittel",
+     "text": "Die Verifikation des ersten echten Laufs des `PreCompact`-Hooks steht noch aus."
+    },
+    {
+     "level": "mittel",
+     "text": "Die Browser-Durchklick-Verifikation von Session-Tab-Rebuild Phase 3 Stück 4 + Phase 4 Stück 1 wurde mehrfach angemahnt, aber nicht durchgeführt."
+    },
+    {
+     "level": "mittel",
+     "text": "Die Prüfung der Runtime-DBs und `tw-data` pro Klient vor breitem Rollout ist noch offen."
     }
    ],
    "naechste_schritte": [
@@ -331,13 +343,12 @@
     "Durchführen der Browser-Durchklick-Verifikation von Session-Tab-Rebuild Phase 3 Stück 4 + Phase 4 Stück 1.",
     "Prüfen der Runtime-DBs und `tw-data` pro Klient vor breitem Rollout."
    ],
-   "veraendert": "Der `master`-Branch wurde auf Commit `e1a405c1` aktualisiert und der `dev`-Branch auf `9df0ded4` weiterentwickelt.",
+   "veraendert": "Der `dev`-Branch ist nicht mehr einen Commit vor `master`, sondern vollständig synchronisiert, und der `Check (Plan)` Workflow für `9df0ded` auf `dev` ist erfolgreich abgeschlossen.",
    "fragen": [
-    "Welcher der beiden identischen leeren Yoga-Headstand-Inbox-Drafts soll gelöscht werden?",
-    "Soll der `coach-catalog/kb/` Drift langfristig durch Submodul/Subtree statt Doppelbaum gelöst werden?"
+    "Welcher der beiden identischen leeren Yoga-Headstand-Inbox-Drafts (`inbox_20260831_161715_3b9447` oder `inbox_20260831_161759_cc51fb`) soll gelöscht werden?"
    ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-13T16:15:42+00:00"
+  "ai_at": "2026-11-14T11:42:47+00:00"
  }
 }
