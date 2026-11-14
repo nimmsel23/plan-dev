@@ -127,3 +127,7 @@ Kurzfassung dauerhaft relevanten Wissens aus dem früheren Arbeitslog, thematisc
 - `fitness-strength` ist in `fitness-log` aufgegangen. `fitness/commands/` ist aufgelöst. Jedes Modul ist ein Subpackage (`log/`, `tui/`, `activity/`, `mail/`, `sync/`). Der Entry-Point liegt in `bin/fitness-log`.
 - `fitness/runtime/session_store.py` ist der zentrale Session-Resolver (`session_path`, `iter_session_files`, `user_dirs`). Lege Session-Pfade nicht mehr selbst an.
 - `fitness/muscles.py`: `muscle_label()` liefert echte KB-Muskelnamen. Grobe Buckets nur für Gruppenansichten.
+
+## Setup-Zugang
+
+`#settings` (Alias `#setup`) öffnet im Standalone-Plan die gemeinsame Settings-Ansicht aus dem Fitness-Overlay. Profil-, Trainings- und Darstellungseinstellungen bleiben in ihrem bestehenden Store. Zurück führt wieder zur Plan-Oberfläche.

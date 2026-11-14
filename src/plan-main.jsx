@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useSyncExternalStore } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ClipboardList } from 'lucide-react'
+import Settings from './views/Settings/index.jsx'
 import StrongApp from './views/Plan/StrongApp.jsx'
 import AuthGateModal from './components/AuthGateModal.jsx'
 import ErrorBoundary from './components/common/ErrorBoundary.jsx'
@@ -8,7 +9,9 @@ import '@src/styles.css'
 import { UserProvider, useUser } from './contexts/UserContext.jsx'
 import { SettingsProvider } from './contexts/SettingsContext.jsx'
 
+const subscribeRoute = cb => { window.addEventListener('hashchange', cb); return () => window.removeEventListener('hashchange', cb) }
 function PlanShell() {
+  const settingsOpen = useSyncExternalStore(subscribeRoute, () => /^#\/?(?:settings|setup)(?:\/|$)/.test(location.hash), () => false)
   const { user, authLoading, signIn, signInEmail, signUpEmail, signOut } = useUser()
   const [authEmail, setAuthEmail] = useState('')
   const [authPassword, setAuthPassword] = useState('')
@@ -44,7 +47,7 @@ function PlanShell() {
 
         {allowed ? (
           <main className="min-w-0">
-            <StrongApp key={user.uid || "local"} user={user} onSignOut={signOut} />
+            {settingsOpen ? <div className="p-4"><a href="#">Zurück zu Plan</a><Settings /></div> : <><a href="#settings" className="block p-3 text-right text-sm">Setup</a><StrongApp key={user.uid || "local"} user={user} onSignOut={signOut} /></>}
           </main>
         ) : (
           <main className="mx-auto flex min-h-[calc(100vh-65px)] max-w-lg flex-col items-center justify-center px-4 py-12 text-center">
