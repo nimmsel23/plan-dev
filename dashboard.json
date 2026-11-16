@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-15T12:12:45+00:00",
+  "generated_at": "2026-11-16T11:36:09+00:00",
   "repo": "nimmsel23/plan-dev",
   "meta": {
    "name": "plan-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/plan-dev",
-   "pushed_at": "2026-11-15T07:11:46Z",
+   "pushed_at": "2026-11-16T11:35:48Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/plan-dev/"
@@ -19,12 +19,30 @@
    "main": "master",
    "has_dev": true,
    "dev_behind": 0,
-   "dev_ahead": 0,
-   "oldest_unpromoted": null,
-   "dev_head": "d4181a86 2026-11-14T18:58:31+01:00",
+   "dev_ahead": 3,
+   "oldest_unpromoted": "2026-11-16T11:26:45Z",
+   "dev_head": "493f3e27 2026-11-16T11:35:46Z",
    "master_head": "d4181a86 2026-11-14T18:58:31+01:00"
   },
   "commits": [
+   {
+    "sha": "493f3e27",
+    "date": "2026-11-16T11:35:46Z",
+    "author": "Cursor Agent",
+    "subject": "dashboard: Check und Dashboard starten"
+   },
+   {
+    "sha": "3c38fb7e",
+    "date": "2026-11-16T11:33:33Z",
+    "author": "Cursor Agent",
+    "subject": "dashboard: Check und Dashboard auf dev starten"
+   },
+   {
+    "sha": "fff01806",
+    "date": "2026-11-16T11:26:45Z",
+    "author": "Cursor Agent",
+    "subject": "dashboard: master-Push baut ebenfalls dev"
+   },
    {
     "sha": "d4181a86",
     "date": "2026-11-14T18:58:31+01:00",
@@ -126,31 +144,9 @@
     "date": "2026-11-11T17:15:54+01:00",
     "author": "Alpha",
     "subject": "docs(al-log): AL-Lauf 2026-11-11 Abend — CI-Kette nach Shell-Pin-Close"
-   },
-   {
-    "sha": "ab8c9899",
-    "date": "2026-11-11T17:13:11+01:00",
-    "author": "Alpha",
-    "subject": "docs(al-log): AL-Lauf 2026-11-11 Abend — Shell-Pin 35b1a180 closed"
-   },
-   {
-    "sha": "18698fab",
-    "date": "2026-11-11T17:12:59+01:00",
-    "author": "Alpha",
-    "subject": "docs: auto-update RESULTS.md"
-   },
-   {
-    "sha": "871d5302",
-    "date": "2026-11-11T17:12:54+01:00",
-    "author": "Alpha",
-    "subject": "docs: auto-update NEXT.md"
    }
   ],
   "activity": [
-   {
-    "day": "2026-10-26",
-    "n": 0
-   },
    {
     "day": "2026-10-27",
     "n": 0
@@ -230,18 +226,22 @@
    {
     "day": "2026-11-15",
     "n": 0
+   },
+   {
+    "day": "2026-11-16",
+    "n": 3
    }
   ],
   "workflows": [
    {
-    "name": "Merge-Agent",
-    "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-15T09:25:57Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43699223093",
-    "sha": "d4181a8"
+    "name": "Check (Plan)",
+    "branch": "dev",
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-16T11:35:51Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43859138962",
+    "sha": "493f3e2"
    },
    {
     "name": "PR-AutoMerge (Dependabot -> dev)",
@@ -249,8 +249,18 @@
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-15T09:15:13Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43698342244",
+    "created_at": "2026-11-16T09:31:03Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43840452620",
+    "sha": "d4181a8"
+   },
+   {
+    "name": "Merge-Agent",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-16T08:19:58Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43830355783",
     "sha": "d4181a8"
    },
    {
@@ -259,8 +269,8 @@
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-15T08:28:12Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43694648099",
+    "created_at": "2026-11-16T08:01:06Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43827932710",
     "sha": "d4181a8"
    },
    {
@@ -284,16 +294,6 @@
     "sha": "d4181a8"
    },
    {
-    "name": "Check (Plan)",
-    "branch": "dev",
-    "event": "push",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-14T17:58:35Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/43623990343",
-    "sha": "d4181a8"
-   },
-   {
     "name": "Preview Plan",
     "branch": "dev",
     "event": "push",
@@ -314,20 +314,16 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Branches synchronisiert; alle CI-Workflows erfolgreich",
-   "lage": "Die Branches `dev` und `master` sind weiterhin auf Commit `d4181a86` synchronisiert. Alle zuvor in Bearbeitung befindlichen CI-Workflows, inklusive `Live Deploy (Plan master)` und `Check (Plan)` für `dev`, wurden erfolgreich abgeschlossen.",
+   "headline": "Dev-Branch voraus; Check (Plan) Workflow läuft",
+   "lage": "Der `dev`-Branch ist 3 Commits (bis `493f3e27`) vor dem `master`-Branch (`d4181a86`). Der `Check (Plan)` Workflow für den `dev`-Branch ist aktuell in Bearbeitung.",
    "auffaelligkeiten": [
     {
-     "level": "info",
-     "text": "Alle relevanten CI-Workflows (`Merge-Agent`, `PR-AutoMerge`, `Auto-Promote dev -> master (Check (Plan))`, `Live Deploy (Plan master)`, `Check (Plan)`) wurden am 2026-11-15 bzw. 2026-11-14 erfolgreich abgeschlossen."
-    },
-    {
-     "level": "info",
-     "text": "Commit `faa3c955` vom 2026-11-12 hat `Gemini repair + Merge-Agent` wiederhergestellt, nachdem sie am 2026-11-11 mit `d38bd90a` entfernt wurden."
+     "level": "hoch",
+     "text": "Der `dev`-Branch ist 3 Commits (bis `493f3e27`) vor dem `master`-Branch (`d4181a86`), was eine Abweichung von der letzten synchronisierten Einschätzung darstellt."
     },
     {
      "level": "mittel",
-     "text": "Zwei identische leere Yoga-Headstand-Inbox-Drafts (`inbox_20260831_161715_3b9447`, `inbox_20260831_161759_cc51fb`) sind als Duplikate in `NEXT.md` aufgeführt und müssen bereinigt werden."
+     "text": "Der `Check (Plan)` Workflow für den `dev`-Branch ist mit Commit `493f3e27` aktuell `in_progress`."
     }
    ],
    "naechste_schritte": [
@@ -335,12 +331,10 @@
     "Durchführen der Browser-Durchklick-Verifikation von Session-Tab-Rebuild Phase 3 Stück 4 + Phase 4 Stück 1.",
     "Prüfen der Runtime-DBs und `tw-data` pro Klient vor breitem Rollout."
    ],
-   "veraendert": "Gegenüber der letzten Einschätzung sind alle zuvor in Bearbeitung befindlichen CI-Workflows erfolgreich abgeschlossen worden.",
-   "fragen": [
-    "Welcher der beiden identischen Yoga-Headstand-Inbox-Drafts (`inbox_20260831_161715_3b9447` oder `inbox_20260831_161759_cc51fb`) soll gelöscht werden?"
-   ],
+   "veraendert": "Der `dev`-Branch ist nun 3 Commits vor `master`, und der `Check (Plan)` Workflow für `dev` ist aktuell in Bearbeitung, im Gegensatz zur vorherigen synchronisierten und erfolgreich abgeschlossenen Lage.",
+   "fragen": [],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-15T12:12:47+00:00"
+  "ai_at": "2026-11-16T11:36:11+00:00"
  }
 }
