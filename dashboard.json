@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-18T13:23:35+00:00",
+  "generated_at": "2026-11-19T13:50:04+00:00",
   "repo": "nimmsel23/plan-dev",
   "meta": {
    "name": "plan-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/plan-dev",
-   "pushed_at": "2026-11-18T10:36:35Z",
+   "pushed_at": "2026-11-18T13:23:51Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/plan-dev/"
@@ -148,12 +148,8 @@
   ],
   "activity": [
    {
-    "day": "2026-10-29",
-    "n": 0
-   },
-   {
     "day": "2026-10-30",
-    "n": 4
+    "n": 0
    },
    {
     "day": "2026-10-31",
@@ -230,17 +226,31 @@
    {
     "day": "2026-11-18",
     "n": 0
+   },
+   {
+    "day": "2026-11-19",
+    "n": 0
    }
   ],
   "workflows": [
+   {
+    "name": "PR-AutoMerge (Dependabot -> dev)",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-19T12:54:10Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/44528206296",
+    "sha": "ad2a50b"
+   },
    {
     "name": "Auto-Promote dev -> master (Check (Plan))",
     "branch": "master",
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-18T10:14:02Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/44283426908",
+    "created_at": "2026-11-19T08:52:40Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/44491350671",
     "sha": "ad2a50b"
    },
    {
@@ -249,18 +259,8 @@
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-18T09:46:52Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/44279131036",
-    "sha": "ad2a50b"
-   },
-   {
-    "name": "PR-AutoMerge (Dependabot -> dev)",
-    "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-18T04:12:10Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/44235671896",
+    "created_at": "2026-11-19T07:59:31Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/44483864225",
     "sha": "ad2a50b"
    },
    {
@@ -304,28 +304,28 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Branches dev und master auf ad2a50b9 synchronisiert; Automatisierung läuft",
-   "lage": "Die Branches `dev` und `master` sind auf Commit `ad2a50b9` synchronisiert. Mehrere Automatisierungs-Workflows, inklusive \"Live Deploy (Plan master)\", wurden erfolgreich abgeschlossen. Die Verifikation wichtiger neuer Funktionalitäten steht jedoch noch aus.",
+   "headline": "Branches dev und master synchronisiert; Automatisierung läuft stabil",
+   "lage": "Die Branches `dev` und `master` sind weiterhin auf Commit `ad2a50b9` synchronisiert. Alle relevanten Automatisierungs-Workflows, inklusive `Live Deploy (Plan master)` und `Auto-Promote dev -> master`, wurden erfolgreich abgeschlossen. Die Verifikation wichtiger neuer Funktionalitäten steht jedoch noch aus.",
    "auffaelligkeiten": [
     {
-     "level": "hoch",
-     "text": "Der neue `PreCompact`-Hook wurde nur mit simuliertem Input getestet; ein erster echter Lauf muss verifiziert werden (`NEXT.md`)."
-    },
-    {
-     "level": "hoch",
-     "text": "Die Browser-Durchklick-Verifikation von Session-Tab-Rebuild Phase 3 Stück 4 + Phase 4 Stück 1 ist weiterhin offen (`NEXT.md`)."
+     "level": "info",
+     "text": "Alle automatisierten Workflows, darunter `PR-AutoMerge (Dependabot -> dev)`, `Auto-Promote dev -> master (Check (Plan))`, `Merge-Agent` und `Live Deploy (Plan master)`, wurden erfolgreich ausgeführt."
     },
     {
      "level": "mittel",
-     "text": "Vor einem breiten Rollout müssen Runtime-DBs und `tw-data` pro Klient geprüft und verlustfrei zusammengeführt werden (`TODO.md`)."
+     "text": "Der neue `PreCompact`-Hook (`.claude/hooks/pre-compact-fill-docs.sh`) wurde noch nicht mit einem echten Compact-Trigger verifiziert."
+    },
+    {
+     "level": "mittel",
+     "text": "Die Browser-Durchklick-Verifikation von Session-Tab-Rebuild Phase 3 Stück 4 + Phase 4 Stück 1 ist weiterhin offen."
+    },
+    {
+     "level": "mittel",
+     "text": "Die Prüfung der Runtime-DBs und `tw-data` pro Klient vor breitem Rollout steht noch aus."
     },
     {
      "level": "info",
-     "text": "Der Commit `ad2a50b9` \"org-bot: Workflow installieren (Org-Autonomie 16.11.2026)\" wurde auf `master` und `dev` angewendet."
-    },
-    {
-     "level": "info",
-     "text": "Workflows wie \"Auto-Promote dev -> master (Check (Plan))\", \"Merge-Agent\", \"PR-AutoMerge (Dependabot -> dev)\", \"Gemini CI Agent\" und \"Live Deploy (Plan master)\" wurden erfolgreich abgeschlossen."
+     "text": "18 echte Muskel-Flags aus dem `source-consistency`-Audit müssen noch manuell durchgegangen/korrigiert werden."
     }
    ],
    "naechste_schritte": [
@@ -333,12 +333,12 @@
     "Durchführen der Browser-Durchklick-Verifikation von Session-Tab-Rebuild Phase 3 Stück 4 + Phase 4 Stück 1.",
     "Prüfen der Runtime-DBs und `tw-data` pro Klient vor breitem Rollout."
    ],
-   "veraendert": "Der Workflow \"Live Deploy (Plan master)\", der zuvor in Bearbeitung war, wurde erfolgreich abgeschlossen, und weitere Automatisierungs-Workflows liefen erfolgreich.",
+   "veraendert": "Gegenüber der letzten Einschätzung hat sich die Lage nicht wesentlich verändert; die Branches sind weiterhin synchronisiert und die Automatisierung läuft stabil, jedoch stehen die gleichen Verifikationen noch aus.",
    "fragen": [
-    "Welcher der beiden identischen leeren Yoga-Headstand-Inbox-Drafts (`inbox_20260831_161715_3b9447`, `inbox_20260831_161759_cc51fb`) soll gelöscht werden?"
+    "Welcher der beiden identischen leeren Yoga-Headstand-Inbox-Drafts (`inbox_20260831_161715_3b9447` oder `inbox_20260831_161759_cc51fb`) soll gelöscht werden?"
    ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-18T13:23:37+00:00"
+  "ai_at": "2026-11-19T13:50:06+00:00"
  }
 }
