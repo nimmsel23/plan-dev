@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-20T13:32:03+00:00",
+  "generated_at": "2026-11-21T12:57:54+00:00",
   "repo": "nimmsel23/plan-dev",
   "meta": {
    "name": "plan-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/plan-dev",
-   "pushed_at": "2026-11-20T08:18:35Z",
+   "pushed_at": "2026-11-20T13:32:19Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/plan-dev/"
@@ -148,12 +148,8 @@
   ],
   "activity": [
    {
-    "day": "2026-10-31",
-    "n": 1
-   },
-   {
     "day": "2026-11-01",
-    "n": 13
+    "n": 12
    },
    {
     "day": "2026-11-02",
@@ -230,6 +226,10 @@
    {
     "day": "2026-11-20",
     "n": 1
+   },
+   {
+    "day": "2026-11-21",
+    "n": 0
    }
   ],
   "workflows": [
@@ -239,8 +239,8 @@
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-20T13:26:55Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/44744394701",
+    "created_at": "2026-11-21T10:15:56Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/44893507304",
     "sha": "fb73e9f"
    },
    {
@@ -249,8 +249,8 @@
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-20T11:25:34Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/44727504990",
+    "created_at": "2026-11-21T09:39:50Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/44890635397",
     "sha": "fb73e9f"
    },
    {
@@ -259,8 +259,8 @@
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-20T08:36:12Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/44703865265",
+    "created_at": "2026-11-21T04:18:31Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/44865456179",
     "sha": "fb73e9f"
    },
    {
@@ -305,35 +305,19 @@
   "signals": [],
   "ai": {
    "headline": "Dev und Master synchron; alle CI-Workflows erfolgreich abgeschlossen",
-   "lage": "Der `dev`-Branch ist mit `master` auf Commit `fb73e9f6` synchronisiert. Alle zugehörigen CI-Workflows, einschließlich `Check (Plan)` und `Auto-Promote`, wurden erfolgreich abgeschlossen.",
+   "lage": "Der `dev`-Branch ist weiterhin mit `master` auf Commit `fb73e9f6` synchronisiert. Alle zugehörigen CI-Workflows, einschließlich `Check (Plan)` und `Auto-Promote`, wurden erfolgreich abgeschlossen.",
    "auffaelligkeiten": [
     {
-     "level": "hoch",
-     "text": "Zwei identische leere Yoga-Headstand-Inbox-Drafts (`inbox_20260831_161715_3b9447`, `inbox_20260831_161759_cc51fb`) sind ein Duplikat; es ist noch nicht entschieden, welcher gelöscht werden soll."
+     "level": "info",
+     "text": "Die drei in der letzten Einschätzung genannten nächsten Schritte sind laut `NEXT.md` und `TODO.md` noch offen."
     },
     {
      "level": "mittel",
-     "text": "Der neue `PreCompact`-Hook wurde nur mit simuliertem Fake-Input getestet; ein erster echter Lauf sollte verifiziert werden."
+     "text": "Zwei identische leere Yoga-Headstand-Inbox-Drafts (`inbox_20260831_161715_3b9447`, `inbox_20260831_161759_cc51fb`) sind ein Duplikat und müssen bereinigt werden."
     },
     {
      "level": "mittel",
-     "text": "Die Browser-Durchklick-Verifikation von Session-Tab-Rebuild Phase 3 Stück 4 + Phase 4 Stück 1 wurde mehrfach angemahnt, aber nicht durchgeführt."
-    },
-    {
-     "level": "mittel",
-     "text": "Vor breitem Rollout müssen Runtime-DBs und `tw-data` pro Klient geprüft und verlustfrei zusammengeführt werden."
-    },
-    {
-     "level": "info",
-     "text": "Der Coach-`catalog/kb/` Drift gegen `~/dev/fitness` (2 Inbox-Drafts) muss angeglichen werden; langfristig ist ein Submodul/Subtree statt Doppelbaum angedacht."
-    },
-    {
-     "level": "info",
-     "text": "Fünf Inbox-Drafts ohne wger-/yuhonas-Quelle benötigen einen echten Gemini-Reenrich-Pass."
-    },
-    {
-     "level": "info",
-     "text": "Die 18 echten Muskel-Flags aus dem `source-consistency`-Audit sind noch nicht einzeln manuell durchgegangen/korrigiert worden."
+     "text": "Die 18 vom `source-consistency`-Audit gefundenen Muskel-Flags sind noch nicht manuell durchgegangen/korrigiert worden."
     }
    ],
    "naechste_schritte": [
@@ -341,12 +325,12 @@
     "Durchführen der Browser-Durchklick-Verifikation von Session-Tab-Rebuild Phase 3 Stück 4 + Phase 4 Stück 1.",
     "Prüfen der Runtime-DBs und `tw-data` pro Klient vor breitem Rollout."
    ],
-   "veraendert": "Der `dev`-Branch ist nun mit `master` auf Commit `fb73e9f6` synchronisiert, und der `Check (Plan)`-Workflow für `dev` wurde erfolgreich abgeschlossen.",
+   "veraendert": "Gegenüber der letzten Einschätzung gab es keine Änderungen im Branch-Status oder bei den CI-Workflow-Ergebnissen; die offenen nächsten Schritte sind unverändert.",
    "fragen": [
-    "Welcher der beiden identischen leeren Yoga-Headstand-Inbox-Drafts (`inbox_20260831_161715_3b9447`, `inbox_20260831_161759_cc51fb`) soll gelöscht werden?"
+    "Welcher der beiden identischen Yoga-Headstand-Inbox-Drafts (`inbox_20260831_161715_3b9447`, `inbox_20260831_161759_cc51fb`) soll gelöscht werden?"
    ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-20T13:32:05+00:00"
+  "ai_at": "2026-11-21T12:57:56+00:00"
  }
 }
