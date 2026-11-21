@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-21T12:57:54+00:00",
+  "generated_at": "2026-11-21T20:08:31+00:00",
   "repo": "nimmsel23/plan-dev",
   "meta": {
    "name": "plan-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/plan-dev",
-   "pushed_at": "2026-11-20T13:32:19Z",
+   "pushed_at": "2026-11-21T12:58:14Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/plan-dev/"
@@ -149,7 +149,7 @@
   "activity": [
    {
     "day": "2026-11-01",
-    "n": 12
+    "n": 2
    },
    {
     "day": "2026-11-02",
@@ -234,13 +234,23 @@
   ],
   "workflows": [
    {
+    "name": "Auto-Promote dev -> master (Check (Plan))",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-21T20:07:45Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/44944604780",
+    "sha": "fb73e9f"
+   },
+   {
     "name": "Merge-Agent",
     "branch": "master",
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-21T10:15:56Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/44893507304",
+    "created_at": "2026-11-21T17:43:14Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/44931578017",
     "sha": "fb73e9f"
    },
    {
@@ -249,18 +259,8 @@
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-21T09:39:50Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/44890635397",
-    "sha": "fb73e9f"
-   },
-   {
-    "name": "Auto-Promote dev -> master (Check (Plan))",
-    "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-21T04:18:31Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/44865456179",
+    "created_at": "2026-11-21T17:25:02Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/44929923707",
     "sha": "fb73e9f"
    },
    {
@@ -308,16 +308,16 @@
    "lage": "Der `dev`-Branch ist weiterhin mit `master` auf Commit `fb73e9f6` synchronisiert. Alle zugehörigen CI-Workflows, einschließlich `Check (Plan)` und `Auto-Promote`, wurden erfolgreich abgeschlossen.",
    "auffaelligkeiten": [
     {
+     "level": "mittel",
+     "text": "18 echte Muskel-Flags (u.a. `clean_snatch`, `dumbbell_lateral_raise`, `face_pull`) sind noch nicht manuell durchgegangen/korrigiert worden."
+    },
+    {
      "level": "info",
-     "text": "Die drei in der letzten Einschätzung genannten nächsten Schritte sind laut `NEXT.md` und `TODO.md` noch offen."
+     "text": "Zwei identische leere Yoga-Headstand-Inbox-Drafts (`inbox_20260831_161715_3b9447`, `inbox_20260831_161759_cc51fb`) sind ein Duplikat."
     },
     {
-     "level": "mittel",
-     "text": "Zwei identische leere Yoga-Headstand-Inbox-Drafts (`inbox_20260831_161715_3b9447`, `inbox_20260831_161759_cc51fb`) sind ein Duplikat und müssen bereinigt werden."
-    },
-    {
-     "level": "mittel",
-     "text": "Die 18 vom `source-consistency`-Audit gefundenen Muskel-Flags sind noch nicht manuell durchgegangen/korrigiert worden."
+     "level": "info",
+     "text": "Der Endpunkt `/fitness/coach/habit-cycle/:clientUid` fehlt weiterhin im Python-Backend."
     }
    ],
    "naechste_schritte": [
@@ -325,12 +325,12 @@
     "Durchführen der Browser-Durchklick-Verifikation von Session-Tab-Rebuild Phase 3 Stück 4 + Phase 4 Stück 1.",
     "Prüfen der Runtime-DBs und `tw-data` pro Klient vor breitem Rollout."
    ],
-   "veraendert": "Gegenüber der letzten Einschätzung gab es keine Änderungen im Branch-Status oder bei den CI-Workflow-Ergebnissen; die offenen nächsten Schritte sind unverändert.",
+   "veraendert": "Gegenüber der letzten Einschätzung hat sich der Zustand des Repos nicht wesentlich verändert; `dev` und `master` sind weiterhin synchron, und alle CI-Workflows laufen erfolgreich.",
    "fragen": [
-    "Welcher der beiden identischen Yoga-Headstand-Inbox-Drafts (`inbox_20260831_161715_3b9447`, `inbox_20260831_161759_cc51fb`) soll gelöscht werden?"
+    "Welcher der beiden identischen leeren Yoga-Headstand-Inbox-Drafts (`inbox_20260831_161715_3b9447`, `inbox_20260831_161759_cc51fb`) soll gelöscht werden?"
    ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-21T12:57:56+00:00"
+  "ai_at": "2026-11-21T20:08:33+00:00"
  }
 }
