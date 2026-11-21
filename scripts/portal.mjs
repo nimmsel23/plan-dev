@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 // vos-portal — App-Links + APK-Downloads (KEIN Dashboard).
-// Keine Abhängigkeiten; schreibt docs/ bzw. portal/ (+ docs/dev-dashboard.html als Pages-Spiegel).
+// Keine Abhängigkeiten; schreibt docs/ bzw. portal/ (+ docs/apps.html als Pages-Spiegel; docs/dev-dashboard.html leitet weiter).
 //
 //   node scripts/vos-portal.mjs                  Repo = cwd → docs/apps.json + docs/apps.html
 //   node scripts/vos-portal.mjs --repo <dir>     dasselbe für ein anderes Repo
 //   node scripts/vos-portal.mjs --all [<root>]   alle Repos aus portal/repos.json (Default ~/dev):
 //                                                je Repo docs/apps.*; Meta: portal/{registry,index}.html
-//                                                + docs/dev-dashboard.html (GitHub-Pages-Spiegel, Dateiname historisch)
+//                                                + docs/apps.html (GitHub-Pages-Spiegel) + docs/dev-dashboard.html (Weiterleitung)
 //   --check                                      schreibt nichts, Exit 1 wenn veraltet (CI / CTO-Runde)
 //
 // Quellen je Repo (nichts doppelt pflegen):
@@ -161,14 +161,16 @@ function card(a, withRepo) {
 
 const SEARCH = `<script>const q=document.getElementById("q");q&&q.addEventListener("input",()=>{const v=q.value.toLowerCase();document.querySelectorAll("a.card").forEach(c=>c.classList.toggle("hide",!c.dataset.q.includes(v)));document.querySelectorAll("section").forEach(s=>s.classList.toggle("hide",!s.querySelector("a.card:not(.hide)")))})</script>`;
 
+const REDIRECT = `<!doctype html><meta charset="utf-8"><title>VitalOS App-Links</title><meta http-equiv="refresh" content="0; url=./apps.html"><link rel="canonical" href="./apps.html"><p>Umgezogen: <a href="./apps.html">VitalOS App-Links &amp; APKs</a></p>\n`;
+
 function navLinks(extra = []) {
   const links = [
     ["Produkt (PRODUCT.md)", "https://github.com/nimmsel23/vitalos/blob/master/prod/coordination/PRODUCT.md"],
     ["Koordination", "https://github.com/nimmsel23/vitalos/blob/master/prod/coordination/README.md"],
     ["Backlog", "https://github.com/nimmsel23/vitalos/blob/master/prod/coordination/PRODUKT-BACKLOG.md"],
     ["CTO", "https://github.com/nimmsel23/vitalos/blob/master/prod/coordination/CTO.md"],
-    ["Meta Pages", "https://nimmsel23.github.io/vitalos/"],
-    ["App-Links (Portal)", "https://nimmsel23.github.io/vitalos/dev-dashboard.html"],
+    ["Entwicklungsdashboard", "https://nimmsel23.github.io/vitalos/"],
+    ["App-Links & APKs", "https://nimmsel23.github.io/vitalos/apps.html"],
     ["Org-Dashboards", "https://vos-dev-dashboards.web.app"],
     ...extra,
   ];
@@ -250,7 +252,9 @@ if (flag("--all")) {
   const pagesDash = dash
     .replaceAll('href="./registry.json"', 'href="https://github.com/nimmsel23/vitalos/blob/master/portal/registry.json"')
     .replaceAll('href="./dev-status.json"', 'href="https://github.com/nimmsel23/vitalos/blob/master/portal/dev-status.json"');
-  write(path.join(metaRoot, "docs/dev-dashboard.html"), pagesDash);
+  write(path.join(metaRoot, "docs/apps.html"), pagesDash);
+  // Alter Pfad bleibt als Weiterleitung, damit bestehende Links nicht brechen.
+  write(path.join(metaRoot, "docs/dev-dashboard.html"), REDIRECT);
 } else {
   emitRepo(val("--repo") ?? process.cwd(), metaStatus);
 }
