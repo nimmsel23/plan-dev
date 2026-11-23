@@ -145,11 +145,7 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
   return (
     <div className="mx-auto max-w-2xl px-4 py-6">
       <header className="mb-6">
-        <p className="text-xs font-semibold uppercase tracking-wide text-fit-muted">Strong · Plan</p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight">Training starten</h1>
-        <p className="mt-2 text-sm text-fit-muted">
-          Eigene Routine starten oder leeres Workout. Templates sind Vorschläge — anpassen und als Routine speichern. Einen Plan brauchst du nur, wenn du einen willst; dann baust du ihn selbst. Vom Coach bekommst du Pläne über die Coach-App — hier siehst du sie und trainierst damit.
-        </p>
+        <h1 className="text-2xl font-bold tracking-tight">Training starten</h1>
       </header>
       {error && <div role="alert" className="mb-4 rounded-xl border border-red-500/30 p-3 text-sm text-fit-red">{error}<button onClick={load} className="ml-2 underline">Erneut laden</button></div>}
       <PushOptIn user={user} />
@@ -157,12 +153,11 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
       {bannerPlans.length > 0 && <button onClick={showPlans} className="mb-4 flex w-full items-center justify-between rounded-2xl border border-fit-accent bg-fit-accent/10 p-4 text-left"><span><span className="block font-semibold">{bannerPlans.length === 1 ? `Neuer Trainingsplan: ${bannerPlans[0].name}` : `${bannerPlans.length} neue Trainingspläne von deinem Coach`}</span><span className="text-xs text-fit-muted">Antippen zum Ansehen</span></span><Layers size={20} className="text-fit-accent" /></button>}
       {coachState.error && <div role="alert" className="mb-4 rounded-xl border border-red-500/30 p-3 text-sm text-fit-red">Plan vom Coach konnte nicht geladen werden.<button onClick={loadCoachPlans} className="ml-2 underline">Erneut laden</button></div>}
       {unfinished ? <button disabled={busy} onClick={() => onOpenWorkout(unfinished.id)} className="mb-6 flex w-full items-center justify-between rounded-2xl border border-fit-accent bg-fit-accent/10 p-4 text-left"><span><span className="block font-semibold">{unfinished.name}</span><span className="text-xs text-fit-muted">Workout läuft · Fortsetzen</span></span><Play size={20} className="text-fit-accent" /></button> : coachNext ? <><CoachPlanToday key={dayKey} {...coachNext} onStart={begin} onOpenPlans={showPlans} busy={busy} /><WeekOverview key={`w${dayKey}`} plan={coachNext.plan} workouts={workouts} /></> : next && <NextUpCard routine={next} onStart={begin} onEdit={onEditRoutine} busy={busy} />}
-      <div className="mb-6 grid grid-cols-2 gap-2">
-        <button disabled={busy || loading} onClick={() => begin()} className="rounded-xl border border-fit-line bg-fit-card px-3 py-3 text-sm font-semibold disabled:opacity-50">Leeres Workout</button>
-        <button disabled={busy} onClick={newRoutine} className="flex items-center justify-center gap-2 rounded-xl bg-fit-accent px-3 py-3 text-sm font-semibold text-fit-bg disabled:opacity-50"><Plus size={16} /> Neue Routine</button>
+      <div className="mb-6">
+        <button disabled={busy} onClick={newRoutine} className="flex w-full items-center justify-center gap-2 rounded-xl bg-fit-accent px-3 py-3 text-sm font-semibold text-fit-bg disabled:opacity-50"><Plus size={16} /> Neue Routine</button>
       </div>
       <div aria-label="Trainingsbereich" className="mb-5 flex gap-1 rounded-xl bg-fit-bg2 p-1">
-        {[['templates', 'Routinen'], ['plans', 'Pläne (optional)']].map(([id, label]) => (
+        {[['templates', 'Routinen'], ['plans', 'Pläne']].map(([id, label]) => (
           <button
             key={id}
             aria-pressed={section === id}
@@ -175,12 +170,9 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
         ))}
       </div>
       {section === 'plans' ? <>
-        <p className="mb-4 text-sm text-fit-muted">
-          Ein Plan ist optional und setzt sich aus mehreren Templates/Routinen zusammen. Selbst bauen kannst du hier. Zustellen an Klienten macht die Coach-App — nicht diese Plan-App.
-        </p>
         {coachState.loaded && !coachState.error && !coachPlans.length && (
           <p role="status" className="mb-4 rounded-xl border border-dashed border-fit-line p-4 text-sm text-fit-muted">
-            Noch kein Plan vom Coach. Ohne Plan über Routinen trainieren — oder unten selbst einen für dich anlegen.
+            Noch kein Plan vom Coach.
           </p>
         )}
         <AssignedPlans onStart={(body) => begin(null, body)} />
@@ -195,7 +187,7 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
             <Dumbbell size={30} className="mx-auto mb-3 text-fit-accent" />
             <h3 className="font-semibold">Noch keine Routine</h3>
             <p className="my-3 text-sm text-fit-muted">
-              Leg eine eigene an (z.&nbsp;B. „Push A“) oder starte ein leeres Workout und speichere es danach als Routine. Fertige Templates sind nur Vorschläge — ändern und als deine Routine behalten.
+              Eigene Routine anlegen (z.&nbsp;B. „Push A“), leeres Workout starten oder Template nutzen.
             </p>
             <button onClick={newRoutine} className="rounded-xl bg-fit-accent px-4 py-2 text-sm font-semibold text-fit-bg">Erste Routine erstellen</button>
             <button onClick={() => begin()} className="mt-3 block w-full text-sm text-fit-accent">Stattdessen leeres Workout starten</button>

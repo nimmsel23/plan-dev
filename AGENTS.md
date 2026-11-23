@@ -4,9 +4,8 @@
 
 - Scoped fertige Arbeit: **immer committen** (nicht auf explizites „commit“ warten).
 - `~/plan-dev` on `dev` is the canonical working checkout for the Plan mini-app.
-- **Plan-App = Strong für den Athleten:** Routinen, Workouts, Templates als
-  Vorschläge (anpassen → eigene Routine), optional eigener Plan. Nicht
-  Features gegeneinander wegräumen.
+- **Plan-App = Strong App:** Routinen, Workouts, Templates, Pläne.
+  Nichts davon ist „optionales Feature“ — und nichts ungefragt wegräumen.
 - **Zustellung an Klienten fachlich = Coach-App.** Bestehende Coach-UI in Plan
   (z. B. CoachWorkspace) nicht ungefragt entfernen — lieber belassen, bis
   bewusst umgezogen wird. Nicht „aufteilen“ mit Löschen verwechseln.
@@ -49,10 +48,9 @@ Stand 2026-11-09. Ausführlich: `~/vitalos/docs/DEPLOYMENT.md`.
 
 ## Plan ownership and Coach consumption (2026-11-09)
 
-Plan ist im Kern die Strong-App (Logbuch). Coach-Zustellung und geteilter Editor
-liegen darauf; Coach hostet die Schmiede/Local-Backend (`coach_local_plans` lädt
-heute noch `modules/plan/runtime` — Umzug nach Coach ist offen). Fitness zeigt
-denselben Plan-Tab für den Klienten, ohne Coach-Imports.
+Plan ist die Strong-App. Coach hostet die Schmiede/Local-Backend
+(`coach_local_plans` lädt heute noch `modules/plan/runtime` — Umzug nach Coach
+ist offen). Fitness zeigt denselben Plan-Tab, ohne Coach-Imports.
 
 Change shared UI here, commit, then deliberately advance Coach's `modules/plan`
 pointer. Publish Plan commits before pushing a Coach pointer referencing them.
