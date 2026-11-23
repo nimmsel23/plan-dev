@@ -6,6 +6,38 @@ Plan ist **nicht** eine weitere Fitness-App und **nicht** die Coach-Workbench.
 Plan ist die **gemeinsame Schnittstelle** zwischen Coach und Athlet:
 Trainingsplan, später Ernährungsplan, Feedback, Versionen — ein Artefakt, zwei Rollen.
 
+**Eigentliche Diagnose:** Plan ist das, was Fitness von Anfang an hätte sein sollen —
+Coach gibt Vorgaben, Athlet führt aus, beide sehen denselben Stand.
+Fitness ist zum Tempel/Tracker/Ausbildungs-Kosmos ausgewachsen, bevor dieses
+Betriebsmodell je festgeschrieben war. **Wie irgendetwas mit etwas zusammenspielt,
+wurde nie festgelegt** — weder Auftrag noch Grenzen noch der Vertrag zwischen den Apps.
+Features gibt es; ein Produktgesetz und ein Zusammenspiel-Modell fehlen.
+Das Problem ist Unklarheit, nicht fehlende Buttons.
+
+### Plan ↔ Coach (Gegenstück, das gleichzeitig innen steckt)
+
+Fachlich ist Plan das **Gegenstück zu Coach**:
+
+| | Coach | Plan |
+| --- | --- | --- |
+| Rolle | Schmiede / Betrieb / Klientenakte | Zugestelltes Artefakt + Athlet-Sicht + Dialog |
+| Frage | Wen betreue ich, was schmiede ich? | Was gilt für den Athleten, was sieht er, was kommt zurück? |
+
+Technisch steckt Plan **gleichzeitig in Coach** (Submodul `modules/plan`, Local-Schmiede
+nutzt denselben Editor). Das ist Absicht für Code-Sharing — aber ohne festgeschriebenes
+Zusammenspiel wirkt es wie Identitätsverlust: Ist Plan App, Modul, Tab in Fitness, oder
+Teil von Coach?
+
+**Festlegung:**
+
+1. **Produkt:** Plan = Gegenstück (Athlet-Vertrag am freigegebenen Artefakt).
+2. **Code:** Plan = Modul, das Coach und Fitness einbetten — ein Editor, kein zweiter.
+3. **Coach „hat Plan inne“** heißt nur: Coach hostet die Schmiede-UI und Persistenz/Versand;
+   er besitzt nicht den Produktauftrag „was der Athlet sieht“.
+4. **Fitness zeigt Plan**, besitzt aber nicht die Schmiede und nicht die Klientenakte.
+5. Alles, was diese Grenzen vermischt (zweiter Editor, Plan-Backend in plan-dev,
+   Coach-only Athleten-UI), ist Drift.
+
 Die alte `VISION.md` in diesem Repo war Fitness-Fork-Ballast (Anatomie, Ausbildung, Tracker).
 Das hier ersetzt sie als Fundament.
 
