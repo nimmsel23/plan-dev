@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Plus, Pencil, Users } from 'lucide-react';
+import { ArrowLeft, Users } from 'lucide-react';
 import { getAllUserProfiles, listMacrocycles } from '@db';
 import { createPlanApi } from './api.js';
-import RoutineBuilder from './RoutineBuilder.jsx';
 import TrainingPlans from './TrainingPlans.jsx';
 import { formatDuration, workoutTotals } from './lib/history.js';
 
@@ -11,8 +10,6 @@ export default function CoachWorkspace({ onBack }) {
   const [clientUid, setClientUid] = useState('');
   const [routines, setRoutines] = useState([]);
   const [workouts, setWorkouts] = useState([]);
-  const [editing, setEditing] = useState(null);
-  const [name, setName] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [overview, setOverview] = useState({});
@@ -25,11 +22,15 @@ export default function CoachWorkspace({ onBack }) {
   const clientApi = useMemo(() => createPlanApi(clientUid), [clientUid]);
   const loadProfiles = useCallback(() => {
     setProfilesError('');
-    getAllUserProfiles().then((p) => aliveRef.current && setProfiles(p || {})).catch((err) => aliveRef.current && setProfilesError(err?.message || 'Klienten konnten nicht geladen werden.'));
+    getAllUserProfiles()
+      .then((p) => aliveRef.current && setProfiles(p || {}))
+      .catch((err) => aliveRef.current && setProfilesError(err?.message || 'Klienten konnten nicht geladen werden.'));
   }, []);
   useEffect(() => { loadProfiles(); }, [loadProfiles]);
-  const clients = useMemo(() => Object.entries(profiles).map(([uid, p]) => [uid, p.displayName || p.email || uid]).sort((a, b) => a[1].localeCompare(b[1])), [profiles]);
-  // Pro Klient: bereitgestellte/Entwurfs-Pläne und Workouts der letzten 7 Tage.
+  const clients = useMemo(
+    () => Object.entries(profiles).map(([uid, p]) => [uid, p.displayName || p.email || uid]).sort((a, b) => a[1].localeCompare(b[1])),
+    [profiles],
+  );
   const loadOverview = useCallback(async (uid) => {
     setOverview((o) => ({ ...o, [uid]: undefined }));
     try {
@@ -43,64 +44,174 @@ export default function CoachWorkspace({ onBack }) {
         week: finished.filter((d) => Date.parse(d) >= weekAgo).length,
       };
       if (aliveRef.current) setOverview((o) => ({ ...o, [uid]: info }));
-    } catch { if (aliveRef.current) setOverview((o) => ({ ...o, [uid]: { failed: true } })); }
+    } catch {
+      if (aliveRef.current) setOverview((o) => ({ ...o, [uid]: { failed: true } }));
+    }
   }, []);
   useEffect(() => { clients.forEach(([uid]) => loadOverview(uid)); }, [clients, loadOverview]);
-  const shown = useMemo(() => { const q = filter.trim().toLowerCase(); return q ? clients.filter(([, label]) => label.toLowerCase().includes(q)) : clients; }, [clients, filter]);
+  const shown = useMemo(() => {
+    const q = filter.trim().toLowerCase();
+    return q ? clients.filter(([, label]) => label.toLowerCase().includes(q)) : clients;
+  }, [clients, filter]);
+
   async function load() {
     if (!clientUid) return;
     const mine = ++seq.current;
-    setBusy(true); setError('');
+    setBusy(true);
+    setError('');
     try {
       const [r, w] = await Promise.all([clientApi.get('/routines'), clientApi.get('/workouts')]);
       if (mine !== seq.current) return;
-      setRoutines(r.routines || []); setWorkouts(w.workouts || []);
-    } catch (err) { if (mine === seq.current) setError(err.message); }
-    finally { if (mine === seq.current) setBusy(false); }
+      setRoutines(r.routines || []);
+      setWorkouts(w.workouts || []);
+    } catch (err) {
+      if (mine === seq.current) setError(err.message);
+    } finally {
+      if (mine === seq.current) setBusy(false);
+    }
   }
-  useEffect(() => { seq.current++; setRoutines([]); setWorkouts([]); setEditing(null); setError(''); setBusy(false); load(); return () => { seq.current++; }; }, [clientUid]);
-  async function create() {
-    if (busy || !name.trim()) return;
-    setBusy(true); setError('');
-    try { const r = await clientApi.post('/routines', { name: name.trim() }); setName(''); setEditing(r.id); }
-    catch (err) { setError(err.message); }
-    finally { setBusy(false); }
-  }
-  if (editing) return <div><p className="px-4 pt-4 text-xs text-fit-accent">Für {profiles[clientUid]?.displayName || profiles[clientUid]?.email || clientUid}</p><RoutineBuilder key={`${clientUid}:${editing}`} routineId={editing} apiClient={clientApi} onBack={() => { setEditing(null); load(); }} /></div>;
+  useEffect(() => {
+    seq.current++;
+    setRoutines([]);
+    setWorkouts([]);
+    setError('');
+    setBusy(false);
+    setSection('plans');
+    load();
+    return () => { seq.current++; };
+  }, [clientUid]);
+
+  const clientLabel = clients.find(([id]) => id === clientUid)?.[1] || clientUid;
+
   return (
     <div className="mx-auto max-w-2xl space-y-6 px-4 py-6">
-      <button onClick={onBack} className="flex items-center gap-2 text-sm text-fit-muted"><ArrowLeft size={16} /> Mein Training</button>
-      <header><h1 className="flex items-center gap-2 text-2xl font-bold"><Users size={23} /> Klienten-Training</h1><p className="mt-2 text-sm text-fit-muted">Klient wählen und einen Trainingsplan direkt gestalten: Trainingstage, Übungen und Satzvorgaben. Entwurf prüfen und anschließend für den Klienten freigeben.</p></header>
-      <label className="block text-sm font-medium">Klient
-        <select aria-label="Klient auswählen" value={clientUid} onChange={(e) => { setClientUid(e.target.value); setSection('plans'); }} className="mt-2 w-full rounded-xl border border-fit-line bg-fit-card p-3">
-          <option value="">Klient auswählen…</option>
-          {clients.map(([uid, label]) => <option key={uid} value={uid}>{label}</option>)}
-        </select>
-      </label>
-      {profilesError && <p role="alert" className="text-sm text-fit-red">Klienten konnten nicht geladen werden: {profilesError}<button onClick={loadProfiles} className="ml-2 min-h-[44px] underline">Erneut versuchen</button></p>}
-      {!clientUid && clients.length > 0 && <section aria-label="Klienten-Übersicht" className="space-y-2">
-        <h2 className="text-lg font-semibold">Klienten-Übersicht</h2>
-        {clients.length > 8 && <input type="search" aria-label="Klienten filtern" placeholder="Klienten filtern…" value={filter} onChange={(e) => setFilter(e.target.value)} className="min-h-[44px] w-full rounded-xl border border-fit-line bg-fit-card p-3 text-sm" />}
-        {!shown.length && <p className="text-sm text-fit-muted">Kein Klient gefunden.</p>}
-        {shown.map(([uid, label]) => { const o = overview[uid]; return <div key={uid} className="flex w-full items-center justify-between gap-3 rounded-xl border border-fit-line bg-fit-card p-3">
-          <button onClick={() => setClientUid(uid)} className="min-h-[44px] min-w-0 flex-1 text-left"><span className="block truncate font-semibold">{label}</span>
-            <span className="text-xs text-fit-muted">{!o ? 'Lädt…' : o.failed ? 'Konnte nicht geladen werden' : o.published ? `${o.published} Plan${o.published > 1 ? 'e' : ''} bereitgestellt` : o.drafts ? 'Nur Entwurf — noch nichts bereitgestellt' : 'Noch kein Plan'}{o && !o.failed && o.drafts > 0 && o.published > 0 ? ` · ${o.drafts} Entwurf` : ''}</span></button>
-          {o?.failed ? <button onClick={() => loadOverview(uid)} className="min-h-[44px] shrink-0 px-2 text-xs underline">Erneut versuchen</button>
-            : <span className="shrink-0 text-right text-xs text-fit-muted">{o && <><span className="block font-semibold text-fit-ink">{o.week} Workouts · 7 Tage</span>{o.last ? `zuletzt ${new Date(o.last).toLocaleDateString('de-AT')}` : 'noch kein Workout'}</>}</span>}
-        </div>; })}
-      </section>}
-      {error && <p role="alert" className="text-sm text-fit-red">{error}<button onClick={load} className="ml-2 underline">Erneut versuchen</button></p>}
-      {clientUid && <>
-        <div className="rounded-2xl border border-fit-accent/30 bg-fit-accent/5 p-4"><p className="text-xs font-semibold uppercase tracking-wide text-fit-accent">Klientenbereich</p><h2 className="mt-1 break-words text-xl font-semibold">{clients.find(([id]) => id === clientUid)?.[1] || clientUid}</h2><p className="mt-2 text-sm text-fit-muted">Plan gestalten → Vorschau prüfen → freigeben. Ergebnisse und Rückmeldungen bleiben beim Klienten.</p></div>
-        <nav aria-label="Klientenbereiche" className="grid grid-cols-3 gap-1 rounded-2xl border border-fit-line bg-fit-card p-1">{[['plans', 'Pläne'], ['templates', 'Vorlagen'], ['results', 'Ergebnisse']].map(([id, label]) => <button key={id} aria-current={section === id ? 'page' : undefined} onClick={() => setSection(id)} className={`min-h-[48px] rounded-xl px-2 text-sm font-semibold ${section === id ? 'bg-fit-accent text-fit-bg' : 'text-fit-muted'}`}>{label}</button>)}</nav>
-        {section === 'plans' && <TrainingPlans key={clientUid} clientUid={clientUid} clients={clients} templates={routines} workouts={workouts} onChanged={load} />}
-        {section === 'templates' && <section className="space-y-3"><h2 className="text-lg font-semibold">Workout-Vorlagen</h2>
-          <form onSubmit={(e) => { e.preventDefault(); create(); }} className="flex gap-2"><input aria-label="Neue Workout-Vorlage" placeholder="z. B. Push A" value={name} onChange={(e) => setName(e.target.value)} className="min-w-0 flex-1 rounded-xl border border-fit-line bg-fit-card p-3 text-sm" /><button disabled={busy || !name.trim()} className="flex items-center gap-1 rounded-xl bg-fit-accent px-4 text-sm font-semibold text-fit-bg disabled:opacity-50"><Plus size={16} /> Erstellen</button></form>
-          {busy ? <p className="text-sm text-fit-muted">Lädt…</p> : routines.map((r) => <button key={r.id} onClick={() => setEditing(r.id)} className="flex w-full items-center justify-between rounded-xl border border-fit-line bg-fit-card p-4 text-left"><span><span className="block font-semibold">{r.name}</span><span className="text-xs text-fit-muted">{r.exerciseCount || 0} Übungen · Sätze, Pausen und Hinweise bearbeiten</span></span><Pencil size={16} /></button>)}
-          {!busy && !routines.length && <p className="text-sm text-fit-muted">Erstelle die erste Einheit. Füge anschließend ihre Übungen und Satzvorgaben hinzu.</p>}
-        </section>}
-        {section === 'results' && <section><h2 className="mb-3 text-lg font-semibold">Absolvierte Workouts</h2>{workouts.filter((w) => w.finished_at).sort((a,b) => b.finished_at.localeCompare(a.finished_at)).slice(0, 12).map((w) => <div key={w.id} className="mb-2 rounded-xl border border-fit-line p-3"><p className="font-medium">{w.name}</p><p className="text-xs text-fit-muted">{new Date(w.finished_at).toLocaleDateString('de-AT')} · {workoutTotals(w).sets} Sätze · {formatDuration(workoutTotals(w).durationMs)}</p>{w.feedback && <p className="mt-1 rounded-lg bg-fit-accent/10 px-2 py-1 text-xs"><span className="font-semibold text-fit-accent">Rückmeldung{w.feedback.effort ? ` · Anstrengung ${w.feedback.effort}/10` : ''}</span>{w.feedback.note ? `: ${w.feedback.note}` : ''}</p>}{(w.eventLog || []).map((s,i) => <p key={i} className="mt-1 text-xs text-fit-dim">{s.name} · {s.reps != null ? `${s.reps} Wdh` : `${s.seconds || 0} s`}{s.weight != null ? ` · ${s.weight} kg` : ''}</p>)}</div>)}{!workouts.some((w) => w.finished_at) && <p className="text-sm text-fit-muted">Hier erscheinen die tatsächlichen Ergebnisse des Klienten.</p>}</section>}
-      </>}
+      <button onClick={onBack} className="flex items-center gap-2 text-sm text-fit-muted">
+        <ArrowLeft size={16} /> Zurück
+      </button>
+      <header>
+        <h1 className="flex items-center gap-2 text-2xl font-bold"><Users size={23} /> Klientenpläne</h1>
+        <p className="mt-2 text-sm text-fit-muted">Klient → Plan anlegen → gestalten → freigeben.</p>
+      </header>
+
+      {!clientUid && (
+        <section aria-label="Klienten" className="space-y-2">
+          {profilesError && (
+            <p role="alert" className="text-sm text-fit-red">
+              {profilesError}
+              <button onClick={loadProfiles} className="ml-2 min-h-[44px] underline">Erneut</button>
+            </p>
+          )}
+          {clients.length > 8 && (
+            <input
+              type="search"
+              aria-label="Klienten filtern"
+              placeholder="Filtern…"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="min-h-[44px] w-full rounded-xl border border-fit-line bg-fit-card p-3 text-sm"
+            />
+          )}
+          {!clients.length && !profilesError && <p className="text-sm text-fit-muted">Keine Klienten geladen.</p>}
+          {!shown.length && clients.length > 0 && <p className="text-sm text-fit-muted">Kein Treffer.</p>}
+          {shown.map(([uid, label]) => {
+            const o = overview[uid];
+            return (
+              <button
+                key={uid}
+                onClick={() => setClientUid(uid)}
+                className="flex w-full items-center justify-between gap-3 rounded-xl border border-fit-line bg-fit-card p-3 text-left"
+              >
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate font-semibold">{label}</span>
+                  <span className="text-xs text-fit-muted">
+                    {!o ? '…' : o.failed ? 'Fehler' : o.published ? `${o.published} bereitgestellt` : o.drafts ? `${o.drafts} Entwurf` : 'kein Plan'}
+                  </span>
+                </span>
+                <span className="shrink-0 text-right text-xs text-fit-muted">
+                  {o && !o.failed && (
+                    <>
+                      <span className="block font-semibold text-fit-ink">{o.week}× / 7d</span>
+                      {o.last ? new Date(o.last).toLocaleDateString('de-AT') : '—'}
+                    </>
+                  )}
+                </span>
+              </button>
+            );
+          })}
+        </section>
+      )}
+
+      {error && (
+        <p role="alert" className="text-sm text-fit-red">
+          {error}
+          <button onClick={load} className="ml-2 underline">Erneut</button>
+        </p>
+      )}
+
+      {clientUid && (
+        <>
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-fit-line bg-fit-card p-4">
+            <div>
+              <p className="text-xs text-fit-muted">Klient</p>
+              <h2 className="text-xl font-semibold">{clientLabel}</h2>
+            </div>
+            <button onClick={() => setClientUid('')} className="min-h-[44px] text-sm text-fit-muted underline">
+              Anderen wählen
+            </button>
+          </div>
+          <nav aria-label="Bereich" className="grid grid-cols-2 gap-1 rounded-2xl border border-fit-line bg-fit-card p-1">
+            {[['plans', 'Pläne'], ['results', 'Ergebnisse']].map(([id, label]) => (
+              <button
+                key={id}
+                aria-current={section === id ? 'page' : undefined}
+                onClick={() => setSection(id)}
+                className={`min-h-[48px] rounded-xl px-2 text-sm font-semibold ${section === id ? 'bg-fit-accent text-fit-bg' : 'text-fit-muted'}`}
+              >
+                {label}
+              </button>
+            ))}
+          </nav>
+          {section === 'plans' && (
+            <TrainingPlans
+              key={clientUid}
+              clientUid={clientUid}
+              clients={clients}
+              templates={routines}
+              workouts={workouts}
+              onChanged={load}
+            />
+          )}
+          {section === 'results' && (
+            <section>
+              <h2 className="mb-3 text-lg font-semibold">Absolvierte Workouts</h2>
+              {busy && <p className="text-sm text-fit-muted">Lädt…</p>}
+              {workouts
+                .filter((w) => w.finished_at)
+                .sort((a, b) => b.finished_at.localeCompare(a.finished_at))
+                .slice(0, 12)
+                .map((w) => (
+                  <div key={w.id} className="mb-2 rounded-xl border border-fit-line p-3">
+                    <p className="font-medium">{w.name}</p>
+                    <p className="text-xs text-fit-muted">
+                      {new Date(w.finished_at).toLocaleDateString('de-AT')} · {workoutTotals(w).sets} Sätze · {formatDuration(workoutTotals(w).durationMs)}
+                    </p>
+                    {w.feedback && (
+                      <p className="mt-1 rounded-lg bg-fit-accent/10 px-2 py-1 text-xs">
+                        <span className="font-semibold text-fit-accent">
+                          Rückmeldung{w.feedback.effort ? ` · ${w.feedback.effort}/10` : ''}
+                        </span>
+                        {w.feedback.note ? `: ${w.feedback.note}` : ''}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              {!busy && !workouts.some((w) => w.finished_at) && (
+                <p className="text-sm text-fit-muted">Noch keine Ergebnisse.</p>
+              )}
+            </section>
+          )}
+        </>
+      )}
     </div>
   );
 }

@@ -53,9 +53,9 @@ function PlanShell() {
           <main className="mx-auto flex min-h-[calc(100vh-65px)] max-w-lg flex-col items-center justify-center px-4 py-12 text-center">
             <div className="vos-surface w-full rounded-[28px] p-8">
               <ClipboardList size={34} className="mx-auto mb-4 text-fit-accent" />
-              <h1 className="text-2xl font-semibold tracking-tight">Plan-Zugang</h1>
+              <h1 className="text-2xl font-semibold tracking-tight">Plan</h1>
               <p className="mt-3 text-sm text-fit-dim">
-                Melde dich an, um Workouts zu protokollieren und deine Trainingspläne zu öffnen.
+                Trainingsplan vom Coach empfangen — oder als Coach Pläne freigeben.
               </p>
               <button
                 type="button"
