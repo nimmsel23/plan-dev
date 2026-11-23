@@ -29,7 +29,7 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  const [section, setSection] = useState('plans');
+  const [section, setSection] = useState('templates');
   const { user } = useUser();
   const [newPlans, setNewPlans] = useState([]);
   const [coachPlans, setCoachPlans] = useState([]);
@@ -66,9 +66,6 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
       // Ohne veröffentlichten Stand bekommt der Klient keinen Arbeitsstand zu sehen.
       const visible = details.filter((d) => d?.published).map(clientView);
       setCoachPlans(visible);
-      // Athlet: Plan vom Coach ist der Einstieg — Vorlagen nur Fallback.
-      if (visible.length) setSection('plans');
-      else if (!routines.length) setSection('plans');
       const { updates: pending, baseline } = pendingUpdates(visible, readSeenVersions(uid));
       if (baseline.length) markVersionsSeen(uid, baseline);
       setUpdates(pending);
@@ -148,14 +145,12 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
   return (
     <div className="mx-auto max-w-2xl px-4 py-6">
       <header className="mb-6">
-        <p className="text-xs font-semibold uppercase tracking-wide text-fit-muted">Plan</p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight">
-          {coachPlans.length ? 'Dein Plan vom Coach' : 'Noch kein Plan'}
-        </h1>
+        <p className="text-xs font-semibold uppercase tracking-wide text-fit-muted">Dein Trainingslogbuch</p>
+        <h1 className="mt-1 text-2xl font-bold tracking-tight">Training starten</h1>
         <p className="mt-2 text-sm text-fit-muted">
           {coachPlans.length
-            ? 'Vorgaben lesen, Einheit starten, Feedback geben.'
-            : 'Sobald dein Coach einen Plan freigibt, erscheint er hier. Vorlagen sind nur Behelf.'}
+            ? 'Plan vom Coach und eigene Vorlagen — Einheit starten, Sätze abhaken, Feedback geben.'
+            : 'Vorlage wählen oder Plan vom Coach nutzen. Sätze abhaken und beim nächsten Mal aufbauen.'}
         </p>
       </header>
       {error && <div role="alert" className="mb-4 rounded-xl border border-red-500/30 p-3 text-sm text-fit-red">{error}<button onClick={load} className="ml-2 underline">Erneut laden</button></div>}
@@ -169,20 +164,24 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
       {section === 'plans' ? <>
         {coachState.loaded && !coachState.error && !coachPlans.length && (
           <p role="status" className="mb-4 rounded-xl border border-dashed border-fit-line p-4 text-sm text-fit-muted">
-            Noch nichts zugestellt. Plan beginnt erst, wenn dein Coach eine Version freigibt — nicht mit leeren Vorlagen.
+            Dein Coach hat noch keinen Trainingsplan bereitgestellt. Sobald er einen veröffentlicht, erscheint er hier und ganz oben auf der Startseite.
           </p>
         )}
+        <p className="mb-4 text-sm text-fit-muted">Ein Trainingsplan bündelt deine Workout-Vorlagen und zeigt, wie oft du sie trainieren möchtest.</p>
         <AssignedPlans onStart={(body) => begin(null, body)} />
         <TrainingPlans templates={routines} workouts={workouts} onChanged={load} onStart={begin} />
       </> : <section>
-        <div className="mb-4 flex items-center justify-between"><h2 className="text-sm font-semibold">Vorlagen (Behelf) {!loading && `(${routines.length})`}</h2><button onClick={createFolder} className="flex items-center gap-1 text-xs text-fit-muted"><FolderPlus size={15} /> Ordner</button></div>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-sm font-semibold">Deine Vorlagen {!loading && `(${routines.length})`}</h2>
+          <button onClick={createFolder} className="flex items-center gap-1 text-xs text-fit-muted"><FolderPlus size={15} /> Ordner</button>
+        </div>
         {loading ? <p className="py-12 text-center text-sm text-fit-muted">Vorlagen laden…</p> : !routines.length ? (
           <div className="rounded-2xl border border-dashed border-fit-line p-6 text-center">
             <Dumbbell size={30} className="mx-auto mb-3 text-fit-accent" />
-            <h3 className="font-semibold">Kein Coach-Plan · Vorlagen optional</h3>
-            <p className="my-3 text-sm text-fit-muted">Der eigentliche Zweck ist der freigegebene Plan. Eigene Vorlagen nur, wenn du trotzdem etwas brauchst.</p>
-            <button onClick={() => setSection('plans')} className="rounded-xl bg-fit-accent px-4 py-2 text-sm font-semibold text-fit-bg">Zu den Trainingsplänen</button>
-            <button onClick={newRoutine} className="mt-3 block w-full text-sm text-fit-accent">Trotzdem Vorlage anlegen</button>
+            <h3 className="font-semibold">{coachState.loaded && !coachPlans.length ? 'Noch kein Plan von deinem Coach' : 'Dein erstes Workout beginnt hier'}</h3>
+            <p className="my-3 text-sm text-fit-muted">Erstelle eine Vorlage, z. B. „Push A“, und füge Übungen aus dem Yuhonas-Katalog hinzu. Oder starte leer und speichere dein Workout danach als Vorlage.</p>
+            <button onClick={newRoutine} className="rounded-xl bg-fit-accent px-4 py-2 text-sm font-semibold text-fit-bg">Erste Vorlage erstellen</button>
+            <button onClick={() => setSection('plans')} className="mt-3 block w-full text-sm text-fit-accent">Trainingspläne vom Coach ansehen</button>
           </div>
         ) : <>
           {folderNames.map((name) => <RoutineFolder key={name} label={name} routines={folders[name] || []} defaultOpen onDeleteFolder={() => foldersChanged(emptyFolders.filter((f) => f !== name))} {...cardProps} />)}
