@@ -4,12 +4,12 @@
 
 - Scoped fertige Arbeit: **immer committen** (nicht auf explizites „commit“ warten).
 - `~/plan-dev` on `dev` is the canonical working checkout for the Plan mini-app.
-- **Kern = Strong App:** Vorlagen, aktives Workout, Sätze loggen, History,
-  Übungskatalog. Coach-Zustellung (Klient → Plan freigeben) ist Aufsatz darauf —
-  nie den Strong-Kern für Coach-Kram opfern oder Tabs/Features „aufräumen“.
-- Geteilte UI/Planlogik (Editor, Snapshots, Feedback) lebt hier; **Schmieden für
-  andere User** und die Laptop-Backdoor gehören nach `coach-dev`. Fitness kommt
-  mit Coach-Code nicht direkt in Berührung.
+- **Plan-App = Strong für den Athleten:** Routinen, Workouts, Templates als
+  Vorschläge (anpassen → eigene Routine), optional eigener Plan. Nicht
+  Features gegeneinander wegräumen.
+- **Plan an Klienten zustellen = Coach-App** (`coach-dev`), nicht die Plan-App.
+  Geteilte Editor-Logik darf in Plan liegen; die Zustell-UI gehört nach Coach.
+- **`fitness-dev` = der ganze Rest** (Sessions, Body, Coverage, Learn, Habits, …).
 - Coach consumes the pinned `modules/plan` Git submodule. Fitness resolves Plan
   through `vite-miniapp-submodules.mjs` (sibling `plan-app`/`plan-dev`).
 - Yuhonas Free Exercise DB: gepinntes Submodul `vendor/free-exercise-db` +
