@@ -48,8 +48,8 @@ Stand 2026-11-09. Ausführlich: `~/vitalos/docs/DEPLOYMENT.md`.
 
 ## Plan ownership and Coach consumption (2026-11-09)
 
-Plan ist die Brücken-UI (geteilter Editor, Versionierung, Feedback). Coach hostet
-die Schmiede für Klientenpläne und das lokale Backend (`coach_local_plans` lädt
+Plan ist im Kern die Strong-App (Logbuch). Coach-Zustellung und geteilter Editor
+liegen darauf; Coach hostet die Schmiede/Local-Backend (`coach_local_plans` lädt
 heute noch `modules/plan/runtime` — Umzug nach Coach ist offen). Fitness zeigt
 denselben Plan-Tab für den Klienten, ohne Coach-Imports.
 
