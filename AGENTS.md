@@ -7,8 +7,9 @@
 - **Plan-App = Strong für den Athleten:** Routinen, Workouts, Templates als
   Vorschläge (anpassen → eigene Routine), optional eigener Plan. Nicht
   Features gegeneinander wegräumen.
-- **Plan an Klienten zustellen = Coach-App** (`coach-dev`), nicht die Plan-App.
-  Geteilte Editor-Logik darf in Plan liegen; die Zustell-UI gehört nach Coach.
+- **Zustellung an Klienten fachlich = Coach-App.** Bestehende Coach-UI in Plan
+  (z. B. CoachWorkspace) nicht ungefragt entfernen — lieber belassen, bis
+  bewusst umgezogen wird. Nicht „aufteilen“ mit Löschen verwechseln.
 - **`fitness-dev` = der ganze Rest** (Sessions, Body, Coverage, Learn, Habits, …).
 - Coach consumes the pinned `modules/plan` Git submodule. Fitness resolves Plan
   through `vite-miniapp-submodules.mjs` (sibling `plan-app`/`plan-dev`).

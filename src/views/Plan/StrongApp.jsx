@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { Timer, ChevronUp } from "lucide-react";
+import { Timer, ChevronUp, Users } from "lucide-react";
 import { startWorkout } from './lib/startWorkout.js';
 import { workoutTemplateExercises } from './lib/workoutTemplate.js';
+import CoachWorkspace from './CoachWorkspace.jsx';
+import { usePlanCoach } from '../../hooks/usePlanCoach.js';
 import PlanView from "./index.jsx";
 import HistoryView from "./HistoryView.jsx";
 import ExercisesView from "./ExercisesView.jsx";
@@ -17,10 +19,12 @@ import ThemeSheet from '../../shell/ThemeSheet.jsx';
 import { NAV_ITEMS } from '../../shell/NavigationItems.js';
 import { useSettingsStore } from '../../store/index.js';
 
-// Plan-App = Strong für den Athleten. Pläne an Klienten zustellen = Coach-App, nicht hier.
+// Plan-App = Strong. CoachWorkspace bleibt erreichbar; Zustellung an Klienten gehört fachlich zur Coach-App.
 export default function StrongApp({ user, onSignOut }) {
   setActiveWorkoutOwner(user?.uid);
   const { sidebarPinned: pinned, setSidebarPinned } = useSettingsStore();
+  const isCoach = usePlanCoach(user);
+  const [coachOpen, setCoachOpen] = useState(false);
   const [themeOpen, setThemeOpen] = useState(false);
   const [navExpanded, setNavExpanded] = useState(true);
   const [tab, setTab] = useState("workout");
@@ -53,15 +57,17 @@ export default function StrongApp({ user, onSignOut }) {
   function openActiveWorkout() {
     if (!active) return;
     setPlanRoute({ view: "workout", id: active.id });
+    setCoachOpen(false);
     setTab("workout");
   }
 
   function selectTab(id) {
     if (id === tab && id === "workout") setPlanRoute({ view: null, id: null });
+    setCoachOpen(false);
     setTab(id);
   }
 
-  const inActiveWorkout = tab === "workout" && planRoute.view === "workout" && planRoute.id === active?.id;
+  const inActiveWorkout = !coachOpen && tab === "workout" && planRoute.view === "workout" && planRoute.id === active?.id;
   const showActiveBar = active && !inActiveWorkout;
   const startedMs = Date.parse(active?.started_at);
 
@@ -69,18 +75,33 @@ export default function StrongApp({ user, onSignOut }) {
     <div style={{ '--mobile-nav-height': `calc(var(--nav-grip-h) + var(--safe-bottom)${navExpanded ? ' + var(--tabbar-h)' : ''})` }}>
       <PlanSidebar active={tab} onNavigate={selectTab} pinned={pinned} setPinned={setSidebarPinned} user={user} onTheme={() => setThemeOpen(true)} onRefresh={() => window.location.reload()} onSignOut={onSignOut} />
       <div className={`min-w-0 transition-all duration-500 ${pinned ? 'lg:ml-[304px]' : 'lg:ml-[108px]'}`}>
-        <PlanHeader title={NAV_ITEMS.find((item) => item.id === tab)?.label} />
+        <PlanHeader
+          title={coachOpen && isCoach ? 'Klientenpläne' : (NAV_ITEMS.find((item) => item.id === tab)?.label)}
+          subtitle={coachOpen && isCoach ? 'Anlegen · Gestalten · Freigeben' : undefined}
+        />
         <div className="mx-auto max-w-[1600px] px-[var(--safe-left)]" style={{ paddingRight: 'var(--safe-right)', paddingBottom: 'calc(var(--mobile-nav-height) + 88px)' }}>
+          {tab === 'workout' && isCoach && !coachOpen && !inActiveWorkout && (
+            <div className="mx-auto max-w-2xl px-4 pt-4">
+              <button onClick={() => setCoachOpen(true)} className="flex min-h-[72px] w-full items-center gap-3 rounded-2xl border border-fit-accent/30 bg-fit-accent/5 p-4 text-left">
+                <Users size={24} className="shrink-0 text-fit-accent" />
+                <span>
+                  <span className="block font-semibold">Klientenpläne</span>
+                  <span className="mt-1 block text-xs text-fit-muted">Coach-Bereich — Zustellung gehört fachlich zur Coach-App</span>
+                </span>
+              </button>
+            </div>
+          )}
+          {tab === 'workout' && coachOpen && isCoach && <CoachWorkspace onBack={() => setCoachOpen(false)} />}
           {tab === "profile" && <ProfileView user={user} />}
           {tab === "history" && (
             <HistoryView onRepeat={async (workout) => {
               let id;
               try { id = await startWorkout({ name: workout.name, routine_id: workout.routine_id, routine_snapshot: { name: workout.name, exercises: workoutTemplateExercises(workout) }, sourcePlanId: workout.sourcePlanId, sourcePlanRoutineId: workout.sourcePlanRoutineId, sourcePlanVersion: workout.sourcePlanVersion, sourcePlanMicrocycle: workout.sourcePlanMicrocycle, sourceAssignmentId: workout.sourceAssignmentId }); }
               catch (err) { if (err.code !== 'ACTIVE_WORKOUT') throw err; if (!confirm(`„${err.active.name}“ läuft noch. Jetzt dorthin wechseln?`)) return; id = err.active.id; }
-              setPlanRoute({ view: 'workout', id }); setTab('workout');
+              setPlanRoute({ view: 'workout', id }); setCoachOpen(false); setTab('workout');
             }} onOpenExercise={(key) => { setExerciseKey(key); setTab("exercises"); }} />
           )}
-          {tab === "workout" && (
+          {tab === "workout" && !coachOpen && (
             <PlanView
               routeView={planRoute.view}
               routeId={planRoute.id}
