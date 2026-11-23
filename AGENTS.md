@@ -4,12 +4,13 @@
 
 - Scoped fertige Arbeit: **immer committen** (nicht auf explizites „commit“ warten).
 - `~/plan-dev` on `dev` is the canonical working checkout for the Plan mini-app.
-- **Plan-App = Strong App:** Routinen, Workouts, Templates, Pläne.
-  Nichts davon ist „optionales Feature“ — und nichts ungefragt wegräumen.
+- **Plan-App = Plan-App** (Strong-ähnliche Bedienung): Templates, Routinen, Pläne.
+  Das ist **keine Trainings-App** — Trainieren/Logging lebt woanders (u. a.
+  fitness-dev). Nichts ungefragt wegräumen; „optionales Feature“-Geschwafel vermeiden.
 - **Zustellung an Klienten fachlich = Coach-App.** Bestehende Coach-UI in Plan
   (z. B. CoachWorkspace) nicht ungefragt entfernen — lieber belassen, bis
   bewusst umgezogen wird. Nicht „aufteilen“ mit Löschen verwechseln.
-- **`fitness-dev` = der ganze Rest** (Sessions, Body, Coverage, Learn, Habits, …).
+- **`fitness-dev` = der ganze Rest** inkl. Training/Sessions usw.
 - Coach consumes the pinned `modules/plan` Git submodule. Fitness resolves Plan
   through `vite-miniapp-submodules.mjs` (sibling `plan-app`/`plan-dev`).
 - Yuhonas Free Exercise DB: gepinntes Submodul `vendor/free-exercise-db` +

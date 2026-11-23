@@ -145,7 +145,7 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
   return (
     <div className="mx-auto max-w-2xl px-4 py-6">
       <header className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight">Training starten</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Plan</h1>
       </header>
       {error && <div role="alert" className="mb-4 rounded-xl border border-red-500/30 p-3 text-sm text-fit-red">{error}<button onClick={load} className="ml-2 underline">Erneut laden</button></div>}
       <PushOptIn user={user} />
@@ -156,7 +156,7 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
       <div className="mb-6">
         <button disabled={busy} onClick={newRoutine} className="flex w-full items-center justify-center gap-2 rounded-xl bg-fit-accent px-3 py-3 text-sm font-semibold text-fit-bg disabled:opacity-50"><Plus size={16} /> Neue Routine</button>
       </div>
-      <div aria-label="Trainingsbereich" className="mb-5 flex gap-1 rounded-xl bg-fit-bg2 p-1">
+      <div aria-label="Planbereich" className="mb-5 flex gap-1 rounded-xl bg-fit-bg2 p-1">
         {[['templates', 'Routinen'], ['plans', 'Pläne']].map(([id, label]) => (
           <button
             key={id}
@@ -186,11 +186,7 @@ export default function WorkoutList({ onEditRoutine, onOpenWorkout }) {
           <div className="rounded-2xl border border-dashed border-fit-line p-6 text-center">
             <Dumbbell size={30} className="mx-auto mb-3 text-fit-accent" />
             <h3 className="font-semibold">Noch keine Routine</h3>
-            <p className="my-3 text-sm text-fit-muted">
-              Eigene Routine anlegen (z.&nbsp;B. „Push A“), leeres Workout starten oder Template nutzen.
-            </p>
             <button onClick={newRoutine} className="rounded-xl bg-fit-accent px-4 py-2 text-sm font-semibold text-fit-bg">Erste Routine erstellen</button>
-            <button onClick={() => begin()} className="mt-3 block w-full text-sm text-fit-accent">Stattdessen leeres Workout starten</button>
           </div>
         ) : <>
           {folderNames.map((name) => <RoutineFolder key={name} label={name} routines={folders[name] || []} defaultOpen onDeleteFolder={() => foldersChanged(emptyFolders.filter((f) => f !== name))} {...cardProps} />)}
