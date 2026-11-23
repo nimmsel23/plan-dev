@@ -20,7 +20,7 @@ import ThemeSheet from '../../shell/ThemeSheet.jsx';
 import { NAV_ITEMS } from '../../shell/NavigationItems.js';
 import { useSettingsStore } from '../../store/index.js';
 
-// Plan-Shell (Strong-inspiriertes UI-Gerüst): Routing, Zustellung, aktiver Workout-Zeiger.
+// Plan = Strong: Tabs, Vorlagen, aktives Workout. Coach-Workspace ist optionaler Aufsatz.
 export default function StrongApp({ user, onSignOut }) {
   setActiveWorkoutOwner(user?.uid);
   const { sidebarPinned: pinned, setSidebarPinned } = useSettingsStore();
@@ -87,7 +87,7 @@ export default function StrongApp({ user, onSignOut }) {
                 <Users size={24} className="shrink-0 text-fit-accent" />
                 <span>
                   <span className="block font-semibold">Klientenpläne</span>
-                  <span className="mt-1 block text-xs text-fit-muted">Plan anlegen, gestalten, freigeben</span>
+                  <span className="mt-1 block text-xs text-fit-muted">Zusatz für Coaches — Kern bleibt dein Strong-Logbuch</span>
                 </span>
               </button>
             </div>

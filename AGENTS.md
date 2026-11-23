@@ -3,8 +3,10 @@
 **Simplicity (Owner 2026-11-11):** So simpel wie möglich. Ausnahme nur `vitalos/prod`. CI-Spine: Check → automerge-pr → automerge → Deploy (CI.md §1).
 
 - Scoped fertige Arbeit: **immer committen** (nicht auf explizites „commit“ warten).
-- `~/plan-dev` on `dev` is the canonical working checkout for the Plan mini-app —
-  die **Brücke** zwischen Fitness-Klient und Coach, kein eigenes Local-Backend.
+- `~/plan-dev` on `dev` is the canonical working checkout for the Plan mini-app.
+- **Kern = Strong App:** Vorlagen, aktives Workout, Sätze loggen, History,
+  Übungskatalog. Coach-Zustellung (Klient → Plan freigeben) ist Aufsatz darauf —
+  nie den Strong-Kern für Coach-Kram opfern oder Tabs/Features „aufräumen“.
 - Geteilte UI/Planlogik (Editor, Snapshots, Feedback) lebt hier; **Schmieden für
   andere User** und die Laptop-Backdoor gehören nach `coach-dev`. Fitness kommt
   mit Coach-Code nicht direkt in Berührung.
