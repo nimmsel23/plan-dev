@@ -2,7 +2,7 @@ import { useState, useSyncExternalStore } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ClipboardList } from 'lucide-react'
 import Settings from './views/Settings/index.jsx'
-import StrongApp from './views/Plan/StrongApp.jsx'
+import StrongApp from './views/Plan/shell/StrongApp.jsx'
 import AuthGateModal from './components/AuthGateModal.jsx'
 import ErrorBoundary from './components/common/ErrorBoundary.jsx'
 import '@src/styles.css'
@@ -54,9 +54,6 @@ function PlanShell() {
             <div className="vos-surface w-full rounded-[28px] p-8">
               <ClipboardList size={34} className="mx-auto mb-4 text-fit-accent" />
               <h1 className="text-2xl font-semibold tracking-tight">Plan</h1>
-              <p className="mt-3 text-sm text-fit-dim">
-                Trainingsplan vom Coach empfangen — oder als Coach Pläne freigeben.
-              </p>
               <button
                 type="button"
                 onClick={async () => {

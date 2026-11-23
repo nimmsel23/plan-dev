@@ -2,7 +2,7 @@ export default function TemplatePicker({ templates, onPick, onCancel }) {
   return (
     <div className="mt-2 rounded-xl bg-fit-bg border border-fit-line/50 divide-y divide-fit-line/30 max-h-56 overflow-y-auto">
       {templates.length === 0 ? (
-        <div className="px-3 py-3 text-xs text-fit-muted text-center">Erst unten eine Routine/Template anlegen.</div>
+        <div className="px-3 py-3 text-xs text-fit-muted text-center">Keine Vorlagen.</div>
       ) : (
         templates.map((t) => (
           <button

@@ -1,7 +1,7 @@
 // Overlay: plan-dev/src liegt über fitness-dev/src.
 //
-// plan-dev hält nur noch, was Plan wirklich anders macht (src/views/Plan, Einstiege,
-// Plan-Anpassungen). Alles andere kommt aus dem Nachbar-Checkout fitness-dev/src.
+// plan-dev hält nur noch, was Plan wirklich anders macht (src/views/{shell,training,plans,…} + Plan-Shims,
+// Einstiege, Plan-Anpassungen). Alles andere kommt aus dem Nachbar-Checkout fitness-dev/src.
 // Gleiche Idee wie vite-miniapp-submodules.mjs in fitness-dev, nur in Gegenrichtung
 // (dort: Plan-Views aus plan-dev, Rest aus fitness-dev).
 //

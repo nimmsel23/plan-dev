@@ -57,7 +57,7 @@ export default function ExerciseSearch({ onAdd, exclude = [], searchExercises = 
         <input ref={inputRef} aria-label="Übung suchen und hinzufügen" className="min-w-0 flex-1 bg-transparent text-sm outline-none" value={q} onChange={(e) => { setQ(e.target.value); setOpen(true); }} onFocus={() => setOpen(true)} onKeyDown={(e) => { if (e.key === 'Escape') { setOpen(false); e.stopPropagation(); } }} placeholder="Übung, Muskel oder Equipment suchen…" />
         {q && <button onClick={() => setQ('')} aria-label="Suche leeren"><X size={14} /></button>}
       </label>
-      <p role="status" className="mt-1 text-xs text-fit-muted">{notice || "Mehrere Übungen nacheinander hinzufügen; Suche bleibt geöffnet."}</p>
+      {notice && <p role="status" className="mt-1 text-xs text-fit-muted">{notice}</p>}
       {error && <p role="alert" className="mt-2 text-sm text-fit-red">{error}</p>}
       {open && <div className="absolute inset-x-0 top-full z-50 mt-1 max-h-80 overflow-y-auto rounded-2xl border border-fit-line bg-fit-bg shadow-xl">
         <div className="flex items-center justify-between px-3 py-2 text-xs text-fit-muted">{loading ? 'Suche…' : q ? 'Suchergebnisse' : 'Übung auswählen'}<button onClick={() => setOpen(false)} className="min-h-[44px] px-2" aria-label="Übungssuche schließen">Fertig</button></div>

@@ -64,23 +64,20 @@ export default function WorkoutSummary({ workout, prs = [], onDone, onSaveTempla
 
       {onSaveFeedback && <section className="mb-5 rounded-xl border border-fit-line p-4">
         <h2 className="text-sm font-semibold">Wie war das Training?</h2>
-        <p className="my-1 text-xs text-fit-muted">Dein Coach sieht deine Rückmeldung.</p>
         <div role="group" aria-label="Anstrengung 1 bis 10" className="mt-2 grid grid-cols-10 gap-1">{[1,2,3,4,5,6,7,8,9,10].map((n) => <button key={n} aria-pressed={effort === n} onClick={() => { setEffort(effort === n ? 0 : n); setFbState(''); }} className={`min-h-[44px] rounded-lg text-sm font-semibold ${effort === n ? 'bg-fit-accent text-fit-bg' : 'bg-fit-card text-fit-muted'}`}>{n}</button>)}</div>
         <p className="mt-1 h-4 text-xs text-fit-muted">{effort ? `Anstrengung ${effort}/10 · ${effortLabel(effort)}` : ''}</p>
-        <textarea value={note} maxLength={1000} onChange={(e) => { setNote(e.target.value); setFbState(''); }} aria-label="Notiz an den Coach" placeholder="Notiz an den Coach (optional): Schmerzen, Gewichte zu leicht/schwer …" rows={3} className="mt-2 w-full rounded-xl border border-fit-line bg-fit-bg p-3 text-sm" />
+        <textarea value={note} maxLength={1000} onChange={(e) => { setNote(e.target.value); setFbState(''); }} aria-label="Notiz" placeholder="Notiz" rows={3} className="mt-2 w-full rounded-xl border border-fit-line bg-fit-bg p-3 text-sm" />
         <button disabled={busy || fbState === 'saved' || !normFeedback({ effort, note })} onClick={async () => { setBusy(true); setFbState(''); try { await onSaveFeedback(normFeedback({ effort, note })); setFbState('saved'); } catch { setFbState('error'); } finally { setBusy(false); } }} className="mt-2 min-h-[44px] rounded-xl bg-fit-card px-4 text-sm font-semibold text-fit-accent disabled:opacity-50">{fbState === 'saved' ? 'Gesendet ✓' : 'Rückmeldung senden'}</button>
         {fbState === 'error' && <p role="alert" className="mt-2 text-sm text-fit-red">Rückmeldung konnte nicht gespeichert werden. Bitte erneut versuchen.</p>}
       </section>}
 
       {(onSaveTemplate || onUpdateTemplate) && <section className="mb-5 rounded-xl border border-fit-line p-4">
-        <h2 className="text-sm font-semibold">Beim nächsten Mal wiederverwenden</h2>
-        <p className="my-2 text-xs text-fit-muted">Dein Workout ist gespeichert. Vorlagen ändern sich nur, wenn du es hier auswählst.</p>
-        <div className="flex flex-wrap gap-2">
-          {onUpdateTemplate && <button disabled={busy} onClick={() => save(onUpdateTemplate, 'Vorlage mit diesen Werten aktualisiert.')} className="rounded-xl bg-fit-card px-3 py-2 text-sm text-fit-accent">Vorlage aktualisieren</button>}
+        <h2 className="text-sm font-semibold">Vorlage</h2>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {onUpdateTemplate && <button disabled={busy} onClick={() => save(onUpdateTemplate, 'Vorlage aktualisiert.')} className="rounded-xl bg-fit-card px-3 py-2 text-sm text-fit-accent">Vorlage aktualisieren</button>}
           {onSaveTemplate && <button disabled={busy} onClick={() => save(onSaveTemplate, '')} className="rounded-xl bg-fit-card px-3 py-2 text-sm text-fit-accent">Als neue Vorlage speichern</button>}
         </div>{message && <p role="status" className="mt-2 text-sm">{message}</p>}
       </section>}
-      <p className="mb-4 text-center text-xs text-fit-muted">Deine Sätze sind im Verlauf gespeichert. Beim nächsten Training stehen sie als „Vorher“-Werte bereit.</p>
       <button
         disabled={busy}
         onClick={onDone}
