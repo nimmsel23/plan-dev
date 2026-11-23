@@ -22,6 +22,7 @@
 - Plan's pre-push hook validates exports/builds; it does not automatically update
   Coach's pointer or publish Fitness. Release targets remain separate.
 - Ownership, data contracts and pointer updates: `docs/PLAN-COACH-INTEGRATION.md`.
+- Produktfundament (Warum / Was / Anti-Ziele): `docs/VISION.md`.
 
 <!-- release-weg:start -->
 ## Release-Weg und Branches (Plan)
