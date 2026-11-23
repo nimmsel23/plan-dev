@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-22T12:49:51+00:00",
+  "generated_at": "2026-11-23T15:18:19+00:00",
   "repo": "nimmsel23/plan-dev",
   "meta": {
    "name": "plan-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/plan-dev",
-   "pushed_at": "2026-11-21T20:08:54Z",
+   "pushed_at": "2026-11-22T12:50:10Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/plan-dev/"
@@ -148,12 +148,8 @@
   ],
   "activity": [
    {
-    "day": "2026-11-02",
-    "n": 6
-   },
-   {
     "day": "2026-11-03",
-    "n": 2
+    "n": 0
    },
    {
     "day": "2026-11-04",
@@ -230,27 +226,21 @@
    {
     "day": "2026-11-22",
     "n": 0
+   },
+   {
+    "day": "2026-11-23",
+    "n": 0
    }
   ],
   "workflows": [
-   {
-    "name": "PR-AutoMerge (Dependabot -> dev)",
-    "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-22T11:09:41Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45015935702",
-    "sha": "fb73e9f"
-   },
    {
     "name": "Merge-Agent",
     "branch": "master",
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-22T10:20:19Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45011942126",
+    "created_at": "2026-11-23T14:38:21Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45196357349",
     "sha": "fb73e9f"
    },
    {
@@ -259,8 +249,18 @@
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-22T07:30:01Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/44998494942",
+    "created_at": "2026-11-23T10:49:55Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45159646137",
+    "sha": "fb73e9f"
+   },
+   {
+    "name": "PR-AutoMerge (Dependabot -> dev)",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-23T08:56:58Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45142730309",
     "sha": "fb73e9f"
    },
    {
@@ -305,23 +305,19 @@
   "signals": [],
   "ai": {
    "headline": "Dev und Master synchron; alle CI-Workflows erfolgreich abgeschlossen",
-   "lage": "Der `dev`-Branch ist weiterhin mit `master` auf Commit `fb73e9f6` synchronisiert. Alle zugehörigen CI-Workflows, einschließlich `Check (Plan)` und `Auto-Promote`, wurden erfolgreich abgeschlossen. Es gab keine neuen Commits seit dem 20. November.",
+   "lage": "Der `dev`-Branch ist weiterhin mit `master` auf Commit `fb73e9f6` vom 20. November synchronisiert. Alle geplanten CI-Workflows, einschließlich `Merge-Agent` und `Auto-Promote`, wurden am 23. November erfolgreich abgeschlossen. Es gab keine neuen Commits seit dem 20. November.",
    "auffaelligkeiten": [
     {
      "level": "info",
-     "text": "Der `PreCompact`-Hook wurde nur simuliert getestet; ein erster echter Lauf muss noch verifiziert werden."
+     "text": "Die Branches `dev` und `master` sind seit dem 20. November auf Commit `fb73e9f6` unverändert und synchron."
     },
     {
      "level": "info",
-     "text": "Die Browser-Durchklick-Verifikation von Session-Tab-Rebuild Phase 3 Stück 4 + Phase 4 Stück 1 steht noch aus."
+     "text": "Alle CI-Workflows, inklusive der täglichen `Merge-Agent` und `Auto-Promote` Läufe am 23. November, wurden erfolgreich abgeschlossen."
     },
     {
-     "level": "info",
-     "text": "Die Runtime-DBs und `tw-data` pro Klient müssen vor einem breiten Rollout geprüft und zusammengeführt werden."
-    },
-    {
-     "level": "info",
-     "text": "Zwei identische leere Yoga-Headstand-Inbox-Drafts (`inbox_20260831_161715_3b9447`, `inbox_20260831_161759_cc51fb`) sind Duplikate und erfordern eine Entscheidung zur Löschung."
+     "level": "mittel",
+     "text": "Zwei identische leere Yoga-Headstand-Inbox-Drafts (`inbox_20260831_161715_3b9447`, `inbox_20260831_161759_cc51fb`) sind ein Duplikat und erfordern eine Entscheidung zur Löschung eines Eintrags (NEXT.md)."
     }
    ],
    "naechste_schritte": [
@@ -329,12 +325,12 @@
     "Durchführen der Browser-Durchklick-Verifikation von Session-Tab-Rebuild Phase 3 Stück 4 + Phase 4 Stück 1.",
     "Prüfen der Runtime-DBs und `tw-data` pro Klient vor breitem Rollout."
    ],
-   "veraendert": "Gegenüber der letzten Einschätzung gab es keine neuen Commits oder Änderungen am Synchronisationsstatus der Branches und dem Erfolg der CI-Workflows.",
+   "veraendert": "",
    "fragen": [
-    "Welcher der beiden identischen Yoga-Headstand-Inbox-Drafts (`inbox_20260831_161715_3b9447`, `inbox_20260831_161759_cc51fb`) soll gelöscht werden?"
+    "Welcher der beiden identischen leeren Yoga-Headstand-Inbox-Drafts (`inbox_20260831_161715_3b9447` oder `inbox_20260831_161759_cc51fb`) soll gelöscht werden?"
    ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-22T12:49:53+00:00"
+  "ai_at": "2026-11-23T15:18:26+00:00"
  }
 }
