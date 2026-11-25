@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-24T15:12:41+00:00",
+  "generated_at": "2026-11-25T14:52:44+00:00",
   "repo": "nimmsel23/plan-dev",
   "meta": {
    "name": "plan-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/plan-dev",
-   "pushed_at": "2026-11-24T09:40:40Z",
+   "pushed_at": "2026-11-24T15:12:58Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/plan-dev/"
@@ -152,12 +152,8 @@
   ],
   "activity": [
    {
-    "day": "2026-11-04",
-    "n": 3
-   },
-   {
     "day": "2026-11-05",
-    "n": 52
+    "n": 24
    },
    {
     "day": "2026-11-06",
@@ -234,17 +230,61 @@
    {
     "day": "2026-11-24",
     "n": 8
+   },
+   {
+    "day": "2026-11-25",
+    "n": 0
    }
   ],
   "workflows": [
+   {
+    "name": "CI-Heilung (rote Läufe wiederholen)",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-25T13:28:17Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45623912779",
+    "sha": "d403e71"
+   },
+   {
+    "name": "Auto-Promote dev -> master (Check (Plan))",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-25T13:00:13Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45619175883",
+    "sha": "d403e71"
+   },
+   {
+    "name": "Org-Bot (PR anlegen & mergen)",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-25T12:45:18Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45616806190",
+    "sha": "d403e71"
+   },
+   {
+    "name": "PR-AutoMerge (Dependabot -> dev)",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-25T12:42:08Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45616293082",
+    "sha": "d403e71"
+   },
    {
     "name": "Merge-Agent",
     "branch": "master",
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-24T12:02:33Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45389716090",
+    "created_at": "2026-11-25T04:59:06Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45550417209",
     "sha": "d403e71"
    },
    {
@@ -258,16 +298,6 @@
     "sha": "d403e71"
    },
    {
-    "name": "Auto-Promote dev -> master (Check (Plan))",
-    "branch": "master",
-    "event": "workflow_run",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-24T09:40:27Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45367419891",
-    "sha": "40b89f7"
-   },
-   {
     "name": "Gemini CI Agent",
     "branch": "master",
     "event": "workflow_run",
@@ -275,16 +305,6 @@
     "conclusion": "success",
     "created_at": "2026-11-24T09:40:27Z",
     "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45367419679",
-    "sha": "40b89f7"
-   },
-   {
-    "name": "PR-AutoMerge (Dependabot -> dev)",
-    "branch": "master",
-    "event": "workflow_run",
-    "status": "completed",
-    "conclusion": "skipped",
-    "created_at": "2026-11-24T09:40:27Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45367419664",
     "sha": "40b89f7"
    },
    {
@@ -317,34 +337,7 @@
  "assessment": {
   "status": "green",
   "signals": [],
-  "ai": {
-   "headline": "Branches synchronisiert, CI-Logik aktualisiert",
-   "lage": "Die Branches `dev` und `master` sind auf Commit `d403e715` vom 24. November synchronisiert. Es gab mehrere Aktualisierungen der CI-Logik, darunter Änderungen an der Merge-Politik und sicherheitsrelevante Korrekturen. Alle relevanten CI-Workflows wurden erfolgreich abgeschlossen.",
-   "auffaelligkeiten": [
-    {
-     "level": "hoch",
-     "text": "Mehrere Commits (z.B. d403e715, 5866e96a) haben die CI-Merge-Logik und Freigabeprozesse angepasst, inklusive sicherheitsrelevanter Korrekturen (vos#125)."
-    },
-    {
-     "level": "info",
-     "text": "Der PR-AutoMerge-Workflow wurde wie zuvor übersprungen."
-    },
-    {
-     "level": "info",
-     "text": "Zwei identische leere Yoga-Headstand-Inbox-Drafts sind als Duplikat in NEXT.md gelistet."
-    }
-   ],
-   "naechste_schritte": [
-    "Verifizieren des ersten echten Laufs des `PreCompact`-Hooks.",
-    "Durchführen der Browser-Durchklick-Verifikation von Session-Tab-Rebuild Phase 3 Stück 4 + Phase 4 Stück 1.",
-    "Prüfen der Runtime-DBs und `tw-data` pro Klient vor breitem Rollout."
-   ],
-   "veraendert": "Die Branches `dev` und `master` sind auf den neuen Commit `d403e715` synchronisiert, und die CI-Logik wurde durch mehrere Commits aktualisiert.",
-   "fragen": [
-    "Welcher der beiden identischen Yoga-Headstand-Inbox-Drafts soll gelöscht werden?"
-   ],
-   "model": "gemini-2.5-flash"
-  },
-  "ai_at": "2026-11-24T15:12:43+00:00"
+  "ai": null,
+  "ai_at": null
  }
 }
