@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-25T14:52:44+00:00",
+  "generated_at": "2026-11-26T14:20:51+00:00",
   "repo": "nimmsel23/plan-dev",
   "meta": {
    "name": "plan-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/plan-dev",
-   "pushed_at": "2026-11-24T15:12:58Z",
+   "pushed_at": "2026-11-26T14:19:25Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/plan-dev/"
@@ -21,14 +21,86 @@
    "dev_behind": 0,
    "dev_ahead": 0,
    "oldest_unpromoted": null,
-   "dev_head": "d403e715 2026-11-24T10:39:35+01:00",
-   "master_head": "d403e715 2026-11-24T10:39:35+01:00"
+   "dev_head": "c9644328 2026-11-26T15:17:34+01:00",
+   "master_head": "c9644328 2026-11-26T15:17:34+01:00"
   },
   "work": {
    "branch": "master",
-   "sha": "d403e71572b2f97362e9dc3fed6c120175cb9b6a"
+   "sha": "c964432882381e21cea9c798dd22e602f6af1258"
   },
   "commits": [
+   {
+    "sha": "c9644328",
+    "date": "2026-11-26T15:17:34+01:00",
+    "author": "Alpha",
+    "subject": "feat(plan): fix equipment and timed prescriptions; add strength and balance templates"
+   },
+   {
+    "sha": "a7fc8d22",
+    "date": "2026-11-26T15:13:37+01:00",
+    "author": "Alpha",
+    "subject": "docs(plan): record Yuhonas and coaching follow-up opportunities"
+   },
+   {
+    "sha": "2157c345",
+    "date": "2026-11-26T15:05:46+01:00",
+    "author": "Alpha",
+    "subject": "fix(plan): show explicit seconds and missing duration honestly"
+   },
+   {
+    "sha": "87309f80",
+    "date": "2026-11-26T15:02:42+01:00",
+    "author": "Alpha",
+    "subject": "fix(plan): enforce combined workout generator requirements"
+   },
+   {
+    "sha": "901d6b2f",
+    "date": "2026-11-26T15:00:30+01:00",
+    "author": "Alpha",
+    "subject": "docs(plan): audit template coverage against coaching priorities"
+   },
+   {
+    "sha": "b37a073c",
+    "date": "2026-11-26T14:54:48+01:00",
+    "author": "Alpha",
+    "subject": "chore(portal): link navigation to vos organization repo"
+   },
+   {
+    "sha": "08856bc5",
+    "date": "2026-11-26T14:53:33+01:00",
+    "author": "Alpha",
+    "subject": "feat(plan): finish agent templates and document reusable prompts"
+   },
+   {
+    "sha": "87cdb2ff",
+    "date": "2026-11-26T14:27:50+01:00",
+    "author": "Alpha",
+    "subject": "docs(plan): update generator and architecture docs, untrack RESULTS.md per AGENTS.md rule"
+   },
+   {
+    "sha": "8bb6a9e3",
+    "date": "2026-11-26T14:23:48+01:00",
+    "author": "Alpha",
+    "subject": "feat(plan): group presets by goal in UI picker and sync catalog test assertion"
+   },
+   {
+    "sha": "54204700",
+    "date": "2026-11-26T13:52:37+01:00",
+    "author": "Alpha",
+    "subject": "feat(plan): broaden workout generator with vitality, home, mobility goals and modular core"
+   },
+   {
+    "sha": "8625c142",
+    "date": "2026-11-26T12:08:45+01:00",
+    "author": "Alpha",
+    "subject": "feat(plan): generate workouts from JSON templates and training levels"
+   },
+   {
+    "sha": "e4bf12a7",
+    "date": "2026-11-26T10:57:34+01:00",
+    "author": "Alpha",
+    "subject": "feat(plan): add selectable basic and Daniel split templates"
+   },
    {
     "sha": "d403e715",
     "date": "2026-11-24T10:39:35+01:00",
@@ -76,88 +148,12 @@
     "date": "2026-11-24T08:39:53+01:00",
     "author": "nimmsel23",
     "subject": "ci: Org-Bot v2 und CI-Heilung aus Vorlage (vos cto/tools)"
-   },
-   {
-    "sha": "11a34457",
-    "date": "2026-11-23T22:50:35+01:00",
-    "author": "Alpha",
-    "subject": "refactor(plan): Views in Domänen unter Plan/, Erklär-Sprüche raus"
-   },
-   {
-    "sha": "6f033315",
-    "date": "2026-11-23T22:50:35+01:00",
-    "author": "Alpha",
-    "subject": "fix(plan): kein „Training starten“ — Plan-App, keine Trainings-App"
-   },
-   {
-    "sha": "d8415bcf",
-    "date": "2026-11-23T22:50:35+01:00",
-    "author": "Alpha",
-    "subject": "fix(plan): kein „Leeres Workout“ auf der Training-Startseite"
-   },
-   {
-    "sha": "125db749",
-    "date": "2026-11-23T22:50:35+01:00",
-    "author": "Alpha",
-    "subject": "fix(plan): CoachWorkspace wiederherstellen"
-   },
-   {
-    "sha": "44be1e05",
-    "date": "2026-11-23T22:50:35+01:00",
-    "author": "Alpha",
-    "subject": "fix(plan): Plan-App ist Strong; Zustellung nur über Coach-App"
-   },
-   {
-    "sha": "3b72ea6b",
-    "date": "2026-11-23T22:50:35+01:00",
-    "author": "Alpha",
-    "subject": "docs(plan): Plan=Strong (Pläne oder Templates); Fitness=Rest"
-   },
-   {
-    "sha": "41dcd4bd",
-    "date": "2026-11-23T22:50:35+01:00",
-    "author": "Alpha",
-    "subject": "docs(plan): Kern ist Strong — Coach nur Aufsatz"
-   },
-   {
-    "sha": "65fd6592",
-    "date": "2026-11-23T22:50:35+01:00",
-    "author": "Alpha",
-    "subject": "fix(plan): Vorlagen-Tab und Vorlagen-UX wieder vollständig"
-   },
-   {
-    "sha": "ee7eaa3e",
-    "date": "2026-11-23T22:50:35+01:00",
-    "author": "Alpha",
-    "subject": "fix(plan): Anlegen öffnet Editor mit erstem Trainingstag"
-   },
-   {
-    "sha": "6f536ef4",
-    "date": "2026-11-23T22:50:35+01:00",
-    "author": "Alpha",
-    "subject": "docs: Plan↔Coach als Gegenstück mit eingebettetem Modul festlegen"
-   },
-   {
-    "sha": "0bdceaa4",
-    "date": "2026-11-23T22:50:35+01:00",
-    "author": "Alpha",
-    "subject": "docs: Plan-Vision als Onboarding-Brücke Coach↔Athlet festlegen"
-   },
-   {
-    "sha": "f1f35cd6",
-    "date": "2026-11-23T22:50:35+01:00",
-    "author": "Alpha",
-    "subject": "portal: App-Links neu erzeugt (vos-portal)"
    }
   ],
   "activity": [
    {
-    "day": "2026-11-05",
-    "n": 24
-   },
-   {
     "day": "2026-11-06",
-    "n": 23
+    "n": 8
    },
    {
     "day": "2026-11-07",
@@ -234,68 +230,42 @@
    {
     "day": "2026-11-25",
     "n": 0
+   },
+   {
+    "day": "2026-11-26",
+    "n": 12
    }
   ],
   "workflows": [
-   {
-    "name": "CI-Heilung (rote Läufe wiederholen)",
-    "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-25T13:28:17Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45623912779",
-    "sha": "d403e71"
-   },
-   {
-    "name": "Auto-Promote dev -> master (Check (Plan))",
-    "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-25T13:00:13Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45619175883",
-    "sha": "d403e71"
-   },
-   {
-    "name": "Org-Bot (PR anlegen & mergen)",
-    "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-25T12:45:18Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45616806190",
-    "sha": "d403e71"
-   },
-   {
-    "name": "PR-AutoMerge (Dependabot -> dev)",
-    "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-25T12:42:08Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45616293082",
-    "sha": "d403e71"
-   },
-   {
-    "name": "Merge-Agent",
-    "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-25T04:59:06Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45550417209",
-    "sha": "d403e71"
-   },
    {
     "name": "Live Deploy (Plan master)",
     "branch": "master",
     "event": "workflow_dispatch",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-24T09:40:41Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45367459714",
-    "sha": "d403e71"
+    "created_at": "2026-11-26T14:19:26Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45837834109",
+    "sha": "c964432"
+   },
+   {
+    "name": "Auto-Promote dev -> master (Check (Plan))",
+    "branch": "master",
+    "event": "workflow_run",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-26T14:19:17Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45837809019",
+    "sha": "e4bf12a"
+   },
+   {
+    "name": "PR-AutoMerge (Dependabot -> dev)",
+    "branch": "master",
+    "event": "workflow_run",
+    "status": "completed",
+    "conclusion": "skipped",
+    "created_at": "2026-11-26T14:19:17Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45837809011",
+    "sha": "e4bf12a"
    },
    {
     "name": "Gemini CI Agent",
@@ -303,9 +273,9 @@
     "event": "workflow_run",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-24T09:40:27Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45367419679",
-    "sha": "40b89f7"
+    "created_at": "2026-11-26T14:19:17Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45837808872",
+    "sha": "e4bf12a"
    },
    {
     "name": "Check (Plan)",
@@ -313,9 +283,9 @@
     "event": "push",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-24T09:39:39Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45367295186",
-    "sha": "d403e71"
+    "created_at": "2026-11-26T14:18:14Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45837633322",
+    "sha": "c964432"
    },
    {
     "name": "Preview Plan",
@@ -323,9 +293,39 @@
     "event": "push",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-23T21:50:40Z",
-    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45273755896",
-    "sha": "11a3445"
+    "created_at": "2026-11-26T14:18:14Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45837633216",
+    "sha": "c964432"
+   },
+   {
+    "name": "Org-Bot (PR anlegen & mergen)",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-26T13:51:07Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45833160300",
+    "sha": "e4bf12a"
+   },
+   {
+    "name": "Merge-Agent",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-26T05:29:48Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45761963371",
+    "sha": "d403e71"
+   },
+   {
+    "name": "CI-Heilung (rote Läufe wiederholen)",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-26T04:58:08Z",
+    "url": "https://github.com/nimmsel23/plan-dev/actions/runs/45758512543",
+    "sha": "d403e71"
    }
   ],
   "issues": [],
