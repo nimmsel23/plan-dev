@@ -578,3 +578,5 @@ Krafttraining sowie Sensomotorik für Balance und Stabilität.
 - [x] Geräteversprechen, Zusatzbedarf, Zeitvorgaben und Dosierungs-Overrides korrigiert; Balance/Stabilität und differenziertes Ganzkörpertraining ergänzt.
 - Coaching-Abnahme der konkreten Aufgaben/Dosierungen und angemeldeter Plan-/Coach-Durchlauf bleiben offen. Bestehende Klientenpläne unverändert; kein Coach-/Shell-Pointer angehoben.
 - Historisches `home`-Goal bei späterer Schemaänderung sauber von Equipment trennen; vorhandene IDs/Pläne erhalten.
+
+- [x] 2026-11-26: Konkreten Reviewfall conditioning-press ohne explizites Template als API-/CLI-Regression abgesichert; historischen Filterbefund direkt in der Matrix als behoben markiert.

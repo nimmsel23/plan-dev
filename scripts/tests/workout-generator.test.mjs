@@ -424,3 +424,33 @@ test('listed variants and published snapshots keep the generator contract', () =
       else assert.equal(groups[0].duration, null)
     }
 })
+
+test('requested selectors participate in automatic candidate selection', () => {
+  const options = {
+    level: 'intermediate',
+    goal: 'home',
+    equipment: 'gym',
+    days: 3,
+    variants: { 'conditioning-press': 'kettlebell-press' },
+  }
+  const automatic = build(options)
+  assert.equal(automatic.generator.templateId, 'kettlebell-vital')
+  assert.deepEqual(automatic, build({ ...options, template: 'kettlebell-vital' }))
+  const result = cli(
+    'Daniel',
+    '--level',
+    'intermediate',
+    '--goal',
+    'home',
+    '--equipment',
+    'gym',
+    '--days',
+    '3',
+    '--variant',
+    'conditioning-press=kettlebell-press',
+    '--format',
+    'json',
+  )
+  assert.equal(result.status, 0, result.stderr)
+  assert.equal(JSON.parse(result.stdout).generator.templateId, 'kettlebell-vital')
+})
