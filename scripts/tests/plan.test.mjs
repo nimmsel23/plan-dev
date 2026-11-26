@@ -10,8 +10,8 @@ import { snapshotOf, clientView, hasUnpublishedChanges, diffSnapshots } from '..
 import { workoutTemplateExercises } from '../../src/views/Plan/lib/workoutTemplate.js'
 
 test('Yuhonas catalog retains source IDs, instructions and bodyweight tracking', () => {
-  assert.equal(YUHONAS_EXERCISES.length, 873)
-  assert.equal(new Set(YUHONAS_EXERCISES.map((e) => e.id)).size, 873)
+  assert.equal(YUHONAS_EXERCISES.length, 876)
+  assert.equal(new Set(YUHONAS_EXERCISES.map((e) => e.id)).size, 876)
   const ex = YUHONAS_EXERCISES.find((e) => e.yuhonas_id === '3_4_Sit-Up')
   assert.equal(ex.id, 'yuhonas_3_4_sit-up')
   assert.equal(ex.trackingType, 'bodyweight_reps')

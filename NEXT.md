@@ -544,6 +544,6 @@ pruefen.
 
 ## 2026-11-26 — Workout-Generator
 
-- Breiten Eingang (--goal vitality|home|hypertrophy|mobility, --equipment, --core) im UI-Picker bei Bedarf als Filter-/Kategorie-Ebene anbieten (bisher flache Liste aller 12 Vorlagen).
+- [x] Breiten Eingang (--goal vitality|home|hypertrophy|mobility, --equipment, --core) im UI-Picker per Optgroups/Goal-Gruppen eingebunden (TrainingPlans.jsx & planPresets.js).
 - JSON-Basic-Templates bei weiteren Klientenbedürfnissen (z. B. Reha/Schulter-Spezial) ergänzen; Übungs-IDs am gepinnten Katalog prüfen. Gewichte und konkrete 6Pack-Sessions bleiben individuell.
 - Falls später gewünscht: expliziten Planimport/Coach-Zuweisung separat umsetzen; der Generator schreibt absichtlich nur stdout bzw. neue Zieldateien.

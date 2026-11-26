@@ -2,6 +2,13 @@ import { useEffect, useState } from "react";
 import { Layers, Plus, ChevronDown } from "lucide-react";
 import { listMacrocycles, createMacrocycle, getUid } from "@db";
 import { PLAN_PRESETS, planFromPreset } from "../lib/planPresets.js";
+
+const GOAL_LABELS = {
+  hypertrophy: '🏋️ Hypertrophie & Kraft (Gym)',
+  vitality: '🌿 Vitalität & Prävention',
+  home: '🏠 Home & Minimal Equipment',
+  mobility: '🧘 Mobility & Flow',
+};
 import PlanCard from "../components/PlanCard.jsx";
 
 // Shared plan composition for personal training and the client workspace.
@@ -80,7 +87,17 @@ export default function TrainingPlans({ templates, workouts, onChanged, clientUi
                 Vorlage
                 <select aria-label="Planvorlage" value={presetId} onChange={(e) => { setPresetId(e.target.value); if (e.target.value) setName(PLAN_PRESETS.find((p) => p.id === e.target.value).name); }} className="mt-1 min-h-[44px] w-full rounded-xl border border-fit-line bg-fit-bg p-3">
                   <option value="">Leerer Plan</option>
-                  {PLAN_PRESETS.map((preset) => <option key={preset.id} value={preset.id}>{preset.name}</option>)}
+                  {Object.entries(
+                    PLAN_PRESETS.reduce((acc, p) => {
+                      const g = p.goal ?? 'hypertrophy';
+                      (acc[g] ??= []).push(p);
+                      return acc;
+                    }, {})
+                  ).map(([goal, presets]) => (
+                    <optgroup key={goal} label={GOAL_LABELS[goal] ?? goal}>
+                      {presets.map((preset) => <option key={preset.id} value={preset.id}>{preset.name}</option>)}
+                    </optgroup>
+                  ))}
                 </select>
               </label>
               {presetId && <p className="text-xs text-fit-muted">{PLAN_PRESETS.find((p) => p.id === presetId).description}</p>}
