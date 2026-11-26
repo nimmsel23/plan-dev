@@ -549,3 +549,9 @@ pruefen.
 - Falls später gewünscht: expliziten Planimport/Coach-Zuweisung separat umsetzen; der Generator schreibt absichtlich nur stdout bzw. neue Zieldateien.
 
 - [x] 2026-11-26: Template-Agent-Prompts A–D und Schema-Anleitung angelegt; abgebrochene Schulter-/Kettlebell-Templates vervollständigt.
+
+## 2026-11-26 — Vorlagen-Abdeckung (Owner-Ausrichtung)
+
+- [x] 14 Templates nach tatsächlichen Übungen/Equipment/Ablauf geprüft; Matrix: docs/WORKOUT-TEMPLATE-COVERAGE.md.
+- [ ] Generator-Grundlagen: Geräteversprechen, Dauerübungs-Vorgaben und gemeinsame Ziel/Geräte/Tage-Auswahl korrigieren.
+- [ ] Differenziertes Krafttraining (Wirbelsäule/Rumpf, Schultergürtel, Ganzkörper) und sensomotorisches Training für Balance/Stabilität fachlich strukturieren, danach gezielte Templates ergänzen. Kein Sonderfokus auf Nacken, Kettlebell oder Home-Selbstversorger.

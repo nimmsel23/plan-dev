@@ -37,6 +37,10 @@ Auch außerhalb des Repo-Ordners funktioniert der absolute Aufruf:
 
 Die vorhandene Shell-PATH-Konfiguration nimmt `~/dev/*/bin` beim Shell-Start auf. Nach Öffnen einer neuen Shell ist der kurze Aufruf `plan-generate` verfügbar; kein Wrapper in `~/.local/bin` nötig. Alternativ: `npm run plan:generate -- --name Daniel --level beginner` im Repo.
 
+## Abdeckung und Ausrichtung
+
+[Abdeckungsmatrix und priorisierte Lücken](WORKOUT-TEMPLATE-COVERAGE.md): differenziertes Krafttraining sowie sensomotorisches Training für Balance und Stabilität als Maßstab der weiteren Vorlagenarbeit.
+
 ## Templates per Agent anlegen
 
 Kopierfertige Aufträge und ein gültiges JSON-Beispiel: [Agent-Prompts](WORKOUT-GENERATOR-PROMPTS.md).
