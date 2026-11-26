@@ -555,3 +555,5 @@ pruefen.
 - [x] 14 Templates nach tatsächlichen Übungen/Equipment/Ablauf geprüft; Matrix: docs/WORKOUT-TEMPLATE-COVERAGE.md.
 - [ ] Generator-Grundlagen: Geräteversprechen, Dauerübungs-Vorgaben und gemeinsame Ziel/Geräte/Tage-Auswahl korrigieren.
 - [ ] Differenziertes Krafttraining (Wirbelsäule/Rumpf, Schultergürtel, Ganzkörper) und sensomotorisches Training für Balance/Stabilität fachlich strukturieren, danach gezielte Templates ergänzen. Kein Sonderfokus auf Nacken, Kettlebell oder Home-Selbstversorger.
+
+- [x] 2026-11-26: Generator prüft Ziel, Equipment und Trainingstage gemeinsam, meldet Konflikte und nennt Alternativen.

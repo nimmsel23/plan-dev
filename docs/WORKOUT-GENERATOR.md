@@ -146,4 +146,9 @@ Die Tests decken alle 14 Templates × Level, sämtliche Selector-Alternativen, K
 - `vital-shoulder-neck`: Präventionsentwurf, 2 Einheiten (Tag 1/4), Kurzhanteln und Eigengewicht.
 - `kettlebell-vital`: 3 Einheiten (Tag 1/3/5), Kettlebells **und** Kurzhanteln plus Eigengewicht; Satztraining, kein Timer-Zirkel.
 - Optionales Template-Feld `defaultCore` legt den Core-Standard fest (bei beiden neuen Templates `posture`). Explizites `--core` hat Vorrang. Ohne Feld bleibt die bisherige Ziel-Automatik bestehen.
-- `--goal`, `--equipment` und `--days` filtern nicht gemeinsam: Ziel-Default hat Vorrang vor Equipment, Equipment vor Tagen. Ein explizites Template bestimmt die Übungen; Geräte werden nicht automatisch ersetzt.
+- `--goal`, `--equipment` und `--days` gelten gemeinsam, auch bei explizitem `--template`. Ohne Treffer: Exitcode 2 mit nahen Alternativen und deren Abweichungen; keine automatische Lockerung.
+- `--equipment dumbbell` erlaubt Kurzhanteln und Eigengewicht; `bodyweight` nur Eigengewicht; `gym` setzt ein voll ausgestattetes Studio voraus. Geprüft werden die konkreten Übungen. Nur bereits freigegebene Selector-Alternativen dürfen Geräte ersetzen; explizite `--variant`-Wahlen bleiben verbindlich.
+- `--days` bedeutet Trainingstage pro 7-Tage-Woche (2–6). Der Acht-Tage-Zyklus `ppl-six` bleibt per Template ohne widersprechendes `--days` verfügbar.
+- Unter passenden Vorlagen priorisiert der Generator Ziel-Default, Equipment-Default und Level-Default, danach das passende Standardlevel und die Katalogreihenfolge. Ohne Vorgaben bleiben die bisherigen Level-Defaults erhalten. Level steuert weiterhin Dosierung; eine automatische technische Eignungsprüfung ist nicht enthalten.
+
+Beispiel: `--goal vitality --equipment dumbbell --days 3` bricht aktuell ab, weil die Vitalitätsvorlage mit drei Tagen einen Kabelzug braucht. `--goal home --equipment dumbbell --days 3` liefert dagegen eine passende Vorlage.

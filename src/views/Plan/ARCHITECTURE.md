@@ -408,3 +408,7 @@ Kurzfassung dauerhaft relevanten Wissens aus dem früheren Arbeitslog, thematisc
 ## Template-Erweiterung 2026-11-26
 
 14 gemeinsame JSON-Templates für CLI und `planPresets.js`, darunter Schulter/Nacken und Kettlebell-Ganzkörper. Optionales `defaultCore` wird vor der Ziel-Automatik ausgewertet; explizites `core` hat Vorrang. Agent-Aufträge: `docs/WORKOUT-GENERATOR-PROMPTS.md`. Equipment-Metadaten sind keine automatische Übungssubstitution.
+
+## Generator-Auswahl (2026-11-26)
+
+Ziel, verfügbare Geräte und Trainingstage werden gemeinsam geprüft, einschließlich expliziter Templates. Equipment wird an aufgelösten Übungen geprüft; ausschließlich freigegebene Selector-Alternativen können automatisch wechseln. Kein Treffer führt zum Fehler mit abweichenden Alternativen. `--days` gilt für Sieben-Tage-Wochen; Acht-Tage-Zyklen bleiben explizite Templates. Regressionen im Generator-Test abgedeckt.

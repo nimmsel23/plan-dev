@@ -17,9 +17,9 @@ Breiter Einstieg nach Trainingsziel, Equipment, Wochentagen oder Split:
 Optionen:
   --name NAME            Name für den Plan (alternativ ein Positionsargument)
   --level LEVEL          beginner | intermediate | advanced (erforderlich)
-  --goal GOAL            vitality | home | hypertrophy | mobility (steuert Standard-Template & Core)
-  --equipment EQUIP      gym | dumbbell | bodyweight (wählt passendes Equipment-Template)
-  --days N               2 | 3 | 4 | 5 | 6 (Wochentage/Frequenz)
+  --goal GOAL            vitality | home | hypertrophy | mobility (verbindliches Ziel; steuert Core)
+  --equipment EQUIP      gym | dumbbell | bodyweight (verbindlich: verfügbare Geräte)
+  --days N               2 | 3 | 4 | 5 | 6 (Trainingstage pro 7-Tage-Woche)
   --template ID          Split aus --list; Standard passend zu Goal/Level
   --variant SLOT=ID      Alternative statt Standardübung; mehrfach möglich
   --weeks N              Dauer 1–52 Wochen; Standard 4

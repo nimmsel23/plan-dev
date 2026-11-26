@@ -195,3 +195,27 @@ test('new templates keep core defaults overridable and require truthful equipmen
   broken.templates[0].defaultCore = 'missing';
   assert.throws(() => validateWorkoutCatalog(broken), /Template-Core/);
 });
+
+
+test('requirements intersect, including explicit templates and selected exercise equipment', () => {
+  const plan = build({ goal: 'home', equipment: 'dumbbell', days: 3 });
+  assert.equal(plan.generator.templateId, 'home-dumbbell');
+  assert(plan.routines.flatMap((r) => r.exercises).every((e) => e.equipment.every((item) => ['dumbbell', 'body only'].includes(item))));
+  assert.equal(build({ goal: 'vitality', equipment: 'dumbbell', days: 2 }).routines.length, 2);
+  assert.equal(build({ goal: 'hypertrophy', equipment: 'gym', days: 4 }).generator.templateId, 'push-pull');
+  assert.equal(build({ days: 5 }).routines.length, 5);
+  assert.throws(() => build({ goal: 'vitality', equipment: 'dumbbell', days: 3 }), /Keine passende Vorlage.*Nahe Alternativen/);
+  assert.throws(() => build({ template: 'ppl-six', days: 6 }), /widerspricht.*6 Einheiten \/ 8 Tage/);
+  assert.throws(() => build({ template: 'home-dumbbell', goal: 'hypertrophy' }), /widerspricht/);
+  assert.throws(() => build({ template: 'kettlebell-vital', equipment: 'dumbbell' }), /Equipment unpassend/);
+  assert.throws(() => build({ template: 'five-two-legs', equipment: 'dumbbell', variants: { 'chest-press': 'bench' } }), /widerspricht/);
+  for (const options of [{ equipment: 'unknown' }, { equipment: '' }, { goal: '' }, { days: 0 }, { days: 7 }, { days: 'three' }, { days: 2.5 }]) assert.throws(() => build(options));
+  const r = cli('Daniel', '--level', 'beginner', '--goal', 'vitality', '--equipment', 'dumbbell', '--days', '3');
+  assert.equal(r.status, 2); assert.equal(r.stdout, ''); assert.match(r.stderr, /Keine passende Vorlage/);
+  const custom = structuredClone(catalog);
+  const home = custom.templates.find((t) => t.id === 'home-dumbbell');
+  home.routines[0].exercises[0] = { selector: 'chest-press', role: 'main' };
+  const adapted = build({ template: home.id, equipment: 'dumbbell' }, custom);
+  assert.equal(adapted.generator.choices['chest-press'], 'bench-db');
+  assert.equal(adapted.routines[0].exercises.length, home.routines[0].exercises.length);
+});

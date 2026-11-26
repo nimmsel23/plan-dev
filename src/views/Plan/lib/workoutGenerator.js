@@ -73,37 +73,38 @@ export function generateWorkoutPlan({ name, level, template: templateId, goal, e
   const profile = Object.hasOwn(catalog.levels, levelId) ? catalog.levels[levelId] : null;
   if (!profile) fail(`Unbekanntes Level: ${level}. Verfügbar: ${Object.keys(catalog.levels).join(', ')}`);
 
-  const goalId = typeof goal === 'string' ? goal.trim().toLowerCase() : undefined;
-  if (goalId && catalog.goals && !Object.hasOwn(catalog.goals, goalId)) {
-    fail(`Unbekanntes Trainingsziel: ${goal}. Verfügbar: ${Object.keys(catalog.goals).join(', ')}`);
-  }
+  const goalId = goal === undefined ? undefined : String(goal).trim().toLowerCase();
+  if (goal !== undefined && !Object.hasOwn(catalog.goals || {}, goalId)) fail(`Unbekanntes Trainingsziel: ${goal}. Verfügbar: ${Object.keys(catalog.goals || {}).join(', ')}`);
+  const equipmentId = equipment === undefined ? undefined : String(equipment).trim().toLowerCase();
+  if (equipment !== undefined && !['gym', 'dumbbell', 'bodyweight'].includes(equipmentId)) fail(`Unbekanntes Equipment: ${equipment}. Möglich: gym, dumbbell, bodyweight.`);
+  const dayCount = days === undefined ? undefined : Number(days);
+  if (days !== undefined && !integer(dayCount, 2, 6)) fail('Trainingstage müssen eine ganze Zahl von 2 bis 6 sein.');
+  if (!variants || typeof variants !== 'object' || Array.isArray(variants)) fail('Varianten müssen eine Auswahl je Übungsplatz enthalten.');
 
-  let resolvedTemplateId = templateId;
-  if (!resolvedTemplateId) {
-    if (goalId && catalog.defaults?.goals?.[goalId]?.[levelId]) {
-      resolvedTemplateId = catalog.defaults.goals[goalId][levelId];
-    } else if (typeof equipment === 'string') {
-      const eq = equipment.trim().toLowerCase();
-      let match;
-      if (eq === 'dumbbell') {
-        match = catalog.templates.find((t) => t.id === 'home-dumbbell') ||
-                catalog.templates.find((t) => t.equipment?.includes('dumbbell') && !t.equipment?.includes('barbell'));
-      } else if (eq === 'bodyweight') {
-        match = catalog.templates.find((t) => t.id === 'bodyweight-vital') ||
-                catalog.templates.find((t) => t.equipment?.every((e) => e === 'bodyweight' || e === 'body only'));
-      } else {
-        match = catalog.templates.find((t) => t.equipment?.includes(eq) && (t.defaultLevel === levelId || t.defaultLevel === 'intermediate'));
-      }
-      if (match) resolvedTemplateId = match.id;
-    } else if (days !== undefined) {
-      const d = Number(days);
-      const match = catalog.templates.find((t) => t.routines.length === d && (t.defaultLevel === levelId || t.defaultLevel === 'intermediate'));
-      if (match) resolvedTemplateId = match.id;
-    }
-    if (!resolvedTemplateId) resolvedTemplateId = catalog.defaults[levelId];
+  // Only approved selector alternatives may adapt a template to available equipment.
+  const exerciseFits = (key) => !equipmentId || equipmentId === 'gym' || catalog.exercises[key].equipment.every((item) =>
+    ['body only', 'bodyweight'].includes(item) || (equipmentId === 'dumbbell' && item === 'dumbbell'));
+  const slotChoices = (slot) => slot.selector
+    ? (Object.hasOwn(variants, slot.selector) ? [variants[slot.selector]] : catalog.selectors[slot.selector].choices)
+    : [slot.exercise];
+  const conflicts = (t) => [
+    ...(goalId && (t.goal || 'hypertrophy') !== goalId ? [`Ziel ${t.goal || 'hypertrophy'}`] : []),
+    ...(dayCount !== undefined && (t.cycleDays !== 7 || t.routines.length !== dayCount) ? [`${t.routines.length} Einheiten / ${t.cycleDays} Tage`] : []),
+    ...(equipmentId && t.routines.some((r) => r.exercises.some((slot) => !slotChoices(slot).some((key) => catalog.exercises[key] && exerciseFits(key)))) ? ['Equipment unpassend'] : []),
+  ];
+  const preferred = [catalog.defaults.goals?.[goalId]?.[levelId],
+    equipmentId === 'dumbbell' ? 'home-dumbbell' : equipmentId === 'bodyweight' ? 'bodyweight-vital' : undefined,
+    catalog.defaults[levelId]];
+  const ranked = [...catalog.templates].sort((a, b) => {
+    const score = (t) => { const index = preferred.indexOf(t.id); return index < 0 ? preferred.length + (t.defaultLevel === levelId ? 0 : 1) : index; };
+    return score(a) - score(b);
+  });
+  const explicit = templateId === undefined ? null : findWorkoutTemplate(templateId, catalog);
+  const template = explicit || ranked.find((t) => !conflicts(t).length);
+  if (!template || conflicts(template).length) {
+    const alternatives = ranked.map((t) => ({ t, reasons: conflicts(t) })).sort((a, b) => a.reasons.length - b.reasons.length).slice(0, 3);
+    fail(`${explicit ? `Template ${explicit.id} widerspricht den Vorgaben: ${conflicts(explicit).join("; ")}` : 'Keine passende Vorlage'} (Ziel: ${goalId || 'offen'}, Equipment: ${equipmentId || 'offen'}, Trainingstage/Woche: ${dayCount ?? 'offen'}). Nahe Alternativen, nicht automatisch gewählt: ${alternatives.map(({ t, reasons }) => `${t.id} [${reasons.join('; ') || 'passt'}]`).join(', ')}.`);
   }
-
-  const template = findWorkoutTemplate(resolvedTemplateId, catalog);
   const totalWeeks = weeks ?? catalog.defaults.totalWeeks;
   if (!integer(totalWeeks, 1, 52)) fail('Dauer muss eine ganze Zahl von 1 bis 52 Wochen sein.');
 
@@ -130,7 +131,12 @@ export function generateWorkoutPlan({ name, level, template: templateId, goal, e
     if (!used.has(key)) fail(`Auswahl ${key} ist in ${template.id} nicht vorhanden.`);
     if (!catalog.selectors[key].choices.includes(choice)) fail(`Ungültige Variante ${key}=${choice}. Möglich: ${catalog.selectors[key].choices.join(', ')}`);
   }
-  const choices = Object.fromEntries([...used].map((key) => [key, Object.hasOwn(variants, key) ? variants[key] : catalog.selectors[key].default]));
+  const choices = Object.fromEntries([...used].map((key) => {
+    const selector = catalog.selectors[key];
+    const choice = Object.hasOwn(variants, key) ? variants[key]
+      : [selector.default, ...selector.choices].find(exerciseFits);
+    return [key, choice];
+  }));
   const trainingDays = template.routines.map((r) => r.day);
   const restDays = Array.from({ length: template.cycleDays }, (_, i) => i + 1).filter((day) => !trainingDays.includes(day));
   const schedule = `${template.cycleDays}-Tage-Zyklus; Training an Tag ${trainingDays.join(', ')}, Pause an Tag ${restDays.join(', ') || '—'}.`;
