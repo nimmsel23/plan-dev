@@ -399,7 +399,7 @@ Kurzfassung dauerhaft relevanten Wissens aus dem früheren Arbeitslog, thematisc
 
 ## Built-in plan drafts (2026-11-26)
 
-`lib/planPresets.js` owns five selectable starter plans (three basics and two Daniel-derived splits). TrainingPlans copies a selected preset into createMacrocycle only on explicit submit, retaining the existing UID and draft/editor flow. Yuhonas metadata is pinned-source data; weights stay unset. Daniel plans describe the separate 6Pack finisher without fabricating app sessions. Weekdays are Monday=0; classic split rests Wednesday/Sunday.
+`lib/planPresets.js` adapts the same catalog source for the existing picker. In `TrainingPlans.jsx`, presets are grouped into `<optgroup>` sections by goal (`hypertrophy`, `vitality`, `home`, `mobility`). TrainingPlans copies a selected preset into createMacrocycle only on explicit submit, retaining the existing UID and draft/editor flow. Yuhonas metadata is pinned-source data; weights stay unset. Daniel plans describe the separate 6Pack finisher without fabricating app sessions. Weekdays are Monday=0; classic split rests Wednesday/Sunday.
 
 ## JSON workout generator (2026-11-26)
 

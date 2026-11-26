@@ -123,7 +123,7 @@ Formate:
 - `yaml`: dieselbe Struktur wie JSON.
 - `--output`: schreibt ausschließlich eine neue, ausdrücklich benannte Datei. Ein bestehendes Ziel wird geschützt. Kein Firestore-Import, keine automatische Zuweisung, kein Versand.
 
-Der App-Picker nutzt die Routine-/Planfelder des bestehenden Editors. Zusätzliche CLI-Metadaten sind kein neuer Backendvertrag. Der Zyklus und der Core-Hinweis bleiben auch in der Planbeschreibung enthalten. Bereits gespeicherte Pläne werden durch Änderungen an den Templates nicht rückwirkend angepasst.
+Der App-Picker (`TrainingPlans.jsx`) konsumiert dieselben 12 Templates über `planPresets.js` und gruppiert sie im Dropdown nach den 4 Trainingszielen (`<optgroup>` für Hypertrophie, Vitalität, Home und Mobility). Zusätzliche CLI-Metadaten sind kein neuer Backendvertrag. Der Zyklus und der Core-Hinweis bleiben auch in der Planbeschreibung enthalten. Bereits gespeicherte Pläne werden durch Änderungen an den Templates nicht rückwirkend angepasst.
 
 ## Prüfen
 
