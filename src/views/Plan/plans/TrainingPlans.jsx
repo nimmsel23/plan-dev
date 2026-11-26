@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Layers, Plus, ChevronDown } from "lucide-react";
 import { listMacrocycles, createMacrocycle, getUid } from "@db";
+import { PLAN_PRESETS, planFromPreset } from "../lib/planPresets.js";
 import PlanCard from "../components/PlanCard.jsx";
 
 // Shared plan composition for personal training and the client workspace.
 export default function TrainingPlans({ templates, workouts, onChanged, clientUid, clients, onStart }) {
   const [name, setName] = useState('');
+  const [presetId, setPresetId] = useState('');
   const [creating, setCreating] = useState(false);
   const [busy, setBusy] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -32,14 +34,13 @@ export default function TrainingPlans({ templates, workouts, onChanged, clientUi
     try {
       // Sofort mit einem Trainingstag starten — leerer Editor ist der Hauptgrund warum „anlegen“ sich tot anfühlt.
       const created = await createMacrocycle(uid, {
+        ...(presetId ? planFromPreset(presetId) : { totalWeeks: 4, routines: [{ label: 'Training 1', weekdays: [0], exercises: [] }] }),
         name: name.trim(),
         coachUid: getUid(),
-        totalWeeks: 4,
         status: 'draft',
-        routines: [{ label: 'Training 1', weekdays: [0], exercises: [] }],
       });
       if (!created) throw new Error("Trainingsplan konnte nicht erstellt werden.");
-      setEditingId(created.id); setCreating(false); setName('');
+      setEditingId(created.id); setCreating(false); setName(''); setPresetId('');
       await load();
     } catch (err) { setError(err.message); } finally { setBusy(false); }
   }
@@ -76,6 +77,14 @@ export default function TrainingPlans({ templates, workouts, onChanged, clientUi
           {creating && (
             <form onSubmit={(e) => { e.preventDefault(); newPlan(); }} className="space-y-2 rounded-xl border border-fit-accent/40 bg-fit-accent/5 p-3">
               <label className="block text-sm">
+                Vorlage
+                <select aria-label="Planvorlage" value={presetId} onChange={(e) => { setPresetId(e.target.value); if (e.target.value) setName(PLAN_PRESETS.find((p) => p.id === e.target.value).name); }} className="mt-1 min-h-[44px] w-full rounded-xl border border-fit-line bg-fit-bg p-3">
+                  <option value="">Leerer Plan</option>
+                  {PLAN_PRESETS.map((preset) => <option key={preset.id} value={preset.id}>{preset.name}</option>)}
+                </select>
+              </label>
+              {presetId && <p className="text-xs text-fit-muted">{PLAN_PRESETS.find((p) => p.id === presetId).description}</p>}
+              <label className="block text-sm">
                 Name
                 <input
                   autoFocus
@@ -91,7 +100,7 @@ export default function TrainingPlans({ templates, workouts, onChanged, clientUi
                 <button disabled={busy || !name.trim()} className="vos-btn primary">
                   {busy ? 'Öffnet Editor…' : 'Anlegen & gestalten'}
                 </button>
-                <button type="button" disabled={busy} onClick={() => { setCreating(false); setName(''); }} className="min-h-[44px] px-3">
+                <button type="button" disabled={busy} onClick={() => { setCreating(false); setName(''); setPresetId(''); }} className="min-h-[44px] px-3">
                   Abbrechen
                 </button>
               </div>

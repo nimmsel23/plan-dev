@@ -396,3 +396,7 @@ Kurzfassung dauerhaft relevanten Wissens aus dem früheren Arbeitslog, thematisc
 ## Shell-Übernahme (2026-10-16)
 
 - Einklappbare Desktop-Sidebar, Safe-Area-Header, mobile Navigation mit vier Plan-Tabs plus Mehr. Defaults sind vital bzw. vital-light. Akzentbuttons nutzen den Theme-Kontrast.
+
+## Built-in plan drafts (2026-11-26)
+
+`lib/planPresets.js` owns five selectable starter plans (three basics and two Daniel-derived splits). TrainingPlans copies a selected preset into createMacrocycle only on explicit submit, retaining the existing UID and draft/editor flow. Yuhonas metadata is pinned-source data; weights stay unset. Daniel plans describe the separate 6Pack finisher without fabricating app sessions. Weekdays are Monday=0; classic split rests Wednesday/Sunday.

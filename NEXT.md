@@ -537,3 +537,7 @@ pruefen.
 - [ ] Fehler außerhalb des Codes (fehlende Deploy-Credentials, externe Dienste, Runner-Ausfälle) separat als Diagnose melden; keine ungeprüften Änderungen an Secrets oder Deploy-Konfiguration.
 - [x] 2026-11-13: GitHub-Pages-Prüfung abgeschlossen — Pages nutzt Workflow-Publishing (`gh api repos/nimmsel23/plan-dev/pages`); Living Dashboard läuft bei `dev`-Pushes (Run `43363954863`, success). Der alte Branch-/`/docs`-Punkt ist durch die Workflow-Konfiguration abgelöst.
 - [ ] Gemini-Reparaturpfad nach dem Feld-Fix anhand eines isolierten roten Checks verifizieren: Diagnose, Commit, Check-Neustart und nachgelagerter Deploy.
+
+## 2026-11-26 — Vorlagen
+
+- Vorlagen im angemeldeten Plan-/Coach-Editor prüfen; konkrete 6Pack-Session separat auswählen. Coach nutzt seinen gepinnten Plan-Stand, Pointer hier nicht verändert.

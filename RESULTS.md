@@ -89,3 +89,8 @@
 
 --------------------------------------------------------------------------
 <!-- thin-results-Grenze 2026-11-12: BIS HIERHER AUSGEDÜNNT — Destillat in den Doku-Dateien des Repos. Neue Einträge immer ÜBER diese Grenze. -->
+
+## 2026-11-26 — Trainingsvorlagen
+
+- Fünf auswählbare Planentwürfe: Ganzkörper A/B, Push/Pull mit Beinen, PPL, Daniels bereinigter Dreitageplan und klassischer Fünftagesplit mit Pause an Tag 3/7. Separater 6Pack-Core-Hinweis pro Daniel-Plan, keine erfundenen App-Sessions. Katalogmetadaten aus gepinntem Yuhonas-Bestand; keine Kontodaten vor Auswahl geschrieben.
+- Validierung: ESLint für beide JS/JSX-Dateien, Vite-Plan-Build, 10 bestehende Dokument-/Mikrozyklus-Tests sowie Prüfung aller Yuhonas-Referenzen, Fünftageschedule und unabhängiger Vorlagenkopien erfolgreich. pnpm-Wrapper wegen Store-Lock nicht nutzbar; lokale ESLint-/Vite-Binaries direkt genutzt. Angemeldeter UI-Durchlauf nicht ausgeführt.
