@@ -557,3 +557,17 @@ pruefen.
 - [ ] Differenziertes Krafttraining (Wirbelsäule/Rumpf, Schultergürtel, Ganzkörper) und sensomotorisches Training für Balance/Stabilität fachlich strukturieren, danach gezielte Templates ergänzen. Kein Sonderfokus auf Nacken, Kettlebell oder Home-Selbstversorger.
 
 - [x] 2026-11-26: Generator prüft Ziel, Equipment und Trainingstage gemeinsam, meldet Konflikte und nennt Alternativen.
+
+
+## 2026-11-26 — Yuhonas: weitere Potenziale nach dem laufenden Umbau
+
+Beobachtungen am laufenden Arbeitsstand (52 referenzierte Yuhonas-Übungen,
+8 eigene Coach-Aufgaben); vor Umsetzung jeweils erneut prüfen. Diese Punkte
+ersetzen nicht die laufenden Geräte-/Dosierungs-Fixes. Maßstab: differenziertes
+Krafttraining sowie Sensomotorik für Balance und Stabilität.
+
+- [ ] **Ausführungsanleitungen aus dem Pin nutzbar machen.** Bei 51/52 Yuhonas-Einträgen fehlen derzeit lokale `instructions`; `workoutGenerator.js` übernimmt nur vorhandene lokale Anleitungen in seine Hinweise. Die gepinnten Vendor-Anleitungen über einen gemeinsamen Adapter oder Build-Schritt verfügbar machen, mit Vorrang für explizite lokale Abweichungen. CLI, Plan-Dokument und Übungsdetail müssen dieselbe Ausführung erklären; keine neue manuelle Textkopie je Template.
+- [ ] **Medien und tatsächliche Variante abgleichen.** `yuhonasImage.js` leitet Bilder ausschließlich aus `yuhonas_id` ab. Lokale Abweichungen (`sourceVariation`: KH-Goblet statt KB, stehende Reverse Flys statt Bankvariante) dürfen keine widersprüchliche Ausführung illustrieren. Variantenkennzeichnung bis zur Darstellung erhalten; bei Abweichung Bild passend auswählen oder ausdrücklich ersetzen/auslassen. Vendor-`images` auswerten statt pauschal zwei JPGs vorauszusetzen; fehlende Medien ohne kaputtes Bild behandeln.
+- [ ] **Katalog-Drift gezielt prüfen.** Ein reproduzierbarer Audit gegen den gepinnten Vendor soll IDs, Muskeln, Anleitungen, Bildpfade und Geräte-/Zusatzgeräteabweichungen prüfen. Bewusste Abweichungen mit Begründung separat ausweisen statt sie bei Updates zu überschreiben. Beim Pin-Wechsel Bericht und betroffene Generator-Templates nennen; gespeicherte Pläne unverändert lassen.
+- [ ] **Coach-Aufgaben nachvollziehbar pflegen.** Eigene Balance-/Stabilitätsaufgaben brauchen Quelle, konkrete Anleitung und fachlich geprüfte leichtere/schwerere Varianten. Aktuell referenzieren alle acht dieselbe Coaching-Doku; Referenz pro Aufgabe präzisieren und im Plan-Kontext zugänglich machen. Keine erfundene Yuhonas-ID zur Erzwingung von Bildern.
+- [ ] **Anpassung und Verständnis am echten Plan prüfen.** Für einen konkreten Klienten kontrollieren, ob Übungsanleitung, Trainingsabsicht, Dosierung sowie leichtere/schwerere Variante im zugestellten Plan verständlich ankommen. Vorhandene `coaching`, `regression` und `progression` durch CLI → Preset → Plan-Dokument verfolgen; keine automatische Schwierigkeitserhöhung allein aus `advanced`. Abnahme von bloßem Katalog-/Build-Erfolg trennen.
