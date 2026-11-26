@@ -1,0 +1,1419 @@
+{
+  "schemaVersion": 1,
+  "defaults": {
+    "beginner": "full-body",
+    "intermediate": "ppl-basic",
+    "advanced": "five-two-legs",
+    "totalWeeks": 4
+  },
+  "core": {
+    "label": "6Pack Core-Intervalltraining",
+    "notes": "Fester eigenständiger Trainingsbaustein an jedem Trainingstag, kein Restprogramm. Session in der 6Pack-App wählen; keine konkrete App-Session vorausgewählt. Nicht unmittelbar vor dem schweren Hauptlift ermüden."
+  },
+  "progression": "Arbeitsgewicht individuell wählen. Sind alle Sätze am oberen Wiederholungsziel mit stabiler Technik und der vorgesehenen Reserve geschafft, die kleinste sinnvolle Laststeigerung wählen. Andernfalls zunächst wiederholen; bei wiederholtem Leistungsabfall Last/Umfang und Erholung prüfen. Aufwärmsätze zusätzlich, keine erzwungenen Wiederholungen.",
+  "levels": {
+    "beginner": {
+      "label": "Beginner",
+      "main": {
+        "sets": 2,
+        "reps": "8-12",
+        "restSeconds": 120,
+        "rir": 3
+      },
+      "compound": {
+        "sets": 2,
+        "reps": "8-12",
+        "restSeconds": 120,
+        "rir": 3
+      },
+      "isolation": {
+        "sets": 2,
+        "reps": "10-15",
+        "restSeconds": 90,
+        "rir": 3
+      },
+      "notes": "Technik und gleichmäßige Wiederholungen aufbauen; keine erzwungenen Wiederholungen. Trainingslevel beschreibt hier die Dosierung, nicht eine automatisch geprüfte Eignung."
+    },
+    "intermediate": {
+      "label": "Intermediate",
+      "main": {
+        "sets": 3,
+        "reps": "8-12",
+        "restSeconds": 150,
+        "rir": 2
+      },
+      "compound": {
+        "sets": 2,
+        "reps": "8-12",
+        "restSeconds": 120,
+        "rir": 2
+      },
+      "isolation": {
+        "sets": 3,
+        "reps": "10-15",
+        "restSeconds": 90,
+        "rir": 2
+      },
+      "notes": "Doppelte Progression: erst Wiederholungen, dann Last erhöhen. Keine automatische Steigerung unabhängig von Technik und Reserve."
+    },
+    "advanced": {
+      "label": "Advanced 5×5",
+      "main": {
+        "sets": 5,
+        "reps": "5",
+        "restSeconds": 180,
+        "rir": 2
+      },
+      "compound": {
+        "sets": 2,
+        "reps": "8-12",
+        "restSeconds": 120,
+        "rir": 2
+      },
+      "isolation": {
+        "sets": 3,
+        "reps": "10-15",
+        "restSeconds": 90,
+        "rir": 2
+      },
+      "notes": "5×5 betrifft die Hauptübung. Last für fünf saubere Sätze mit Reserve wählen, nicht die persönliche 5-RM-Last. Weitere Compounds nur, wenn das Basic-Template sie enthält; five-two-legs hat strikt nur einen Compound pro Einheit."
+    }
+  },
+  "exercises": {
+    "bench": {
+      "exercise_id": "barbell_bench_press_-_medium_grip",
+      "yuhonas_id": "Barbell_Bench_Press_-_Medium_Grip",
+      "name": "Bankdrücken",
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "triceps"
+      ],
+      "equipment": [
+        "barbell"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "incline": {
+      "exercise_id": "041",
+      "yuhonas_id": "Incline_Dumbbell_Press",
+      "name": "Schrägbankdrücken mit Kurzhanteln",
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "triceps"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "fly": {
+      "exercise_id": "yuhonas_cable_crossover",
+      "yuhonas_id": "Cable_Crossover",
+      "name": "Cable Crossovers",
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "equipment": [
+        "cable"
+      ],
+      "kind": "isolation",
+      "trackingType": "weight_reps"
+    },
+    "row": {
+      "exercise_id": "yuhonas_seated_cable_rows",
+      "yuhonas_id": "Seated_Cable_Rows",
+      "name": "Rudern am Kabelzug",
+      "primaryMuscles": [
+        "middle back"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "lats",
+        "shoulders"
+      ],
+      "equipment": [
+        "cable"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "lat": {
+      "exercise_id": "yuhonas_wide-grip_lat_pulldown",
+      "yuhonas_id": "Wide-Grip_Lat_Pulldown",
+      "name": "Latzug zur Brust",
+      "primaryMuscles": [
+        "lats"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "middle back",
+        "shoulders"
+      ],
+      "equipment": [
+        "cable"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "pullup": {
+      "exercise_id": "yuhonas_pullups",
+      "yuhonas_id": "Pullups",
+      "name": "Klimmzüge",
+      "primaryMuscles": [
+        "lats"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "middle back"
+      ],
+      "equipment": [
+        "body only"
+      ],
+      "kind": "compound",
+      "trackingType": "bodyweight_reps"
+    },
+    "squat": {
+      "exercise_id": "back_squat",
+      "yuhonas_id": "Barbell_Squat",
+      "name": "Langhantel-Kniebeugen",
+      "primaryMuscles": [
+        "quadriceps"
+      ],
+      "secondaryMuscles": [
+        "calves",
+        "glutes",
+        "hamstrings",
+        "lower back"
+      ],
+      "equipment": [
+        "barbell"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "lunge": {
+      "exercise_id": "yuhonas_dumbbell_lunges",
+      "yuhonas_id": "Dumbbell_Lunges",
+      "name": "Kurzhantel-Ausfallschritte",
+      "primaryMuscles": [
+        "quadriceps"
+      ],
+      "secondaryMuscles": [
+        "calves",
+        "glutes",
+        "hamstrings"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "hinge": {
+      "exercise_id": "81",
+      "yuhonas_id": "Romanian_Deadlift",
+      "name": "Rumänisches Kreuzheben",
+      "primaryMuscles": [
+        "hamstrings"
+      ],
+      "secondaryMuscles": [
+        "calves",
+        "glutes",
+        "lower back"
+      ],
+      "equipment": [
+        "barbell"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "extend": {
+      "exercise_id": "401",
+      "yuhonas_id": "Leg_Extensions",
+      "name": "Beinstrecken",
+      "primaryMuscles": [
+        "quadriceps"
+      ],
+      "secondaryMuscles": [],
+      "equipment": [
+        "machine"
+      ],
+      "kind": "isolation",
+      "trackingType": "weight_reps"
+    },
+    "curlleg": {
+      "exercise_id": "402",
+      "yuhonas_id": "Lying_Leg_Curls",
+      "name": "Beinbeugen",
+      "primaryMuscles": [
+        "hamstrings"
+      ],
+      "secondaryMuscles": [],
+      "equipment": [
+        "machine"
+      ],
+      "kind": "isolation",
+      "trackingType": "weight_reps"
+    },
+    "calf": {
+      "exercise_id": "yuhonas_standing_calf_raises",
+      "yuhonas_id": "Standing_Calf_Raises",
+      "name": "Wadenheben",
+      "primaryMuscles": [
+        "calves"
+      ],
+      "secondaryMuscles": [],
+      "equipment": [
+        "machine"
+      ],
+      "kind": "isolation",
+      "trackingType": "weight_reps"
+    },
+    "press": {
+      "exercise_id": "yuhonas_seated_dumbbell_press",
+      "yuhonas_id": "Seated_Dumbbell_Press",
+      "name": "Kurzhantel-Schulterdrücken",
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "triceps"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "lateral": {
+      "exercise_id": "dumbbell_lateral_raise",
+      "yuhonas_id": "Side_Lateral_Raise",
+      "name": "Seitheben",
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [],
+      "equipment": [
+        "dumbbell"
+      ],
+      "kind": "isolation",
+      "trackingType": "weight_reps"
+    },
+    "face": {
+      "exercise_id": "yuhonas_face_pull",
+      "yuhonas_id": "Face_Pull",
+      "name": "Face Pulls",
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "middle back"
+      ],
+      "equipment": [
+        "cable"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "curl": {
+      "exercise_id": "wger_91",
+      "yuhonas_id": "Dumbbell_Bicep_Curl",
+      "name": "Bizeps-Curls",
+      "primaryMuscles": [
+        "biceps"
+      ],
+      "secondaryMuscles": [
+        "forearms"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "kind": "isolation",
+      "trackingType": "weight_reps"
+    },
+    "hammer": {
+      "exercise_id": "yuhonas_alternate_hammer_curl",
+      "yuhonas_id": "Alternate_Hammer_Curl",
+      "name": "Hammer Curls",
+      "primaryMuscles": [
+        "biceps"
+      ],
+      "secondaryMuscles": [
+        "forearms"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "kind": "isolation",
+      "trackingType": "weight_reps"
+    },
+    "overhead": {
+      "exercise_id": "yuhonas_cable_rope_overhead_triceps_extension",
+      "yuhonas_id": "Cable_Rope_Overhead_Triceps_Extension",
+      "name": "Overhead-Trizepsstrecken am Kabelzug",
+      "primaryMuscles": [
+        "triceps"
+      ],
+      "secondaryMuscles": [],
+      "equipment": [
+        "cable"
+      ],
+      "kind": "isolation",
+      "trackingType": "weight_reps"
+    },
+    "bench-db": {
+      "exercise_id": "yuhonas_dumbbell_bench_press",
+      "yuhonas_id": "Dumbbell_Bench_Press",
+      "name": "Kurzhantel-Flachbankdrücken",
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "triceps"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "incline-bb": {
+      "exercise_id": "yuhonas_barbell_incline_bench_press_-_medium_grip",
+      "yuhonas_id": "Barbell_Incline_Bench_Press_-_Medium_Grip",
+      "name": "Langhantel-Schrägbankdrücken",
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "triceps"
+      ],
+      "equipment": [
+        "barbell"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "barbell-row": {
+      "exercise_id": "wger_1489",
+      "yuhonas_id": "Bent_Over_Barbell_Row",
+      "name": "Langhantelrudern",
+      "primaryMuscles": [
+        "middle back"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "lats",
+        "shoulders"
+      ],
+      "equipment": [
+        "barbell"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "chest-row": {
+      "exercise_id": "yuhonas_incline_bench_pull",
+      "yuhonas_id": "Incline_Bench_Pull",
+      "name": "Brustgestütztes Rudern",
+      "primaryMuscles": [
+        "middle back"
+      ],
+      "secondaryMuscles": [
+        "lats",
+        "shoulders"
+      ],
+      "equipment": [
+        "barbell"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "front-squat": {
+      "exercise_id": "061",
+      "yuhonas_id": "Front_Barbell_Squat",
+      "name": "Front Squats",
+      "primaryMuscles": [
+        "quadriceps"
+      ],
+      "secondaryMuscles": [
+        "calves",
+        "glutes",
+        "hamstrings"
+      ],
+      "equipment": [
+        "barbell"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "sumo": {
+      "exercise_id": "yuhonas_sumo_deadlift",
+      "yuhonas_id": "Sumo_Deadlift",
+      "name": "Sumo Deadlifts",
+      "primaryMuscles": [
+        "hamstrings"
+      ],
+      "secondaryMuscles": [
+        "adductors",
+        "forearms",
+        "glutes",
+        "lower back",
+        "middle back",
+        "quadriceps",
+        "traps"
+      ],
+      "equipment": [
+        "barbell"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "stiff-legged": {
+      "exercise_id": "yuhonas_stiff-legged_barbell_deadlift",
+      "yuhonas_id": "Stiff-Legged_Barbell_Deadlift",
+      "name": "Stiff-Legged Deadlifts",
+      "primaryMuscles": [
+        "hamstrings"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "lower back"
+      ],
+      "equipment": [
+        "barbell"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "reverse-lunge": {
+      "exercise_id": "yuhonas_dumbbell_rear_lunge",
+      "yuhonas_id": "Dumbbell_Rear_Lunge",
+      "name": "Kurzhantel-Reverse-Lunges",
+      "primaryMuscles": [
+        "quadriceps"
+      ],
+      "secondaryMuscles": [
+        "calves",
+        "glutes",
+        "hamstrings"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "press-bb": {
+      "exercise_id": "yuhonas_standing_military_press",
+      "yuhonas_id": "Standing_Military_Press",
+      "name": "Langhantel-Schulterdrücken",
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "triceps"
+      ],
+      "equipment": [
+        "barbell"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "straight-arm": {
+      "exercise_id": "yuhonas_straight-arm_pulldown",
+      "yuhonas_id": "Straight-Arm_Pulldown",
+      "name": "Straight-arm Pulldowns",
+      "primaryMuscles": [
+        "lats"
+      ],
+      "secondaryMuscles": [],
+      "equipment": [
+        "cable"
+      ],
+      "kind": "isolation",
+      "trackingType": "weight_reps"
+    },
+    "reverse-fly": {
+      "exercise_id": "yuhonas_reverse_flyes",
+      "yuhonas_id": "Reverse_Flyes",
+      "name": "Reverse Flys",
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [],
+      "equipment": [
+        "dumbbell"
+      ],
+      "kind": "isolation",
+      "trackingType": "weight_reps"
+    },
+    "pushdown": {
+      "exercise_id": "triceps_pushdown",
+      "yuhonas_id": "Triceps_Pushdown",
+      "name": "Trizeps-Pushdowns",
+      "primaryMuscles": [
+        "triceps"
+      ],
+      "secondaryMuscles": [],
+      "equipment": [
+        "cable"
+      ],
+      "kind": "isolation",
+      "trackingType": "weight_reps"
+    },
+    "seated-curlleg": {
+      "exercise_id": "yuhonas_seated_leg_curl",
+      "yuhonas_id": "Seated_Leg_Curl",
+      "name": "Sitzendes Beinbeugen",
+      "primaryMuscles": [
+        "hamstrings"
+      ],
+      "secondaryMuscles": [],
+      "equipment": [
+        "machine"
+      ],
+      "kind": "isolation",
+      "trackingType": "weight_reps"
+    },
+    "seated-calf": {
+      "exercise_id": "yuhonas_seated_calf_raise",
+      "yuhonas_id": "Seated_Calf_Raise",
+      "name": "Sitzendes Wadenheben",
+      "primaryMuscles": [
+        "calves"
+      ],
+      "secondaryMuscles": [],
+      "equipment": [
+        "machine"
+      ],
+      "kind": "isolation",
+      "trackingType": "weight_reps"
+    },
+    "low-fly": {
+      "exercise_id": "yuhonas_low_cable_crossover",
+      "yuhonas_id": "Low_Cable_Crossover",
+      "name": "Low-to-high Cable Crossovers",
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "equipment": [
+        "cable"
+      ],
+      "kind": "isolation",
+      "trackingType": "weight_reps"
+    },
+    "front-raise": {
+      "exercise_id": "yuhonas_front_dumbbell_raise",
+      "yuhonas_id": "Front_Dumbbell_Raise",
+      "name": "Kurzhantel-Frontheben",
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [],
+      "equipment": [
+        "dumbbell"
+      ],
+      "kind": "isolation",
+      "trackingType": "weight_reps"
+    }
+  },
+  "selectors": {
+    "chest-press": {
+      "label": "Brust-Hauptübung",
+      "default": "bench",
+      "choices": [
+        "bench",
+        "bench-db",
+        "incline-bb",
+        "incline"
+      ]
+    },
+    "row": {
+      "label": "Ruderübung",
+      "default": "barbell-row",
+      "choices": [
+        "barbell-row",
+        "chest-row",
+        "row"
+      ]
+    },
+    "squat": {
+      "label": "Kniebeuge",
+      "default": "front-squat",
+      "choices": [
+        "front-squat",
+        "squat"
+      ]
+    },
+    "hinge": {
+      "label": "Hüftstreckübung",
+      "default": "hinge",
+      "choices": [
+        "hinge",
+        "sumo",
+        "stiff-legged"
+      ]
+    },
+    "shoulder-press": {
+      "label": "Schulterdrücken",
+      "default": "press",
+      "choices": [
+        "press",
+        "press-bb"
+      ]
+    },
+    "vertical-pull": {
+      "label": "Vertikales Ziehen",
+      "default": "lat",
+      "choices": [
+        "lat",
+        "pullup"
+      ]
+    },
+    "chest-fly": {
+      "label": "Brust-Isolation",
+      "default": "fly",
+      "choices": [
+        "fly",
+        "low-fly"
+      ]
+    },
+    "leg-curl": {
+      "label": "Beinbeugen",
+      "default": "seated-curlleg",
+      "choices": [
+        "seated-curlleg",
+        "curlleg"
+      ]
+    }
+  },
+  "templates": [
+    {
+      "id": "full-body",
+      "name": "Ganzkörper A/B · 3 Tage",
+      "defaultLevel": "beginner",
+      "aliases": [],
+      "cycleDays": 7,
+      "compoundPolicy": "mixed",
+      "notes": "A/B/A-Wochenstruktur. Die Hauptübung steht zuerst; weitere Mehrgelenkübungen gehören bei diesem Ganzkörper-Template zur Struktur.",
+      "routines": [
+        {
+          "day": 1,
+          "label": "Ganzkörper A",
+          "exercises": [
+            {
+              "selector": "squat",
+              "role": "main"
+            },
+            {
+              "selector": "chest-press",
+              "role": "compound"
+            },
+            {
+              "selector": "row",
+              "role": "compound"
+            },
+            {
+              "selector": "leg-curl",
+              "role": "isolation"
+            },
+            {
+              "exercise": "lateral",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "label": "Ganzkörper B",
+          "exercises": [
+            {
+              "selector": "hinge",
+              "role": "main"
+            },
+            {
+              "selector": "vertical-pull",
+              "role": "compound"
+            },
+            {
+              "selector": "shoulder-press",
+              "role": "compound"
+            },
+            {
+              "exercise": "reverse-lunge",
+              "role": "compound"
+            },
+            {
+              "exercise": "curl",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "label": "Ganzkörper A",
+          "exercises": [
+            {
+              "selector": "squat",
+              "role": "main"
+            },
+            {
+              "selector": "chest-press",
+              "role": "compound"
+            },
+            {
+              "selector": "row",
+              "role": "compound"
+            },
+            {
+              "selector": "leg-curl",
+              "role": "isolation"
+            },
+            {
+              "exercise": "lateral",
+              "role": "isolation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "push-pull",
+      "name": "Push/Pull mit Beinen · 4 Tage",
+      "defaultLevel": "intermediate",
+      "aliases": [],
+      "cycleDays": 7,
+      "compoundPolicy": "mixed",
+      "notes": "",
+      "routines": [
+        {
+          "day": 1,
+          "label": "Push A",
+          "exercises": [
+            {
+              "selector": "squat",
+              "role": "main"
+            },
+            {
+              "selector": "chest-press",
+              "role": "compound"
+            },
+            {
+              "exercise": "lateral",
+              "role": "isolation"
+            },
+            {
+              "exercise": "overhead",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 2,
+          "label": "Pull A",
+          "exercises": [
+            {
+              "selector": "hinge",
+              "role": "main"
+            },
+            {
+              "selector": "row",
+              "role": "compound"
+            },
+            {
+              "selector": "leg-curl",
+              "role": "isolation"
+            },
+            {
+              "exercise": "curl",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 4,
+          "label": "Push B",
+          "exercises": [
+            {
+              "selector": "chest-press",
+              "role": "main"
+            },
+            {
+              "exercise": "reverse-lunge",
+              "role": "compound"
+            },
+            {
+              "exercise": "extend",
+              "role": "isolation"
+            },
+            {
+              "exercise": "lateral",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 6,
+          "label": "Pull B",
+          "exercises": [
+            {
+              "selector": "row",
+              "role": "main"
+            },
+            {
+              "selector": "vertical-pull",
+              "role": "compound"
+            },
+            {
+              "exercise": "hammer",
+              "role": "isolation"
+            },
+            {
+              "exercise": "calf",
+              "role": "isolation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ppl-basic",
+      "name": "Push/Pull/Beine · 3 Tage",
+      "defaultLevel": "intermediate",
+      "aliases": [
+        "ppl"
+      ],
+      "cycleDays": 7,
+      "compoundPolicy": "mixed",
+      "notes": "",
+      "routines": [
+        {
+          "day": 1,
+          "label": "Push",
+          "exercises": [
+            {
+              "selector": "chest-press",
+              "role": "main"
+            },
+            {
+              "selector": "shoulder-press",
+              "role": "compound"
+            },
+            {
+              "exercise": "lateral",
+              "role": "isolation"
+            },
+            {
+              "exercise": "overhead",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "label": "Pull",
+          "exercises": [
+            {
+              "selector": "row",
+              "role": "main"
+            },
+            {
+              "selector": "vertical-pull",
+              "role": "compound"
+            },
+            {
+              "exercise": "reverse-fly",
+              "role": "isolation"
+            },
+            {
+              "exercise": "curl",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "label": "Beine",
+          "exercises": [
+            {
+              "selector": "squat",
+              "role": "main"
+            },
+            {
+              "selector": "hinge",
+              "role": "compound"
+            },
+            {
+              "selector": "leg-curl",
+              "role": "isolation"
+            },
+            {
+              "exercise": "calf",
+              "role": "isolation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "daniel-three",
+      "name": "Brust/Pull/Beine + Schultern · 3 Tage",
+      "defaultLevel": "intermediate",
+      "aliases": [],
+      "cycleDays": 7,
+      "compoundPolicy": "mixed",
+      "notes": "Aus Daniels ursprünglichem Übungspool abgeleitet; ohne den früheren Tag-4-Testentwurf.",
+      "routines": [
+        {
+          "day": 1,
+          "label": "Brust + Trizeps",
+          "exercises": [
+            {
+              "selector": "chest-press",
+              "role": "main"
+            },
+            {
+              "selector": "chest-fly",
+              "role": "isolation"
+            },
+            {
+              "exercise": "overhead",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "label": "Rücken + Bizeps",
+          "exercises": [
+            {
+              "selector": "row",
+              "role": "main"
+            },
+            {
+              "selector": "vertical-pull",
+              "role": "compound"
+            },
+            {
+              "exercise": "reverse-fly",
+              "role": "isolation"
+            },
+            {
+              "exercise": "curl",
+              "role": "isolation"
+            },
+            {
+              "exercise": "hammer",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "label": "Beine + Schultern",
+          "exercises": [
+            {
+              "selector": "squat",
+              "role": "main"
+            },
+            {
+              "exercise": "reverse-lunge",
+              "role": "compound"
+            },
+            {
+              "selector": "leg-curl",
+              "role": "isolation"
+            },
+            {
+              "exercise": "calf",
+              "role": "isolation"
+            },
+            {
+              "selector": "shoulder-press",
+              "role": "compound"
+            },
+            {
+              "exercise": "lateral",
+              "role": "isolation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "daniel-classic-five",
+      "name": "Klassischer 5er-Split · 5 Tage",
+      "defaultLevel": "intermediate",
+      "aliases": [
+        "classic-five"
+      ],
+      "cycleDays": 7,
+      "compoundPolicy": "mixed",
+      "notes": "Brust · Rücken · Pause · Beine · Schultern · Arme · Pause. Arme ist ein Isolationstag ohne 5×5-Compound.",
+      "routines": [
+        {
+          "day": 1,
+          "label": "Brust",
+          "exercises": [
+            {
+              "selector": "chest-press",
+              "role": "main"
+            },
+            {
+              "selector": "chest-fly",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 2,
+          "label": "Rücken",
+          "exercises": [
+            {
+              "selector": "row",
+              "role": "main"
+            },
+            {
+              "exercise": "straight-arm",
+              "role": "isolation"
+            },
+            {
+              "exercise": "reverse-fly",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 4,
+          "label": "Beine",
+          "exercises": [
+            {
+              "selector": "squat",
+              "role": "main"
+            },
+            {
+              "selector": "hinge",
+              "role": "compound"
+            },
+            {
+              "exercise": "extend",
+              "role": "isolation"
+            },
+            {
+              "selector": "leg-curl",
+              "role": "isolation"
+            },
+            {
+              "exercise": "calf",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "label": "Schultern",
+          "exercises": [
+            {
+              "selector": "shoulder-press",
+              "role": "main"
+            },
+            {
+              "exercise": "lateral",
+              "role": "isolation"
+            },
+            {
+              "exercise": "reverse-fly",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 6,
+          "label": "Arme",
+          "exercises": [
+            {
+              "exercise": "curl",
+              "role": "isolation"
+            },
+            {
+              "exercise": "overhead",
+              "role": "isolation"
+            },
+            {
+              "exercise": "hammer",
+              "role": "isolation"
+            },
+            {
+              "exercise": "pushdown",
+              "role": "isolation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "five-two-legs",
+      "name": "5er-Split mit zwei Beintagen",
+      "defaultLevel": "advanced",
+      "aliases": [
+        "advanced-5x5"
+      ],
+      "cycleDays": 7,
+      "compoundPolicy": "one-main",
+      "notes": "Brust/Trizeps · Rücken/Bizeps · Pause · Beine A · Schultern/Arme · Beine B · Pause. Exakt ein Compound pro Einheit, danach ausschließlich Isolationen. Keine Beinpresse, Bulgarians oder zusätzlichen Lunges/Hebeblöcke. Reißen/Umsetzen/Ausstoßen bleiben Technikhinweise, keine automatisch eingefügten Übungen.",
+      "routines": [
+        {
+          "day": 1,
+          "label": "Brust + Trizeps",
+          "exercises": [
+            {
+              "selector": "chest-press",
+              "role": "main"
+            },
+            {
+              "selector": "chest-fly",
+              "role": "isolation"
+            },
+            {
+              "exercise": "overhead",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 2,
+          "label": "Rücken + Bizeps",
+          "exercises": [
+            {
+              "selector": "row",
+              "role": "main"
+            },
+            {
+              "exercise": "straight-arm",
+              "role": "isolation"
+            },
+            {
+              "exercise": "curl",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 4,
+          "label": "Beine A",
+          "exercises": [
+            {
+              "selector": "squat",
+              "role": "main"
+            },
+            {
+              "exercise": "extend",
+              "role": "isolation"
+            },
+            {
+              "exercise": "calf",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "label": "Schultern + Arme",
+          "exercises": [
+            {
+              "selector": "shoulder-press",
+              "role": "main"
+            },
+            {
+              "exercise": "lateral",
+              "role": "isolation"
+            },
+            {
+              "exercise": "reverse-fly",
+              "role": "isolation"
+            },
+            {
+              "exercise": "curl",
+              "role": "isolation"
+            },
+            {
+              "exercise": "pushdown",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 6,
+          "label": "Beine B",
+          "exercises": [
+            {
+              "selector": "hinge",
+              "role": "main"
+            },
+            {
+              "selector": "leg-curl",
+              "role": "isolation"
+            },
+            {
+              "exercise": "seated-calf",
+              "role": "isolation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ppl-six",
+      "name": "PPL A/B · 6 Einheiten im 8-Tage-Zyklus",
+      "defaultLevel": "intermediate",
+      "aliases": [
+        "six-day"
+      ],
+      "cycleDays": 8,
+      "compoundPolicy": "mixed",
+      "notes": "Drei Einheiten, Pause, drei Einheiten, Pause. Einfaches Basic-Template mit dem besprochenen Rhythmus; keine 1:1-Kopie der Athlean-X-Videos und keine übernommenen Versagens-/Intensivierungstechniken.",
+      "routines": [
+        {
+          "day": 1,
+          "label": "Brust + Trizeps A",
+          "exercises": [
+            {
+              "selector": "chest-press",
+              "role": "main"
+            },
+            {
+              "selector": "chest-fly",
+              "role": "isolation"
+            },
+            {
+              "exercise": "overhead",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 2,
+          "label": "Rücken + Bizeps A",
+          "exercises": [
+            {
+              "selector": "row",
+              "role": "main"
+            },
+            {
+              "selector": "vertical-pull",
+              "role": "compound"
+            },
+            {
+              "exercise": "curl",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "label": "Beine + Schultern A",
+          "exercises": [
+            {
+              "selector": "squat",
+              "role": "main"
+            },
+            {
+              "selector": "leg-curl",
+              "role": "isolation"
+            },
+            {
+              "exercise": "calf",
+              "role": "isolation"
+            },
+            {
+              "selector": "shoulder-press",
+              "role": "compound"
+            },
+            {
+              "exercise": "lateral",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "label": "Brust + Trizeps B",
+          "exercises": [
+            {
+              "selector": "chest-press",
+              "role": "main"
+            },
+            {
+              "selector": "chest-fly",
+              "role": "isolation"
+            },
+            {
+              "exercise": "pushdown",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 6,
+          "label": "Rücken + Bizeps B",
+          "exercises": [
+            {
+              "selector": "row",
+              "role": "main"
+            },
+            {
+              "exercise": "straight-arm",
+              "role": "isolation"
+            },
+            {
+              "exercise": "hammer",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 7,
+          "label": "Beine + Schultern B",
+          "exercises": [
+            {
+              "selector": "hinge",
+              "role": "main"
+            },
+            {
+              "selector": "leg-curl",
+              "role": "isolation"
+            },
+            {
+              "exercise": "seated-calf",
+              "role": "isolation"
+            },
+            {
+              "exercise": "lateral",
+              "role": "isolation"
+            },
+            {
+              "exercise": "reverse-fly",
+              "role": "isolation"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

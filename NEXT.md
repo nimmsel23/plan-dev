@@ -541,3 +541,8 @@ pruefen.
 ## 2026-11-26 — Vorlagen
 
 - Vorlagen im angemeldeten Plan-/Coach-Editor prüfen; konkrete 6Pack-Session separat auswählen. Coach nutzt seinen gepinnten Plan-Stand, Pointer hier nicht verändert.
+
+## 2026-11-26 — Workout-Generator
+
+- JSON-Basic-Templates bei neuen Übungs-/Splitwünschen ergänzen; Übungs-IDs am gepinnten Katalog prüfen. Gewichte und konkrete 6Pack-Sessions bleiben individuell.
+- Falls später gewünscht: expliziten Planimport/Coach-Zuweisung separat umsetzen; der Generator schreibt absichtlich nur stdout bzw. neue Zieldateien.

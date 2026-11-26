@@ -94,3 +94,10 @@
 
 - Fünf auswählbare Planentwürfe: Ganzkörper A/B, Push/Pull mit Beinen, PPL, Daniels bereinigter Dreitageplan und klassischer Fünftagesplit mit Pause an Tag 3/7. Separater 6Pack-Core-Hinweis pro Daniel-Plan, keine erfundenen App-Sessions. Katalogmetadaten aus gepinntem Yuhonas-Bestand; keine Kontodaten vor Auswahl geschrieben.
 - Validierung: ESLint für beide JS/JSX-Dateien, Vite-Plan-Build, 10 bestehende Dokument-/Mikrozyklus-Tests sowie Prüfung aller Yuhonas-Referenzen, Fünftageschedule und unabhängiger Vorlagenkopien erfolgreich. pnpm-Wrapper wegen Store-Lock nicht nutzbar; lokale ESLint-/Vite-Binaries direkt genutzt. Angemeldeter UI-Durchlauf nicht ausgeführt.
+
+## 2026-11-26 — JSON-basierter Workout-Generator
+
+- `bin/plan-generate`: Name + Beginner/Intermediate/Advanced → Plan als Markdown/JSON/YAML; Split, konkrete Übungsalternativen, Dauer und Core steuerbar. Keine Kontodaten/Logs/Zuweisungen; vorhandene Ausgabedateien werden geschützt.
+- Gemeinsame JSON-SOT für 7 Basic-Templates, 34 reale Katalogübungen und 3 Belastungsprofile; bestehender App-Picker konsumiert dieselben Daten. Flach-/Schrägbank als Ersatz, LH-Rudern standardmäßig, fünfteiliger Zweibein-Split mit genau einem Compound + Isolationen. Core fester Baustein. Sechser als einfacher 8-Tage-PPL-Zyklus, keine behauptete Athlean-X-Originalkopie.
+- Doku: `docs/WORKOUT-GENERATOR.md`; automatisierte Generator-/CLI-Tests inkl. sämtlicher Varianten und JSON-Änderungen ergänzt.
+- Verifikation: 7 Generator-Testgruppen (21 Template/Level-Kombinationen und sämtliche Auswahlvarianten), 10 Dokument-/Mikrozyklus-Tests und @db-Barrel-Vertrag grün; ESLint und Plan-Vite-Build erfolgreich. Kurzer CLI-Aufruf in interaktiver zsh aufgelöst; Angemeldeter App-Picker und produktives Hosting hier nicht geprüft.

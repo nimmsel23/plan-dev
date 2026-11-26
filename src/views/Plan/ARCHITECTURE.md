@@ -400,3 +400,7 @@ Kurzfassung dauerhaft relevanten Wissens aus dem früheren Arbeitslog, thematisc
 ## Built-in plan drafts (2026-11-26)
 
 `lib/planPresets.js` owns five selectable starter plans (three basics and two Daniel-derived splits). TrainingPlans copies a selected preset into createMacrocycle only on explicit submit, retaining the existing UID and draft/editor flow. Yuhonas metadata is pinned-source data; weights stay unset. Daniel plans describe the separate 6Pack finisher without fabricating app sessions. Weekdays are Monday=0; classic split rests Wednesday/Sunday.
+
+## JSON workout generator (2026-11-26)
+
+`data/workoutTemplates.json` is the shared basic-template/selector/level source. `lib/workoutGenerator.js` validates and deterministically builds independent plan drafts without I/O; `planPresets.js` adapts the same source for the existing picker. `bin/plan-generate` is the CLI boundary: name + level, optional split/variants, stdout Markdown/JSON/YAML or exclusive file creation. It does not touch auth, account data, services or assignment APIs. Five-two-legs enforces one main compound followed by isolation slots. The six-unit basic template preserves an 8-day rotation (no weekday pinning). See `docs/WORKOUT-GENERATOR.md`.

@@ -279,3 +279,7 @@ Der Druck rendert weiterhin Trainingsblätter ohne interaktive Körperkarten.
 Die lokale und Cloud-Host-App liefern Identität, Speicher und Navigation.
 
 Lokale Freigabe: `planReadiness.js` nennt offene Übungen vorab. Leere Satzlisten werden nicht durch eine beliebige Feldänderung als vollständig markiert; der Python-Runtime prüft dieselben Zielvorgaben und nennt die betroffene Übung.
+
+## Workout generator (2026-11-26)
+
+The former hardcoded preset definitions now come from one JSON catalog used by both picker and CLI. Generator tests cover all template/level combinations, every selector replacement, catalog references, independent drafts, 8-day rhythm, invalid input and exclusive output writes. This is generation only: no authenticated import, assignment or runtime logging performed. JSON prescriptions are editable starting profiles, not personal load/ability assessment.
