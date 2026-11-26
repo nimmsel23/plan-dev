@@ -165,10 +165,7 @@ const REDIRECT = `<!doctype html><meta charset="utf-8"><title>VitalOS App-Links<
 
 function navLinks(extra = []) {
   const links = [
-    ["Produkt (PRODUCT.md)", "https://github.com/nimmsel23/vitalos/blob/master/prod/coordination/PRODUCT.md"],
-    ["Koordination", "https://github.com/nimmsel23/vitalos/blob/master/prod/coordination/README.md"],
-    ["Backlog", "https://github.com/nimmsel23/vitalos/blob/master/prod/coordination/PRODUKT-BACKLOG.md"],
-    ["CTO", "https://github.com/nimmsel23/vitalos/blob/master/prod/coordination/CTO.md"],
+    ["Org (nimmsel23/vos)", "https://github.com/nimmsel23/vos"],
     ["Entwicklungsdashboard", "https://nimmsel23.github.io/vitalos/"],
     ["App-Links & APKs", "https://nimmsel23.github.io/vitalos/apps.html"],
     ["Org-Dashboards", "https://vos-dev-dashboards.web.app"],
