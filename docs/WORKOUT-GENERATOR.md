@@ -1,9 +1,16 @@
 # Workout Generator
 
-`bin/plan-generate` erzeugt anhand von **Name und Level** einen bearbeitbaren Trainingsplan aus den Basic-Templates. Ohne weitere Optionen geht der Plan auf stdout; es werden weder Kontodaten noch Trainingslogs angelegt.
+`bin/plan-generate` erzeugt anhand von **Name, Trainingsziel, Equipment oder Level** einen bearbeitbaren Trainingsplan aus den Basic-Templates. Ohne weitere Optionen geht der Plan auf stdout; es werden weder Kontodaten noch Trainingslogs angelegt.
 
 ```sh
-# Defaults: Beginner → Ganzkörper, Intermediate → PPL, Advanced → 5er mit 2 Beintagen
+# 1. Breiter Einstieg für Vitaltraining, Home und Klienten
+./bin/plan-generate --name Maria --goal vitality --level beginner
+./bin/plan-generate --name Thomas --equipment dumbbell --level intermediate
+./bin/plan-generate --name Anna --template bodyweight-vital --level beginner
+./bin/plan-generate --name Stefan --goal mobility --level beginner
+
+# 2. Klassische Hypertrophie- & Gym-Splits (Rückwärtskompatibel)
+# Defaults ohne Ziel: Beginner → Ganzkörper, Intermediate → PPL, Advanced → 5er mit 2 Beintagen
 ./bin/plan-generate --name Daniel --level beginner
 ./bin/plan-generate --name Daniel --level intermediate
 ./bin/plan-generate --name Daniel --level advanced
@@ -17,7 +24,7 @@
 ./bin/plan-generate Daniel --level advanced --format yaml
 ./bin/plan-generate Daniel --level advanced --output /tmp/Daniel-5x5.md
 
-# Alle Templates, Level und zulässigen Alternativen
+# Alle Templates, Schwerpunkte, Level, Core-Module und zulässigen Alternativen
 ./bin/plan-generate --list
 ./bin/plan-generate --list --format json
 ```
@@ -37,12 +44,14 @@ Die vorhandene Shell-PATH-Konfiguration nimmt `~/dev/*/bin` beim Shell-Start auf
 | JSON-Bereich | Zweck |
 | --- | --- |
 | `schemaVersion` | Aktuell `1`; unbekannte Versionen werden abgewiesen |
+| `goals` | Kategorien & Schwerpunkte: `vitality`, `home`, `hypertrophy`, `mobility` |
 | `exercises` | Konkrete Katalog-ID, Yuhonas-ID, Name, Muskel-/Gerätedaten, Art und Trackingtyp |
 | `selectors` | Übungsplätze mit zulässigen Alternativen und Standardwahl |
 | `levels` | Dosierung getrennt nach `main`, `compound` und `isolation` |
-| `templates` | Split, Zykluslänge, Trainingstage und ausgewählte Übungsplätze |
-| `defaults` | Passendes Standardtemplate pro Level und Standarddauer |
-| `core` | Eigenständiger Core-Baustein; keine erfundene konkrete 6Pack-Session |
+| `coreModules` | Wählbare Core-Bausteine: `posture` (Rumpf & Haltung), `6pack` (Intervalle), `mobility` (Gelenke) |
+| `templates` | Split, Zykluslänge, Trainingstage, Equipment und ausgewählte Übungsplätze |
+| `defaults` | Passendes Standardtemplate pro Level/Goal und Standarddauer |
+| `core` | Rückwärtskompatibler Default-Core-Baustein |
 | `progression` | Gemeinsame Hinweise zur Laststeigerung |
 
 Beispiel eines Übungsplatzes in einer Einheit:
@@ -77,28 +86,38 @@ Der Generator prüft Schemaversion, Referenzen, Rollen, Dosierung und Zyklustage
 
 Die Profile sind editierbare Ausgangswerte und keine automatische Einstufung einer Person. Lasten bleiben `null`; das Skript erfindet keine Kraftwerte. Die Level verändern Sätze, Wiederholungen, Pausen und Reserve, nicht heimlich die ausgesuchte Übung.
 
-Beim Template `five-two-legs` gilt für alle Level: **genau ein Compound am Anfang, danach nur Isolationen**. Das Advanced-Profil ergibt dort den besprochenen Advanced-5×5-Plan. Ganzkörper/PPL/Push-Pull enthalten dagegen bewusst mehrere Mehrgelenkbewegungen; nur der als `main` bezeichnete Platz erhält 5×5.
+Beim Template `five-two-legs` gilt für alle Level: **genau ein Compound am Anfang, danach nur Isolationen**. Das Advanced-Profil ergibt dort den besprochenen Advanced-5×5-Plan. Ganzkörper/PPL/Push-Pull/Vitality enthalten dagegen bewusst mehrere funktionelle Mehrgelenkbewegungen; nur der als `main` bezeichnete Platz erhält 5×5.
 
-## Templates und Zyklen
+## Templates, Schwerpunkte und Zyklen
 
-| ID | Rhythmus |
-| --- | --- |
-| `full-body` | Ganzkörper A/B/A an Tag 1, 3, 5; 7-Tage-Woche |
-| `push-pull` | Push/Pull mit Beinen an Tag 1, 2, 4, 6 |
-| `ppl-basic` | Push/Pull/Beine an Tag 1, 3, 5 |
-| `daniel-three` | Brust/Trizeps, Rücken/Bizeps, Beine/Schultern an Tag 1, 3, 5 |
-| `daniel-classic-five` | Brust, Rücken, Pause, Beine, Schultern, Arme, Pause |
-| `five-two-legs` | Brust/Trizeps, Rücken/Bizeps, Pause, Beine A, Schultern/Arme, Beine B, Pause |
-| `ppl-six` | Training an Tag 1, 2, 3, 5, 6, 7; Pausen an Tag 4 und 8 |
+| ID | Ziel / Schwerpunkt | Rhythmus & Equipment |
+| --- | --- | --- |
+| `vital-health` | Vitalität & Prävention | 2 Einheiten (Tag 1, 4); Kurzhantel & Eigengewicht (Alltagsfit, 40+) |
+| `vital-back-posture` | Rücken & Haltung Vital | 3 Einheiten (Tag 1, 3, 5); Rumpf, Schultergürtel, Rückenentlastung |
+| `home-dumbbell` | Home & Minimal Equipment | 3 Einheiten (Tag 1, 3, 5); Kurzhanteln + Matte ohne Gym-Geräte |
+| `bodyweight-vital` | Calisthenics & Bodyweight | 3 Einheiten (Tag 1, 3, 5); 100% Eigengewicht ohne Geräte |
+| `mobility-flow` | Mobility & Gelenkgesundheit | 2 Einheiten (Tag 1, 4); Wirbelsäulenentlastung & Hüftmobilität |
+| `full-body` | Hypertrophie (Gym) | Ganzkörper A/B/A an Tag 1, 3, 5; 7-Tage-Woche |
+| `push-pull` | Hypertrophie (Gym) | Push/Pull mit Beinen an Tag 1, 2, 4, 6 |
+| `ppl-basic` | Hypertrophie (Gym) | Push/Pull/Beine an Tag 1, 3, 5 |
+| `daniel-three` | Hypertrophie (Gym) | Brust/Trizeps, Rücken/Bizeps, Beine/Schultern an Tag 1, 3, 5 |
+| `daniel-classic-five` | Hypertrophie (Gym) | Brust, Rücken, Pause, Beine, Schultern, Arme, Pause |
+| `five-two-legs` | Hypertrophie (Gym) | Brust/Trizeps, Rücken/Bizeps, Pause, Beine A, Schultern/Arme, Beine B, Pause |
+| `ppl-six` | Hypertrophie (Gym) | Training an Tag 1, 2, 3, 5, 6, 7; Pausen an Tag 4 und 8 (8-Tage-Zyklus) |
 
-`ppl-six` ist ein **rollierender Acht-Tage-Zyklus**, kein Kalender mit sechs Trainingstagen pro Woche. Es ist ein Basic-Template aus unserem Übungspool, keine 1:1-Reproduktion von Jeffs Videos mit deren Intensivierungstechniken.
+`ppl-six` ist ein **rollierender Acht-Tage-Zyklus**, kein Kalender mit sechs Trainingstagen pro Woche.
 
-Im JSON stehen `schedule.cycleDays`, `trainingDays`, `restDays` und pro Routine `cycleDay`. Nur 7-Tage-Templates erhalten `weekdays` (Montag = 0). Acht-Tage-Pläne behalten leere `weekdays` und `targetPeriodDays: 8`; Pausen nach den dritten Einheiten werden als `restHoursAfter: 48` ausgegeben. Das beschreibt den vorgesehenen Rhythmus bei vergleichbarer Trainingszeit; die CLI startet keinen Kalenderdienst.
+Im JSON stehen `schedule.cycleDays`, `trainingDays`, `restDays` und pro Routine `cycleDay`. Nur 7-Tage-Templates erhalten `weekdays` (Montag = 0). Acht-Tage-Pläne behalten leere `weekdays` und `targetPeriodDays: 8`; Pausen nach den dritten Einheiten werden als `restHoursAfter: 48` ausgegeben.
 
-## Core und Ausgabe
+## Core-Module und Ausgabe
 
-Core ist standardmäßig ein **fester eigener Trainingsbaustein**, kein Restprogramm. Die Auswahl einer konkreten Session erfolgt in der 6Pack-App. `--core none` lässt den Baustein ausdrücklich weg, falls ein anderer Plan ohne ihn erstellt werden soll.
+Core ist ein **fester eigener Trainingsbaustein**, kein Restprogramm:
+- `posture`: Gezielte Rumpf- und Wirbelsäulenstabilisation (Plank, Dead Bug, Beckenboden/Glute). Standard bei `--goal vitality`.
+- `6pack`: Intensives Core-Intervalltraining. Session in der 6Pack-App wählbar. Standard bei `--goal hypertrophy` / Gym.
+- `mobility`: Dynamische Dehnung und Gelenkmobilisation. Standard bei `--goal mobility`.
+- `none`: Lässt den Baustein ausdrücklich weg.
 
+Formate:
 - `md`: lesbare Übersicht, Zyklustage und Trainingstabellen.
 - `json`: bestehende Planfelder `name`, `description`, `totalWeeks`, `routines` und `templateSets`; zusätzlich Generatorherkunft, Zyklusübersicht und Core-Baustein.
 - `yaml`: dieselbe Struktur wie JSON.
@@ -112,4 +131,4 @@ Der App-Picker nutzt die Routine-/Planfelder des bestehenden Editors. Zusätzlic
 npm run test:generator
 ```
 
-Die Tests decken alle Templates × Level, sämtliche Selector-Alternativen, Katalogreferenzen, den Acht-Tage-Zyklus, die Ein-Compound-Regel, unabhängige Kopien, geänderte JSON-Dosierungen, CLI-Formate, Fehlermeldungen und den Schutz vorhandener Dateien ab.
+Die Tests decken alle 12 Templates × Level, sämtliche Selector-Alternativen, Katalogreferenzen, den Acht-Tage-Zyklus, die Ein-Compound-Regel, unabhängige Kopien, geänderte JSON-Dosierungen, CLI-Formate, Ziel-/Equipment-Auflösung, Fehlermeldungen und den Schutz vorhandener Dateien ab.

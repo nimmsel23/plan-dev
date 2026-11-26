@@ -13,7 +13,7 @@ const root = fileURLToPath(new URL('../../', import.meta.url));
 const cli = (...args) => spawnSync(process.execPath, [join(root, 'bin/plan-generate'), ...args], { encoding: 'utf8', cwd: tmpdir() });
 const build = (options = {}, data = catalog) => generateWorkoutPlan({ name: 'Daniel', level: 'advanced', ...options }, data);
 
-test('all 7 templates × 3 levels generate valid source-backed, independent plans', () => {
+test('all templates × 3 levels generate valid source-backed, independent plans', () => {
   for (const template of catalog.templates) for (const level of Object.keys(catalog.levels)) {
     const plan = build({ template: template.id, level });
     assert.equal(plan.routines.length, template.routines.length);
@@ -121,7 +121,32 @@ test('CLI works from another directory and emits parseable JSON, YAML and Markdo
   const noCore = cli('Daniel', '--level', 'beginner', '--core', 'none', '--format', 'json');
   assert.equal(JSON.parse(noCore.stdout).core, null);
   const list = cli('--list', '--format', 'json');
-  assert.equal(JSON.parse(list.stdout).templates.length, 7);
+  assert.equal(JSON.parse(list.stdout).templates.length, 12);
+  assert.equal(Object.keys(JSON.parse(list.stdout).goals).length, 4);
+});
+
+test('broader intake selects goal- and equipment-appropriate templates and core modules', () => {
+  const vitality = build({ name: 'Maria', level: 'beginner', goal: 'vitality' });
+  assert.equal(vitality.generator.templateId, 'vital-health');
+  assert.equal(vitality.core.id, 'posture');
+  assert.equal(vitality.routines.length, 2);
+
+  const homeDumbbell = build({ name: 'Thomas', level: 'intermediate', equipment: 'dumbbell' });
+  assert.equal(homeDumbbell.generator.templateId, 'home-dumbbell');
+  assert.equal(homeDumbbell.routines.length, 3);
+
+  const mobility = build({ name: 'Stefan', level: 'beginner', goal: 'mobility' });
+  assert.equal(mobility.generator.templateId, 'mobility-flow');
+  assert.equal(mobility.core.id, 'mobility');
+
+  const customCore = build({ level: 'advanced', core: 'posture' });
+  assert.equal(customCore.core.id, 'posture');
+  assert.match(customCore.core.label, /Rumpf/);
+
+  const cliVital = cli('--name', 'Maria', '--goal', 'vitality', '--level', 'beginner', '--format', 'json');
+  assert.equal(cliVital.status, 0);
+  assert.equal(JSON.parse(cliVital.stdout).generator.templateId, 'vital-health');
+  assert.equal(JSON.parse(cliVital.stdout).core.id, 'posture');
 });
 
 test('CLI rejects conflicting selections and protects existing output files', () => {

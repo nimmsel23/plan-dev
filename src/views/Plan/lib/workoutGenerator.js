@@ -10,6 +10,11 @@ export function validateWorkoutCatalog(catalog) {
   if (catalog?.schemaVersion !== 1) fail('Unbekannte Template-Schemaversion.');
   if (!catalog.levels || !catalog.exercises || !catalog.selectors || !Array.isArray(catalog.templates) || !catalog.templates.length) fail('Unvollständiger Template-Katalog.');
   if (typeof catalog.progression !== 'string' || typeof catalog.core?.notes !== 'string' || !catalog.core.label) fail('Progressions-/Core-Angaben fehlen.');
+  if (catalog.coreModules) {
+    for (const [id, mod] of Object.entries(catalog.coreModules)) {
+      if (!mod.label || typeof mod.notes !== 'string') fail(`Ungültiges Core-Modul: ${id}`);
+    }
+  }
   for (const [id, ex] of Object.entries(catalog.exercises)) {
     if (!ex.name || !ex.exercise_id || !ex.yuhonas_id || !['compound', 'isolation'].includes(ex.kind) || !Array.isArray(ex.equipment)) fail(`Ungültige Übung: ${id}`);
   }
@@ -60,16 +65,63 @@ export function findWorkoutTemplate(id, catalog = defaultCatalog) {
   return template || fail(`Unbekanntes Template: ${id}. Verfügbar: ${catalog.templates.map((t) => t.id).join(', ')}`);
 }
 
-export function generateWorkoutPlan({ name, level, template: templateId, variants = {}, weeks, core = '6pack' }, catalog = defaultCatalog) {
+export function generateWorkoutPlan({ name, level, template: templateId, goal, equipment, days, variants = {}, weeks, core }, catalog = defaultCatalog) {
   validateWorkoutCatalog(catalog);
   if (typeof name !== 'string' || !name.trim() || name.trim().length > 60 || [...name].some((char) => char.codePointAt(0) < 32 || char.codePointAt(0) === 127)) fail('Name angeben (1–60 Zeichen, eine Zeile).');
   const levelId = typeof level === 'string' ? level.trim().toLowerCase() : '';
   const profile = Object.hasOwn(catalog.levels, levelId) ? catalog.levels[levelId] : null;
   if (!profile) fail(`Unbekanntes Level: ${level}. Verfügbar: ${Object.keys(catalog.levels).join(', ')}`);
-  const template = findWorkoutTemplate(templateId || catalog.defaults[levelId], catalog);
+
+  const goalId = typeof goal === 'string' ? goal.trim().toLowerCase() : undefined;
+  if (goalId && catalog.goals && !Object.hasOwn(catalog.goals, goalId)) {
+    fail(`Unbekanntes Trainingsziel: ${goal}. Verfügbar: ${Object.keys(catalog.goals).join(', ')}`);
+  }
+
+  let resolvedTemplateId = templateId;
+  if (!resolvedTemplateId) {
+    if (goalId && catalog.defaults?.goals?.[goalId]?.[levelId]) {
+      resolvedTemplateId = catalog.defaults.goals[goalId][levelId];
+    } else if (typeof equipment === 'string') {
+      const eq = equipment.trim().toLowerCase();
+      let match;
+      if (eq === 'dumbbell') {
+        match = catalog.templates.find((t) => t.id === 'home-dumbbell') ||
+                catalog.templates.find((t) => t.equipment?.includes('dumbbell') && !t.equipment?.includes('barbell'));
+      } else if (eq === 'bodyweight') {
+        match = catalog.templates.find((t) => t.id === 'bodyweight-vital') ||
+                catalog.templates.find((t) => t.equipment?.every((e) => e === 'bodyweight' || e === 'body only'));
+      } else {
+        match = catalog.templates.find((t) => t.equipment?.includes(eq) && (t.defaultLevel === levelId || t.defaultLevel === 'intermediate'));
+      }
+      if (match) resolvedTemplateId = match.id;
+    } else if (days !== undefined) {
+      const d = Number(days);
+      const match = catalog.templates.find((t) => t.routines.length === d && (t.defaultLevel === levelId || t.defaultLevel === 'intermediate'));
+      if (match) resolvedTemplateId = match.id;
+    }
+    if (!resolvedTemplateId) resolvedTemplateId = catalog.defaults[levelId];
+  }
+
+  const template = findWorkoutTemplate(resolvedTemplateId, catalog);
   const totalWeeks = weeks ?? catalog.defaults.totalWeeks;
   if (!integer(totalWeeks, 1, 52)) fail('Dauer muss eine ganze Zahl von 1 bis 52 Wochen sein.');
-  if (!['6pack', 'none'].includes(core)) fail('Core muss 6pack oder none sein.');
+
+  let coreKey = core;
+  if (coreKey === undefined || coreKey === 'auto') {
+    if (template.goal === 'vitality') coreKey = 'posture';
+    else if (template.goal === 'mobility') coreKey = 'mobility';
+    else coreKey = '6pack';
+  }
+  let coreBlock = null;
+  if (coreKey !== 'none') {
+    const coreEntry = catalog.coreModules?.[coreKey] || (coreKey === '6pack' ? catalog.core : null);
+    if (!coreEntry) {
+      const valid = [...new Set([...Object.keys(catalog.coreModules || {}), '6pack', 'none'])];
+      fail(`Unbekannter Core-Baustein: ${coreKey}. Verfügbar: ${valid.join(', ')}`);
+    }
+    coreBlock = { id: coreKey, required: true, ...structuredClone(coreEntry) };
+  }
+
   if (!variants || typeof variants !== 'object' || Array.isArray(variants)) fail('Varianten müssen eine Auswahl je Übungsplatz enthalten.');
   const used = new Set(template.routines.flatMap((r) => r.exercises.map((ex) => ex.selector).filter(Boolean)));
   for (const [key, choice] of Object.entries(variants)) {
@@ -79,7 +131,6 @@ export function generateWorkoutPlan({ name, level, template: templateId, variant
   const choices = Object.fromEntries([...used].map((key) => [key, Object.hasOwn(variants, key) ? variants[key] : catalog.selectors[key].default]));
   const trainingDays = template.routines.map((r) => r.day);
   const restDays = Array.from({ length: template.cycleDays }, (_, i) => i + 1).filter((day) => !trainingDays.includes(day));
-  const coreBlock = core === '6pack' ? { required: true, ...structuredClone(catalog.core) } : null;
   const schedule = `${template.cycleDays}-Tage-Zyklus; Training an Tag ${trainingDays.join(', ')}, Pause an Tag ${restDays.join(', ') || '—'}.`;
   const routines = template.routines.map((routine, index) => {
     const nextDay = template.routines[index + 1]?.day ?? template.routines[0].day + template.cycleDays;
@@ -93,8 +144,9 @@ export function generateWorkoutPlan({ name, level, template: templateId, variant
         const key = entry.selector ? choices[entry.selector] : entry.exercise;
         const exercise = structuredClone(catalog.exercises[key]);
         const dose = profile[entry.role];
-        // Pull-ups keep their source identity and may need assistance rather than a fictitious load.
-        const note = exercise.trackingType === 'bodyweight_reps' ? ' Bei Bedarf Unterstützung oder Zusatzgewicht passend zum Wiederholungsziel wählen.' : '';
+        const note = exercise.trackingType === 'bodyweight_reps'
+          ? ' Bei Bedarf Unterstützung oder Zusatzgewicht passend zum Wiederholungsziel wählen.'
+          : (exercise.trackingType === 'duration' ? ' Fokus auf saubere statische Spannung und kontrollierte Atmung.' : '');
         return {
           ...exercise, id: `generated-${routine.day}-${order}`, order, role: entry.role,
           rest_seconds: dose.restSeconds, rir: dose.rir,
@@ -107,7 +159,7 @@ export function generateWorkoutPlan({ name, level, template: templateId, variant
   return {
     name: `${name.trim()} · ${profile.label}`, totalWeeks, status: 'draft',
     description: [template.name, schedule, template.notes, profile.notes, catalog.progression, coreBlock?.notes].filter(Boolean).join('\n\n'),
-    generator: { schemaVersion: catalog.schemaVersion, templateId: template.id, templateName: template.name, level: levelId, choices },
+    generator: { schemaVersion: catalog.schemaVersion, templateId: template.id, templateName: template.name, goal: template.goal, level: levelId, choices },
     schedule: { cycleDays: template.cycleDays, trainingDays, restDays }, core: coreBlock,
     routines,
   };
@@ -118,14 +170,15 @@ const text = (value) => cell(value).replace(/[\\`*_{}[\]<>#!]/g, '\\$&');
 export function workoutPlanMarkdown(plan) {
   const g = plan.generator;
   const description = plan.description.split('\n\n').filter((part) => part !== plan.core?.notes).join('\n\n');
-  const lines = [`# ${text(plan.name)}`, '', `**Template:** ${text(g.templateName)} · **Level:** ${g.level} · **Dauer:** ${plan.totalWeeks} Wochen`, '', `**Rhythmus:** ${plan.schedule.cycleDays}-Tage-Zyklus. Pausen: Tag ${plan.schedule.restDays.join(', ') || '—'}.`, '', description, '', '## Zyklusübersicht', '', '| Tag | Einheit |', '| :--- | :--- |'];
+  const goalText = g.goal ? ` · **Ziel:** ${text(g.goal)}` : '';
+  const lines = [`# ${text(plan.name)}`, '', `**Template:** ${text(g.templateName)} · **Level:** ${g.level}${goalText} · **Dauer:** ${plan.totalWeeks} Wochen`, '', `**Rhythmus:** ${plan.schedule.cycleDays}-Tage-Zyklus. Pausen: Tag ${plan.schedule.restDays.join(', ') || '—'}.`, '', description, '', '## Zyklusübersicht', '', '| Tag | Einheit |', '| :--- | :--- |'];
   for (let day = 1; day <= plan.schedule.cycleDays; day++) lines.push(`| ${day} | ${text(plan.routines.find((r) => r.cycleDay === day)?.label || 'Pause')} |`);
   for (const routine of plan.routines) {
     lines.push('', `## Tag ${routine.cycleDay} – ${text(routine.label)}`, '', '| Übung | Sätze × Wdh. | Pause | RIR |', '| :--- | :--- | :--- | :--- |');
     for (const ex of routine.exercises) lines.push(`| ${text(ex.name)} | ${ex.templateSets.length} × ${ex.templateSets[0].targetReps} | ${ex.rest_seconds} s | ${ex.rir} |`);
     lines.push('', ...routine.exercises.filter((ex) => ex.notes).map((ex) => `- **${text(ex.name)}:** ${cell(ex.notes)}`));
   }
-  if (plan.core) lines.push('', '## Core als fester Trainingsbaustein', '', plan.core.notes);
+  if (plan.core) lines.push('', `## Core als fester Trainingsbaustein (${text(plan.core.label)})`, '', plan.core.notes);
   lines.push('', '## Gewichte und Speicherung', '', 'Arbeitsgewichte bleiben offen und werden individuell gewählt. Dieser Plan ist ein bearbeitbarer Entwurf; die Ausgabe allein legt keine Kontodaten oder Trainingslogs an.', '');
   return lines.join('\n');
 }

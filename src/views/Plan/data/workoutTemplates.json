@@ -4,7 +4,29 @@
     "beginner": "full-body",
     "intermediate": "ppl-basic",
     "advanced": "five-two-legs",
-    "totalWeeks": 4
+    "totalWeeks": 4,
+    "goals": {
+      "vitality": {
+        "beginner": "vital-health",
+        "intermediate": "vital-back-posture",
+        "advanced": "vital-back-posture"
+      },
+      "home": {
+        "beginner": "bodyweight-vital",
+        "intermediate": "home-dumbbell",
+        "advanced": "home-dumbbell"
+      },
+      "hypertrophy": {
+        "beginner": "full-body",
+        "intermediate": "ppl-basic",
+        "advanced": "five-two-legs"
+      },
+      "mobility": {
+        "beginner": "mobility-flow",
+        "intermediate": "mobility-flow",
+        "advanced": "mobility-flow"
+      }
+    }
   },
   "core": {
     "label": "6Pack Core-Intervalltraining",
@@ -631,6 +653,173 @@
       ],
       "kind": "isolation",
       "trackingType": "weight_reps"
+    },
+    "pushup": {
+      "exercise_id": "pushups",
+      "yuhonas_id": "Pushups",
+      "name": "Liegestütze",
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "triceps"
+      ],
+      "equipment": [
+        "body only"
+      ],
+      "kind": "compound",
+      "trackingType": "bodyweight_reps"
+    },
+    "goblet-squat": {
+      "exercise_id": "goblet_squat",
+      "yuhonas_id": "Goblet_Squat",
+      "name": "Goblet Squats",
+      "primaryMuscles": [
+        "quadriceps"
+      ],
+      "secondaryMuscles": [
+        "calves",
+        "glutes",
+        "hamstrings",
+        "shoulders"
+      ],
+      "equipment": [
+        "dumbbell",
+        "kettlebells"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "bodyweight-squat": {
+      "exercise_id": "bodyweight_squat",
+      "yuhonas_id": "Bodyweight_Squat",
+      "name": "Kniebeugen mit Eigengewicht",
+      "primaryMuscles": [
+        "quadriceps"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "hamstrings"
+      ],
+      "equipment": [
+        "body only"
+      ],
+      "kind": "compound",
+      "trackingType": "bodyweight_reps"
+    },
+    "db-row": {
+      "exercise_id": "one-arm_dumbbell_row",
+      "yuhonas_id": "One-Arm_Dumbbell_Row",
+      "name": "Einarmiges Kurzhantelrudern",
+      "primaryMuscles": [
+        "middle back"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "lats",
+        "shoulders"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "glute-bridge": {
+      "exercise_id": "butt_lift_bridge",
+      "yuhonas_id": "Butt_Lift_Bridge",
+      "name": "Beckenheben (Glute Bridge)",
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "hamstrings"
+      ],
+      "equipment": [
+        "body only"
+      ],
+      "kind": "compound",
+      "trackingType": "bodyweight_reps"
+    },
+    "plank": {
+      "exercise_id": "plank",
+      "yuhonas_id": "Plank",
+      "name": "Unterarmstütz (Plank)",
+      "primaryMuscles": [
+        "abdominals"
+      ],
+      "secondaryMuscles": [],
+      "equipment": [
+        "body only"
+      ],
+      "kind": "isolation",
+      "trackingType": "duration"
+    },
+    "dead-bug": {
+      "exercise_id": "dead_bug",
+      "yuhonas_id": "Dead_Bug",
+      "name": "Dead Bug (Käfer-Übung)",
+      "primaryMuscles": [
+        "abdominals"
+      ],
+      "secondaryMuscles": [],
+      "equipment": [
+        "body only"
+      ],
+      "kind": "isolation",
+      "trackingType": "bodyweight_reps"
+    },
+    "superman": {
+      "exercise_id": "superman",
+      "yuhonas_id": "Superman",
+      "name": "Superman (Rückenstrecken)",
+      "primaryMuscles": [
+        "lower back"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "hamstrings"
+      ],
+      "equipment": [
+        "body only"
+      ],
+      "kind": "isolation",
+      "trackingType": "bodyweight_reps"
+    },
+    "cat-stretch": {
+      "exercise_id": "cat_stretch",
+      "yuhonas_id": "Cat_Stretch",
+      "name": "Cat-Cow Mobilisation",
+      "primaryMuscles": [
+        "lower back"
+      ],
+      "secondaryMuscles": [
+        "middle back",
+        "traps"
+      ],
+      "equipment": [
+        "body only"
+      ],
+      "kind": "isolation",
+      "trackingType": "duration"
+    },
+    "floor-hyperextension": {
+      "exercise_id": "hyperextensions_with_no_hyperextension_bench",
+      "yuhonas_id": "Hyperextensions_With_No_Hyperextension_Bench",
+      "name": "Rückenstrecken am Boden",
+      "primaryMuscles": [
+        "lower back"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "hamstrings"
+      ],
+      "equipment": [
+        "body only"
+      ],
+      "kind": "isolation",
+      "trackingType": "bodyweight_reps"
     }
   },
   "selectors": {
@@ -641,7 +830,8 @@
         "bench",
         "bench-db",
         "incline-bb",
-        "incline"
+        "incline",
+        "pushup"
       ]
     },
     "row": {
@@ -650,7 +840,8 @@
       "choices": [
         "barbell-row",
         "chest-row",
-        "row"
+        "row",
+        "db-row"
       ]
     },
     "squat": {
@@ -658,7 +849,8 @@
       "default": "front-squat",
       "choices": [
         "front-squat",
-        "squat"
+        "squat",
+        "goblet-squat"
       ]
     },
     "hinge": {
@@ -700,6 +892,58 @@
       "choices": [
         "seated-curlleg",
         "curlleg"
+      ]
+    },
+    "bodyweight-push": {
+      "label": "Brust/Druck Bodyweight oder KH",
+      "default": "pushup",
+      "choices": [
+        "pushup",
+        "bench-db"
+      ]
+    },
+    "bodyweight-squat-slot": {
+      "label": "Kniebeuge-Variante",
+      "default": "goblet-squat",
+      "choices": [
+        "goblet-squat",
+        "bodyweight-squat",
+        "lunge"
+      ]
+    },
+    "home-row": {
+      "label": "Ruder-Variante (Zuhause/Gym)",
+      "default": "db-row",
+      "choices": [
+        "db-row",
+        "row",
+        "pullup"
+      ]
+    },
+    "core-posture": {
+      "label": "Rumpf- & Haltungsstabilisation",
+      "default": "plank",
+      "choices": [
+        "plank",
+        "dead-bug",
+        "superman"
+      ]
+    },
+    "posterior-chain": {
+      "label": "Hüft- und Gesäßaktivierung",
+      "default": "glute-bridge",
+      "choices": [
+        "glute-bridge",
+        "hinge",
+        "stiff-legged"
+      ]
+    },
+    "back-isolation": {
+      "label": "Rückenstrecken & Isoliert",
+      "default": "superman",
+      "choices": [
+        "superman",
+        "floor-hyperextension"
       ]
     }
   },
@@ -791,6 +1035,12 @@
             }
           ]
         }
+      ],
+      "goal": "hypertrophy",
+      "equipment": [
+        "barbell",
+        "dumbbell",
+        "cable"
       ]
     },
     {
@@ -890,6 +1140,12 @@
             }
           ]
         }
+      ],
+      "goal": "hypertrophy",
+      "equipment": [
+        "barbell",
+        "dumbbell",
+        "cable"
       ]
     },
     {
@@ -969,6 +1225,12 @@
             }
           ]
         }
+      ],
+      "goal": "hypertrophy",
+      "equipment": [
+        "barbell",
+        "dumbbell",
+        "cable"
       ]
     },
     {
@@ -1054,6 +1316,12 @@
             }
           ]
         }
+      ],
+      "goal": "hypertrophy",
+      "equipment": [
+        "barbell",
+        "dumbbell",
+        "cable"
       ]
     },
     {
@@ -1165,6 +1433,12 @@
             }
           ]
         }
+      ],
+      "goal": "hypertrophy",
+      "equipment": [
+        "barbell",
+        "dumbbell",
+        "cable"
       ]
     },
     {
@@ -1276,6 +1550,12 @@
             }
           ]
         }
+      ],
+      "goal": "hypertrophy",
+      "equipment": [
+        "barbell",
+        "dumbbell",
+        "cable"
       ]
     },
     {
@@ -1413,7 +1693,465 @@
             }
           ]
         }
+      ],
+      "goal": "hypertrophy",
+      "equipment": [
+        "barbell",
+        "dumbbell",
+        "cable"
+      ]
+    },
+    {
+      "id": "vital-health",
+      "name": "Vital-Ganzkörper Prävention · 2 Tage",
+      "goal": "vitality",
+      "equipment": [
+        "dumbbell",
+        "bodyweight"
+      ],
+      "defaultLevel": "beginner",
+      "aliases": [
+        "vital-2day",
+        "praevention"
+      ],
+      "cycleDays": 7,
+      "compoundPolicy": "mixed",
+      "notes": "Präventives Ganzkörpertraining (2 Einheiten/Woche) zur Förderung von Grundkraft, Haltung, Rumpfstabilität und Gelenkgesundheit. Ideal für den Alltag und den Einstieg.",
+      "routines": [
+        {
+          "day": 1,
+          "label": "Vital-Ganzkörper A",
+          "exercises": [
+            {
+              "selector": "bodyweight-squat-slot",
+              "role": "main"
+            },
+            {
+              "selector": "bodyweight-push",
+              "role": "compound"
+            },
+            {
+              "selector": "home-row",
+              "role": "compound"
+            },
+            {
+              "selector": "posterior-chain",
+              "role": "compound"
+            },
+            {
+              "selector": "core-posture",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 4,
+          "label": "Vital-Ganzkörper B",
+          "exercises": [
+            {
+              "selector": "hinge",
+              "role": "main"
+            },
+            {
+              "selector": "shoulder-press",
+              "role": "compound"
+            },
+            {
+              "selector": "vertical-pull",
+              "role": "compound"
+            },
+            {
+              "exercise": "superman",
+              "role": "isolation"
+            },
+            {
+              "exercise": "dead-bug",
+              "role": "isolation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vital-back-posture",
+      "name": "Rücken & Haltung Vital · 3 Tage",
+      "goal": "vitality",
+      "equipment": [
+        "dumbbell",
+        "cable",
+        "bodyweight"
+      ],
+      "defaultLevel": "intermediate",
+      "aliases": [
+        "ruecken-fit",
+        "posture"
+      ],
+      "cycleDays": 7,
+      "compoundPolicy": "mixed",
+      "notes": "Präventives Training mit Schwerpunkt auf aufrechte Haltung, gesunden Rücken, Schultergürtel und Rumpfentlastung. Perfekt gegen typische Bürobeschwerden.",
+      "routines": [
+        {
+          "day": 1,
+          "label": "Haltung & Hintere Kette",
+          "exercises": [
+            {
+              "selector": "hinge",
+              "role": "main"
+            },
+            {
+              "selector": "row",
+              "role": "compound"
+            },
+            {
+              "exercise": "face",
+              "role": "compound"
+            },
+            {
+              "selector": "posterior-chain",
+              "role": "compound"
+            },
+            {
+              "exercise": "superman",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "label": "Rumpf, Brust & Schultergürtel",
+          "exercises": [
+            {
+              "selector": "shoulder-press",
+              "role": "main"
+            },
+            {
+              "selector": "bodyweight-squat-slot",
+              "role": "compound"
+            },
+            {
+              "selector": "bodyweight-push",
+              "role": "compound"
+            },
+            {
+              "exercise": "reverse-fly",
+              "role": "isolation"
+            },
+            {
+              "selector": "core-posture",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "label": "Rückenstrecker & Mobilität",
+          "exercises": [
+            {
+              "selector": "vertical-pull",
+              "role": "main"
+            },
+            {
+              "exercise": "reverse-lunge",
+              "role": "compound"
+            },
+            {
+              "selector": "home-row",
+              "role": "compound"
+            },
+            {
+              "exercise": "dead-bug",
+              "role": "isolation"
+            },
+            {
+              "exercise": "cat-stretch",
+              "role": "isolation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "home-dumbbell",
+      "name": "Home-Workout mit Kurzhanteln · 3 Tage",
+      "goal": "home",
+      "equipment": [
+        "dumbbell",
+        "bodyweight"
+      ],
+      "defaultLevel": "intermediate",
+      "aliases": [
+        "kurzhantel",
+        "home"
+      ],
+      "cycleDays": 7,
+      "compoundPolicy": "mixed",
+      "notes": "Effektives Kraft- und Vitaltraining für zuhause – nur mit einem Paar Kurzhanteln und Matte. Ganzkörper-Fokus an Tag 1, 3 und 5.",
+      "routines": [
+        {
+          "day": 1,
+          "label": "Home Ganzkörper · Fokus Druck",
+          "exercises": [
+            {
+              "selector": "chest-press",
+              "role": "main"
+            },
+            {
+              "selector": "bodyweight-squat-slot",
+              "role": "compound"
+            },
+            {
+              "selector": "home-row",
+              "role": "compound"
+            },
+            {
+              "exercise": "lateral",
+              "role": "isolation"
+            },
+            {
+              "selector": "core-posture",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "label": "Home Ganzkörper · Fokus Zug & Beine",
+          "exercises": [
+            {
+              "selector": "home-row",
+              "role": "main"
+            },
+            {
+              "exercise": "lunge",
+              "role": "compound"
+            },
+            {
+              "selector": "shoulder-press",
+              "role": "compound"
+            },
+            {
+              "selector": "posterior-chain",
+              "role": "compound"
+            },
+            {
+              "exercise": "curl",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "label": "Home Ganzkörper · Balance & Rumpf",
+          "exercises": [
+            {
+              "selector": "shoulder-press",
+              "role": "main"
+            },
+            {
+              "selector": "bodyweight-push",
+              "role": "compound"
+            },
+            {
+              "selector": "bodyweight-squat-slot",
+              "role": "compound"
+            },
+            {
+              "exercise": "superman",
+              "role": "isolation"
+            },
+            {
+              "exercise": "dead-bug",
+              "role": "isolation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bodyweight-vital",
+      "name": "Calisthenics & Bodyweight · 3 Tage",
+      "goal": "home",
+      "equipment": [
+        "bodyweight"
+      ],
+      "defaultLevel": "beginner",
+      "aliases": [
+        "bodyweight",
+        "calisthenics"
+      ],
+      "cycleDays": 7,
+      "compoundPolicy": "mixed",
+      "notes": "Reines Eigengewichtstraining – flexibel überall durchführbar ohne jedes Trainingsgerät. Kräftigt Rumpf, Beine und Oberkörper funktional.",
+      "routines": [
+        {
+          "day": 1,
+          "label": "Bodyweight Push & Core",
+          "exercises": [
+            {
+              "selector": "bodyweight-push",
+              "role": "main"
+            },
+            {
+              "selector": "bodyweight-squat-slot",
+              "role": "compound"
+            },
+            {
+              "selector": "posterior-chain",
+              "role": "compound"
+            },
+            {
+              "selector": "core-posture",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "label": "Bodyweight Beine & Rücken",
+          "exercises": [
+            {
+              "selector": "bodyweight-squat-slot",
+              "role": "main"
+            },
+            {
+              "selector": "bodyweight-push",
+              "role": "compound"
+            },
+            {
+              "exercise": "superman",
+              "role": "isolation"
+            },
+            {
+              "exercise": "dead-bug",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "label": "Bodyweight Ganzkörper",
+          "exercises": [
+            {
+              "selector": "posterior-chain",
+              "role": "main"
+            },
+            {
+              "selector": "bodyweight-push",
+              "role": "compound"
+            },
+            {
+              "selector": "bodyweight-squat-slot",
+              "role": "compound"
+            },
+            {
+              "selector": "core-posture",
+              "role": "isolation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mobility-flow",
+      "name": "Mobility, Rumpf & Gelenkgesundheit · 2 Tage",
+      "goal": "mobility",
+      "equipment": [
+        "bodyweight"
+      ],
+      "defaultLevel": "beginner",
+      "aliases": [
+        "mobility",
+        "gelenke"
+      ],
+      "cycleDays": 7,
+      "compoundPolicy": "mixed",
+      "notes": "Präventives Beweglichkeits- und Entlastungsprogramm für Gelenke, Brustwirbelsäule und Hüfte kombiniert mit sanfter Rumpfkräftigung.",
+      "routines": [
+        {
+          "day": 1,
+          "label": "Mobility & Wirbelsäulenentlastung",
+          "exercises": [
+            {
+              "selector": "posterior-chain",
+              "role": "compound"
+            },
+            {
+              "exercise": "cat-stretch",
+              "role": "isolation"
+            },
+            {
+              "exercise": "superman",
+              "role": "isolation"
+            },
+            {
+              "exercise": "dead-bug",
+              "role": "isolation"
+            },
+            {
+              "selector": "core-posture",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 4,
+          "label": "Hüftöffnung & Haltungsmobilität",
+          "exercises": [
+            {
+              "selector": "bodyweight-squat-slot",
+              "role": "compound"
+            },
+            {
+              "exercise": "cat-stretch",
+              "role": "isolation"
+            },
+            {
+              "selector": "posterior-chain",
+              "role": "compound"
+            },
+            {
+              "exercise": "superman",
+              "role": "isolation"
+            },
+            {
+              "selector": "core-posture",
+              "role": "isolation"
+            }
+          ]
+        }
       ]
     }
-  ]
+  ],
+  "goals": {
+    "vitality": {
+      "label": "Vitalität & Prävention",
+      "description": "Präventives Training zur Stärkung von Rumpf, Haltung, Gelenkgesundheit und Alltagsenergie (Schwerpunkt Vitaltrainer, 40+)."
+    },
+    "home": {
+      "label": "Home & Minimal Equipment",
+      "description": "Effektives Training für zuhause mit Kurzhanteln oder reinem Körpergewicht, ganz ohne Studio."
+    },
+    "hypertrophy": {
+      "label": "Hypertrophie & Kraft (Gym)",
+      "description": "Gezielter Muskelaufbau und Grundkraftsteigerung mit Langhanteln, Maschinen und Kabelzügen im Fitnessstudio."
+    },
+    "mobility": {
+      "label": "Mobility & Flow",
+      "description": "Gelenkmobilisation, Faszien- und Dehnungsroutinen zur Schmerzentlastung und Wiederherstellung voller Bewegungsradien."
+    }
+  },
+  "coreModules": {
+    "6pack": {
+      "label": "6Pack Core-Intervalltraining",
+      "notes": "Fester eigenständiger Trainingsbaustein an jedem Trainingstag, kein Restprogramm. Session in der 6Pack-App wählen; keine konkrete App-Session vorausgewählt. Nicht unmittelbar vor dem schweren Hauptlift ermüden."
+    },
+    "posture": {
+      "label": "Präventive Rumpf- & Haltungsstabilisation",
+      "notes": "Gezielte Rumpf- und Wirbelsäulenstabilisation (Plank-Variationen, Bird Dog, Dead Bug, Beckenboden-/Glute-Aktivierung). Fokus auf saubere Rumpfspannung und Entlastung der Lendenwirbelsäule vor oder nach der Einheit."
+    },
+    "mobility": {
+      "label": "Mobility & Gelenkgesundheit",
+      "notes": "Präventive Gelenkmobilisation (Brustwirbelsäule, Hüftöffner, Schultergürtel) und dynamisches Dehnen zur Verbesserung von Bewegungsradius und Regeneration."
+    }
+  }
 }

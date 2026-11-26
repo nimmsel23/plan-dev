@@ -90,6 +90,19 @@
 --------------------------------------------------------------------------
 <!-- thin-results-Grenze 2026-11-12: BIS HIERHER AUSGEDÜNNT — Destillat in den Doku-Dateien des Repos. Neue Einträge immer ÜBER diese Grenze. -->
 
+## 2026-11-26 — Breiter Generator-Einstieg (Vitalität, Home, Mobility & Core-Module)
+
+- `bin/plan-generate` und `lib/workoutGenerator.js` um breiten Eingang erweitert: Steuerung nach Trainingszielen (`--goal vitality|home|hypertrophy|mobility`), Equipment (`--equipment gym|dumbbell|bodyweight`), Frequenz (`--days 2|3|4|5|6`) und modularen Core-Bausteinen (`--core posture|6pack|mobility|none`).
+- 5 neue Basic-Templates (insgesamt 12 Templates) für den praktischen Vitaltrainer- und Klienten-Alltag:
+  - `vital-health` (Vital-Ganzkörper Prävention 2 Tage / 40+),
+  - `vital-back-posture` (Rücken & Haltung Vital 3 Tage),
+  - `home-dumbbell` (Home-Workout mit Kurzhanteln 3 Tage),
+  - `bodyweight-vital` (Calisthenics & Eigengewicht 3 Tage),
+  - `mobility-flow` (Mobility & Gelenkgesundheit 2 Tage).
+- 10 neue reale Übungen aus `vendor/free-exercise-db` (u.a. Liegestütze, Goblet Squat, Bodyweight Squat, Einarmiges KH-Rudern, Beckenheben/Glute Bridge, Plank, Dead Bug, Superman, Cat-Cow Mobilisation, Boden-Hyperextension) sowie 6 neue Übungs-Slots integriert.
+- Standard-Core passt sich intelligent an (`posture` bei Vitality, `mobility` bei Mobility, `6pack` bei Hypertrophie/Gym); manuell voll übersteuerbar. Bestehende Aufrufe (`plan-generate --name Daniel --level intermediate`) bleiben zu 100% abwärtskompatibel.
+- Verifikation: 8 Testgruppen in `scripts/tests/workout-generator.test.mjs` (alle 12 Templates × 3 Level, Ziel- & Equipment-Auflösung, Core-Module, Formate) grün; 11 Plan-/Dokument-Tests grün; ESLint sauber; Plan-Vite-Build erfolgreich.
+
 ## 2026-11-26 — Trainingsvorlagen
 
 - Fünf auswählbare Planentwürfe: Ganzkörper A/B, Push/Pull mit Beinen, PPL, Daniels bereinigter Dreitageplan und klassischer Fünftagesplit mit Pause an Tag 3/7. Separater 6Pack-Core-Hinweis pro Daniel-Plan, keine erfundenen App-Sessions. Katalogmetadaten aus gepinntem Yuhonas-Bestand; keine Kontodaten vor Auswahl geschrieben.

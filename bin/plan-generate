@@ -6,28 +6,36 @@ import { WORKOUT_CATALOG, generateWorkoutPlan, validateWorkoutCatalog, workoutPl
 
 const help = `Trainingsplan aus JSON-Basic-Templates erzeugen (ohne Konto-/Datenbankzugriff).
 
-plan-generate --name Daniel --level intermediate [--template five-two-legs]
-plan-generate Daniel --level advanced --variant chest-press=incline-bb --variant hinge=sumo
-plan-generate --list [--format json]
+Breiter Einstieg nach Trainingsziel, Equipment, Wochentagen oder Split:
+  plan-generate --name Daniel --level intermediate
+  plan-generate --name Maria --goal vitality --level beginner
+  plan-generate --name Thomas --equipment dumbbell --level intermediate
+  plan-generate --name Anna --template bodyweight-vital --level beginner
+  plan-generate Daniel --level advanced --variant chest-press=incline-bb --variant hinge=sumo
+  plan-generate --list [--format json]
 
 Optionen:
   --name NAME            Name für den Plan (alternativ ein Positionsargument)
   --level LEVEL          beginner | intermediate | advanced (erforderlich)
-  --template ID          Split aus --list; Standard passend zum Level
+  --goal GOAL            vitality | home | hypertrophy | mobility (steuert Standard-Template & Core)
+  --equipment EQUIP      gym | dumbbell | bodyweight (wählt passendes Equipment-Template)
+  --days N               2 | 3 | 4 | 5 | 6 (Wochentage/Frequenz)
+  --template ID          Split aus --list; Standard passend zu Goal/Level
   --variant SLOT=ID      Alternative statt Standardübung; mehrfach möglich
-  --weeks N             Dauer 1–52 Wochen; Standard 4
-  --core 6pack|none      Fester Core-Baustein; Standard 6pack
+  --weeks N              Dauer 1–52 Wochen; Standard 4
+  --core MODUL           posture | 6pack | mobility | none; Standard passend zum Ziel
   --format md|json|yaml  Ausgabeformat; Standard md
-  --output DATEI        Neue Datei schreiben; vorhandene Dateien bleiben geschützt
-  --catalog DATEI       Eigenen JSON-Katalog mit demselben Schema verwenden
-  --list                Templates, Level und Übungsalternativen anzeigen
-  --help                Diese Hilfe
+  --output DATEI         Neue Datei schreiben; vorhandene Dateien bleiben geschützt
+  --catalog DATEI        Eigenen JSON-Katalog mit demselben Schema verwenden
+  --list                 Templates, Ziele, Level, Core und Übungsalternativen anzeigen
+  --help                 Diese Hilfe
 `;
 try {
   const { values, positionals } = parseArgs({ allowPositionals: true, options: {
     name: { type: 'string' }, level: { type: 'string' }, template: { type: 'string' },
+    goal: { type: 'string' }, equipment: { type: 'string' }, days: { type: 'string' },
     variant: { type: 'string', multiple: true }, weeks: { type: 'string' },
-    core: { type: 'string', default: '6pack' }, format: { type: 'string', default: 'md' },
+    core: { type: 'string' }, format: { type: 'string', default: 'md' },
     output: { type: 'string' }, catalog: { type: 'string' }, list: { type: 'boolean' }, help: { type: 'boolean', short: 'h' },
   } });
   if (values.help) { process.stdout.write(help); process.exit(0); }
@@ -36,8 +44,10 @@ try {
   let result;
   if (values.list) {
     result = {
+      goals: catalog.goals ? Object.fromEntries(Object.entries(catalog.goals).map(([id, g]) => [id, { label: g.label, description: g.description }])) : {},
       levels: Object.fromEntries(Object.entries(catalog.levels).map(([id, p]) => [id, { label: p.label, main: p.main, compound: p.compound, isolation: p.isolation, defaultTemplate: catalog.defaults[id] }])),
-      templates: catalog.templates.map((t) => ({ id: t.id, name: t.name, cycleDays: t.cycleDays, trainingDays: t.routines.map((r) => r.day), selectors: [...new Set(t.routines.flatMap((r) => r.exercises.map((e) => e.selector).filter(Boolean)))], aliases: t.aliases })),
+      coreModules: catalog.coreModules ? Object.fromEntries(Object.entries(catalog.coreModules).map(([id, m]) => [id, { label: m.label, notes: m.notes }])) : {},
+      templates: catalog.templates.map((t) => ({ id: t.id, name: t.name, goal: t.goal || 'hypertrophy', equipment: t.equipment || [], cycleDays: t.cycleDays, trainingDays: t.routines.map((r) => r.day), selectors: [...new Set(t.routines.flatMap((r) => r.exercises.map((e) => e.selector).filter(Boolean)))], aliases: t.aliases })),
       variants: Object.fromEntries(Object.entries(catalog.selectors).map(([id, s]) => [id, { label: s.label, default: s.default, choices: s.choices.map((key) => ({ id: key, name: catalog.exercises[key].name })) }])),
     };
   } else {
@@ -50,13 +60,25 @@ try {
       if (Object.hasOwn(variants, match[1])) throw new Error(`Auswahl doppelt angegeben: ${match[1]}`);
       variants[match[1]] = match[2];
     }
-    result = generateWorkoutPlan({ name: values.name || positionals[0], level: values.level, template: values.template, variants, weeks: values.weeks === undefined ? undefined : Number(values.weeks), core: values.core }, catalog);
+    result = generateWorkoutPlan({
+      name: values.name || positionals[0],
+      level: values.level,
+      goal: values.goal,
+      equipment: values.equipment,
+      days: values.days,
+      template: values.template,
+      variants,
+      weeks: values.weeks === undefined ? undefined : Number(values.weeks),
+      core: values.core,
+    }, catalog);
   }
   let output;
   if (values.format === 'json') output = JSON.stringify(result, null, 2) + '\n';
   else if (values.format === 'yaml') output = dump(result, { noRefs: true, lineWidth: 100 });
   else if (values.list) {
-    output = 'Level: ' + Object.keys(result.levels).join(', ') + '\n\nTemplates:\n' + result.templates.map((t) => `  ${t.id}: ${t.name} (${t.trainingDays.length} Einheiten / ${t.cycleDays} Tage)`).join('\n') + '\n\nÜbungsalternativen (--variant SLOT=ID):\n' + Object.entries(result.variants).map(([id, s]) => `  ${id}: ${s.choices.map((c) => `${c.id} (${c.name})`).join(' | ')}; Standard: ${s.default}`).join('\n') + '\n';
+    const goalsSection = Object.keys(result.goals).length ? 'Trainingsziele (--goal):\n' + Object.entries(result.goals).map(([id, g]) => `  ${id}: ${g.label} — ${g.description}`).join('\n') + '\n\n' : '';
+    const coreSection = Object.keys(result.coreModules).length ? 'Core-Module (--core):\n' + Object.entries(result.coreModules).map(([id, m]) => `  ${id}: ${m.label}`).join('\n') + ' | none\n\n' : '';
+    output = goalsSection + 'Level (--level):\n  ' + Object.keys(result.levels).join(', ') + '\n\n' + coreSection + 'Templates:\n' + result.templates.map((t) => `  ${t.id}: ${t.name} [${t.goal}] (${t.trainingDays.length} Einheiten / ${t.cycleDays} Tage)`).join('\n') + '\n\nÜbungsalternativen (--variant SLOT=ID):\n' + Object.entries(result.variants).map(([id, s]) => `  ${id}: ${s.choices.map((c) => `${c.id} (${c.name})`).join(' | ')}; Standard: ${s.default}`).join('\n') + '\n';
   } else output = workoutPlanMarkdown(result);
   if (values.output) {
     writeFileSync(values.output, output, { flag: 'wx' });
