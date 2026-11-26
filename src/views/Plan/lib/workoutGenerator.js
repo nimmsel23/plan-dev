@@ -37,6 +37,7 @@ export function validateWorkoutCatalog(catalog) {
       names.add(id);
     }
     if (!template.name || !catalog.levels[template.defaultLevel] || !integer(template.cycleDays, 1, 31) || !['mixed', 'one-main'].includes(template.compoundPolicy) || !template.routines?.length) fail(`Ungültiges Template: ${template.id}`);
+    if (template.defaultCore && template.defaultCore !== 'none' && !catalog.coreModules?.[template.defaultCore]) fail(`Unbekannter Template-Core: ${template.id}`);
     let lastDay = 0;
     for (const routine of template.routines) {
       if (!routine.label || !integer(routine.day, 1, template.cycleDays) || routine.day <= lastDay || !routine.exercises?.length) fail(`Ungültiger Zyklustag: ${template.id}`);
@@ -108,7 +109,8 @@ export function generateWorkoutPlan({ name, level, template: templateId, goal, e
 
   let coreKey = core;
   if (coreKey === undefined || coreKey === 'auto') {
-    if (template.goal === 'vitality') coreKey = 'posture';
+    if (template.defaultCore) coreKey = template.defaultCore;
+    else if (template.goal === 'vitality') coreKey = 'posture';
     else if (template.goal === 'mobility') coreKey = 'mobility';
     else coreKey = '6pack';
   }

@@ -404,3 +404,7 @@ Kurzfassung dauerhaft relevanten Wissens aus dem früheren Arbeitslog, thematisc
 ## JSON workout generator (2026-11-26)
 
 `data/workoutTemplates.json` is the shared basic-template/selector/level source. `lib/workoutGenerator.js` validates and deterministically builds independent plan drafts without I/O; `planPresets.js` adapts the same source for the existing picker. `bin/plan-generate` is the CLI boundary: name + level, optional split/variants, stdout Markdown/JSON/YAML or exclusive file creation. It does not touch auth, account data, services or assignment APIs. Five-two-legs enforces one main compound followed by isolation slots. The six-unit basic template preserves an 8-day rotation (no weekday pinning). Broader intake supports goals (`vitality`, `home`, `hypertrophy`, `mobility`), equipment and modular core blocks (`posture`, `6pack`, `mobility`, `none`). See `docs/WORKOUT-GENERATOR.md`.
+
+## Template-Erweiterung 2026-11-26
+
+14 gemeinsame JSON-Templates für CLI und `planPresets.js`, darunter Schulter/Nacken und Kettlebell-Ganzkörper. Optionales `defaultCore` wird vor der Ziel-Automatik ausgewertet; explizites `core` hat Vorrang. Agent-Aufträge: `docs/WORKOUT-GENERATOR-PROMPTS.md`. Equipment-Metadaten sind keine automatische Übungssubstitution.

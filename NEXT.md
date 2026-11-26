@@ -547,3 +547,5 @@ pruefen.
 - [x] Breiten Eingang (--goal vitality|home|hypertrophy|mobility, --equipment, --core) im UI-Picker per Optgroups/Goal-Gruppen eingebunden (TrainingPlans.jsx & planPresets.js).
 - JSON-Basic-Templates bei weiteren Klientenbedürfnissen (z. B. Reha/Schulter-Spezial) ergänzen; Übungs-IDs am gepinnten Katalog prüfen. Gewichte und konkrete 6Pack-Sessions bleiben individuell.
 - Falls später gewünscht: expliziten Planimport/Coach-Zuweisung separat umsetzen; der Generator schreibt absichtlich nur stdout bzw. neue Zieldateien.
+
+- [x] 2026-11-26: Template-Agent-Prompts A–D und Schema-Anleitung angelegt; abgebrochene Schulter-/Kettlebell-Templates vervollständigt.

@@ -37,6 +37,10 @@ Auch außerhalb des Repo-Ordners funktioniert der absolute Aufruf:
 
 Die vorhandene Shell-PATH-Konfiguration nimmt `~/dev/*/bin` beim Shell-Start auf. Nach Öffnen einer neuen Shell ist der kurze Aufruf `plan-generate` verfügbar; kein Wrapper in `~/.local/bin` nötig. Alternativ: `npm run plan:generate -- --name Daniel --level beginner` im Repo.
 
+## Templates per Agent anlegen
+
+Kopierfertige Aufträge und ein gültiges JSON-Beispiel: [Agent-Prompts](WORKOUT-GENERATOR-PROMPTS.md).
+
 ## Die Daten bearbeiten
 
 **Eine Datenquelle:** [`src/views/Plan/data/workoutTemplates.json`](../src/views/Plan/data/workoutTemplates.json). Der bestehende App-Vorlagenpicker und das Skript nutzen beide diese Datei. Kein zweiter Satz fest einprogrammierter Übungen im CLI.
@@ -123,7 +127,7 @@ Formate:
 - `yaml`: dieselbe Struktur wie JSON.
 - `--output`: schreibt ausschließlich eine neue, ausdrücklich benannte Datei. Ein bestehendes Ziel wird geschützt. Kein Firestore-Import, keine automatische Zuweisung, kein Versand.
 
-Der App-Picker (`TrainingPlans.jsx`) konsumiert dieselben 12 Templates über `planPresets.js` und gruppiert sie im Dropdown nach den 4 Trainingszielen (`<optgroup>` für Hypertrophie, Vitalität, Home und Mobility). Zusätzliche CLI-Metadaten sind kein neuer Backendvertrag. Der Zyklus und der Core-Hinweis bleiben auch in der Planbeschreibung enthalten. Bereits gespeicherte Pläne werden durch Änderungen an den Templates nicht rückwirkend angepasst.
+Der App-Picker (`TrainingPlans.jsx`) konsumiert dieselben 14 Templates über `planPresets.js` und gruppiert sie im Dropdown nach den 4 Trainingszielen (`<optgroup>` für Hypertrophie, Vitalität, Home und Mobility). Zusätzliche CLI-Metadaten sind kein neuer Backendvertrag. Der Zyklus und der Core-Hinweis bleiben auch in der Planbeschreibung enthalten. Bereits gespeicherte Pläne werden durch Änderungen an den Templates nicht rückwirkend angepasst.
 
 ## Prüfen
 
@@ -131,4 +135,11 @@ Der App-Picker (`TrainingPlans.jsx`) konsumiert dieselben 12 Templates über `pl
 npm run test:generator
 ```
 
-Die Tests decken alle 12 Templates × Level, sämtliche Selector-Alternativen, Katalogreferenzen, den Acht-Tage-Zyklus, die Ein-Compound-Regel, unabhängige Kopien, geänderte JSON-Dosierungen, CLI-Formate, Ziel-/Equipment-Auflösung, Fehlermeldungen und den Schutz vorhandener Dateien ab.
+Die Tests decken alle 14 Templates × Level, sämtliche Selector-Alternativen, Katalogreferenzen, den Acht-Tage-Zyklus, die Ein-Compound-Regel, unabhängige Kopien, geänderte JSON-Dosierungen, CLI-Formate, Ziel-/Equipment-Auflösung, Fehlermeldungen und den Schutz vorhandener Dateien ab.
+
+## Ergänzungen 2026-11-26
+
+- `vital-shoulder-neck`: Präventionsentwurf, 2 Einheiten (Tag 1/4), Kurzhanteln und Eigengewicht.
+- `kettlebell-vital`: 3 Einheiten (Tag 1/3/5), Kettlebells **und** Kurzhanteln plus Eigengewicht; Satztraining, kein Timer-Zirkel.
+- Optionales Template-Feld `defaultCore` legt den Core-Standard fest (bei beiden neuen Templates `posture`). Explizites `--core` hat Vorrang. Ohne Feld bleibt die bisherige Ziel-Automatik bestehen.
+- `--goal`, `--equipment` und `--days` filtern nicht gemeinsam: Ziel-Default hat Vorrang vor Equipment, Equipment vor Tagen. Ein explizites Template bestimmt die Übungen; Geräte werden nicht automatisch ersetzt.

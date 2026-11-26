@@ -121,7 +121,7 @@ test('CLI works from another directory and emits parseable JSON, YAML and Markdo
   const noCore = cli('Daniel', '--level', 'beginner', '--core', 'none', '--format', 'json');
   assert.equal(JSON.parse(noCore.stdout).core, null);
   const list = cli('--list', '--format', 'json');
-  assert.equal(JSON.parse(list.stdout).templates.length, 12);
+  assert.equal(JSON.parse(list.stdout).templates.length, 14);
   assert.equal(Object.keys(JSON.parse(list.stdout).goals).length, 4);
 });
 
@@ -171,4 +171,27 @@ test('CLI rejects conflicting selections and protects existing output files', ()
     assert.equal(r.status, 0, r.stderr);
     assert.equal(JSON.parse(r.stdout).routines[0].exercises[0].templateSets.length, 1);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+
+test('new templates keep core defaults overridable and require truthful equipment', () => {
+  for (const id of ['vital-shoulder-neck', 'kettlebell-vital']) {
+    assert.equal(build({ template: id }).core.id, 'posture');
+    assert.equal(build({ template: id, core: 'mobility' }).core.id, 'mobility');
+    assert.equal(build({ template: id, core: 'none' }).core, null);
+    assert(PLAN_PRESETS.some((p) => p.id === id && p.core.id === 'posture'));
+    const template = catalog.templates.find((t) => t.id === id);
+    for (const routine of template.routines) for (const slot of routine.exercises) {
+      const choices = slot.selector ? catalog.selectors[slot.selector].choices : [slot.exercise];
+      for (const key of choices) {
+        const ex = catalog.exercises[key];
+        const source = JSON.parse(readFileSync(join(root, 'vendor/free-exercise-db/exercises', `${ex.yuhonas_id}.json`)));
+        const equipment = !source.equipment || source.equipment === 'body only' ? 'bodyweight' : source.equipment;
+        assert(template.equipment.includes(equipment), `${id}/${key}: ${equipment}`);
+      }
+    }
+  }
+  const broken = structuredClone(catalog);
+  broken.templates[0].defaultCore = 'missing';
+  assert.throws(() => validateWorkoutCatalog(broken), /Template-Core/);
 });

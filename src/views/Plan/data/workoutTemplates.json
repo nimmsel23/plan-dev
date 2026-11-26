@@ -820,6 +820,61 @@
       ],
       "kind": "isolation",
       "trackingType": "bodyweight_reps"
+    },
+    "renegade-row": {
+      "exercise_id": "alternating_renegade_row",
+      "yuhonas_id": "Alternating_Renegade_Row",
+      "name": "Kettlebell Renegade Rows",
+      "primaryMuscles": [
+        "middle back"
+      ],
+      "secondaryMuscles": [
+        "abdominals",
+        "biceps",
+        "chest",
+        "lats",
+        "triceps"
+      ],
+      "equipment": [
+        "kettlebells"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "kettlebell-press": {
+      "exercise_id": "alternating_kettlebell_press",
+      "yuhonas_id": "Alternating_Kettlebell_Press",
+      "name": "Kettlebell Überkopfdrücken",
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "triceps"
+      ],
+      "equipment": [
+        "kettlebells"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "kettlebell-halo": {
+      "exercise_id": "kettlebell_halo",
+      "yuhonas_id": "Kettlebell_Halo",
+      "name": "Kettlebell Halo (Mobilität & Schultern)",
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "traps",
+        "middle back",
+        "abdominals",
+        "triceps"
+      ],
+      "equipment": [
+        "kettlebells"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps"
     }
   },
   "selectors": {
@@ -944,6 +999,21 @@
       "choices": [
         "superman",
         "floor-hyperextension"
+      ]
+    },
+    "shoulder-health": {
+      "label": "Schulter- und Nackengesundheit",
+      "default": "reverse-fly",
+      "choices": [
+        "reverse-fly",
+        "superman"
+      ]
+    },
+    "conditioning-press": {
+      "label": "Conditioning Überkopfdrücken",
+      "default": "kettlebell-press",
+      "choices": [
+        "kettlebell-press"
       ]
     }
   },
@@ -2120,6 +2190,178 @@
           ]
         }
       ]
+    },
+    {
+      "id": "vital-shoulder-neck",
+      "name": "Schulter & Nacken Vital · 2 Tage",
+      "goal": "vitality",
+      "equipment": [
+        "dumbbell",
+        "bodyweight"
+      ],
+      "defaultLevel": "beginner",
+      "aliases": [
+        "nacken-vital",
+        "vital-neck"
+      ],
+      "cycleDays": 7,
+      "compoundPolicy": "mixed",
+      "notes": "Bearbeitbarer Präventionsentwurf mit Kurzhanteln und Eigengewicht für Schultergürtel und oberen Rücken; kein individueller Rehabilitationsplan.",
+      "routines": [
+        {
+          "day": 1,
+          "label": "Schultergürtel-Stabilität & Aufrichtung",
+          "exercises": [
+            {
+              "role": "main",
+              "exercise": "press"
+            },
+            {
+              "role": "compound",
+              "exercise": "db-row"
+            },
+            {
+              "selector": "shoulder-health",
+              "role": "isolation"
+            },
+            {
+              "selector": "core-posture",
+              "role": "isolation"
+            },
+            {
+              "exercise": "cat-stretch",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 4,
+          "label": "Nackenentlastung & Scapula-Kontrolle",
+          "exercises": [
+            {
+              "role": "main",
+              "exercise": "db-row"
+            },
+            {
+              "role": "compound",
+              "exercise": "pushup"
+            },
+            {
+              "selector": "shoulder-health",
+              "role": "isolation"
+            },
+            {
+              "exercise": "lateral",
+              "role": "isolation"
+            },
+            {
+              "exercise": "dead-bug",
+              "role": "isolation"
+            }
+          ]
+        }
+      ],
+      "defaultCore": "posture"
+    },
+    {
+      "id": "kettlebell-vital",
+      "name": "Kettlebell & Conditioning Vital · 3 Tage",
+      "goal": "home",
+      "equipment": [
+        "kettlebells",
+        "dumbbell",
+        "bodyweight"
+      ],
+      "defaultLevel": "intermediate",
+      "aliases": [
+        "kettlebell",
+        "conditioning",
+        "kb-vital"
+      ],
+      "cycleDays": 7,
+      "compoundPolicy": "mixed",
+      "notes": "Ganzkörper-Krafttraining an Tag 1, 3 und 5 mit Kettlebells, Kurzhanteln und Eigengewicht. Kein zeitgesteuerter Zirkel; Lasten bleiben individuell.",
+      "routines": [
+        {
+          "day": 1,
+          "label": "KB Ganzkörper · Power & Hinge",
+          "exercises": [
+            {
+              "role": "main",
+              "exercise": "glute-bridge"
+            },
+            {
+              "selector": "conditioning-press",
+              "role": "compound"
+            },
+            {
+              "exercise": "renegade-row",
+              "role": "compound"
+            },
+            {
+              "selector": "bodyweight-squat-slot",
+              "role": "compound"
+            },
+            {
+              "selector": "core-posture",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "label": "KB Ganzkörper · Squat & Rotator",
+          "exercises": [
+            {
+              "selector": "bodyweight-squat-slot",
+              "role": "main"
+            },
+            {
+              "exercise": "kettlebell-halo",
+              "role": "compound"
+            },
+            {
+              "role": "compound",
+              "exercise": "db-row"
+            },
+            {
+              "role": "compound",
+              "exercise": "pushup"
+            },
+            {
+              "exercise": "dead-bug",
+              "role": "isolation"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "label": "KB Ganzkörper · Flow & Core",
+          "exercises": [
+            {
+              "selector": "conditioning-press",
+              "role": "main"
+            },
+            {
+              "role": "compound",
+              "exercise": "glute-bridge"
+            },
+            {
+              "exercise": "renegade-row",
+              "role": "compound"
+            },
+            {
+              "exercise": "kettlebell-halo",
+              "role": "compound"
+            },
+            {
+              "selector": "core-posture",
+              "role": "isolation"
+            }
+          ]
+        }
+      ],
+      "defaultCore": "posture"
     }
   ],
   "goals": {
