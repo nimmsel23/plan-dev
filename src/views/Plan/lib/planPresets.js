@@ -1,5 +1,7 @@
 import { WORKOUT_CATALOG, findWorkoutTemplate, generateWorkoutPlan } from './workoutGenerator.js';
 
+export const PLAN_GOAL_LABELS = Object.fromEntries(Object.entries(WORKOUT_CATALOG.goals).map(([id, goal]) => [id, goal.label]));
+
 // The existing picker and the CLI consume the same JSON-backed basic templates.
 // goal + equipment are carried over from the catalog template for grouped UI rendering.
 export const PLAN_PRESETS = WORKOUT_CATALOG.templates.map((template) => ({

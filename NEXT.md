@@ -571,3 +571,10 @@ Krafttraining sowie Sensomotorik für Balance und Stabilität.
 - [ ] **Katalog-Drift gezielt prüfen.** Ein reproduzierbarer Audit gegen den gepinnten Vendor soll IDs, Muskeln, Anleitungen, Bildpfade und Geräte-/Zusatzgeräteabweichungen prüfen. Bewusste Abweichungen mit Begründung separat ausweisen statt sie bei Updates zu überschreiben. Beim Pin-Wechsel Bericht und betroffene Generator-Templates nennen; gespeicherte Pläne unverändert lassen.
 - [ ] **Coach-Aufgaben nachvollziehbar pflegen.** Eigene Balance-/Stabilitätsaufgaben brauchen Quelle, konkrete Anleitung und fachlich geprüfte leichtere/schwerere Varianten. Aktuell referenzieren alle acht dieselbe Coaching-Doku; Referenz pro Aufgabe präzisieren und im Plan-Kontext zugänglich machen. Keine erfundene Yuhonas-ID zur Erzwingung von Bildern.
 - [ ] **Anpassung und Verständnis am echten Plan prüfen.** Für einen konkreten Klienten kontrollieren, ob Übungsanleitung, Trainingsabsicht, Dosierung sowie leichtere/schwerere Variante im zugestellten Plan verständlich ankommen. Vorhandene `coaching`, `regression` und `progression` durch CLI → Preset → Plan-Dokument verfolgen; keine automatische Schwierigkeitserhöhung allein aus `advanced`. Abnahme von bloßem Katalog-/Build-Erfolg trennen.
+
+
+## 2026-11-26 — Generator-Revision
+
+- [x] Geräteversprechen, Zusatzbedarf, Zeitvorgaben und Dosierungs-Overrides korrigiert; Balance/Stabilität und differenziertes Ganzkörpertraining ergänzt.
+- Coaching-Abnahme der konkreten Aufgaben/Dosierungen und angemeldeter Plan-/Coach-Durchlauf bleiben offen. Bestehende Klientenpläne unverändert; kein Coach-/Shell-Pointer angehoben.
+- Historisches `home`-Goal bei späterer Schemaänderung sauber von Equipment trennen; vorhandene IDs/Pläne erhalten.

@@ -412,3 +412,22 @@ Kurzfassung dauerhaft relevanten Wissens aus dem früheren Arbeitslog, thematisc
 ## Generator-Auswahl (2026-11-26)
 
 Ziel, verfügbare Geräte und Trainingstage werden gemeinsam geprüft, einschließlich expliziter Templates. Equipment wird an aufgelösten Übungen geprüft; ausschließlich freigegebene Selector-Alternativen können automatisch wechseln. Kein Treffer führt zum Fehler mit abweichenden Alternativen. `--days` gilt für Sieben-Tage-Wochen; Acht-Tage-Zyklen bleiben explizite Templates. Regressionen im Generator-Test abgedeckt.
+
+
+## Generator-Revision 2026-11-26 — Geräte, Dosis und Sensomotorik
+
+16 gemeinsame JSON-Vorlagen. `template.equipment` begrenzt auch UI-Defaults;
+`exercise.requires` erfasst Zusatzbedarf. CLI-Profile oder Einzelinventare
+schränken weiter ein. `workoutTemplateChoices` liefert ausschließlich zum
+Template passende Auswahlwerte. UI-Gruppenlabels kommen aus derselben Datenquelle.
+Zeitübungen liefern `targetDuration` in Sekunden und `targetReps: null`.
+Dosisreihenfolge: Level/Rolle → Template/Level/Rolle → Übung/Level → Platz/Level.
+`skill` und `mobility` ermöglichen aufgabengerechte Vorgaben ohne fiktives RIR.
+Eigene Coaching-Aufgaben haben nachvollziehbare lokale Herkunft, Anleitung,
+Abstufung und Notes für bestehende gespeicherte Routinen. Bestehende IDs,
+5×5-Regel und Acht-Tage-PPL bleiben erhalten. Core-Modi: externe 6Pack-Session
+oder expliziter Coaching-Hinweis, kein impliziter Trainingsblock.
+Tests prüfen alle Template-/Level-Kombinationen, Geräte-Defaults/-Varianten,
+Zeit-/Wiederholungsvorgaben, UI-Presets und CLI-Exporte. Keine kontobezogene
+Freigabe oder Veröffentlichung im Rahmen dieser Änderung.
+Details: `docs/WORKOUT-GENERATOR.md`, `docs/WORKOUT-GENERATOR-COACHING.md`.

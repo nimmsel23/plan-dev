@@ -1,14 +1,8 @@
 import { useEffect, useState } from "react";
 import { Layers, Plus, ChevronDown } from "lucide-react";
 import { listMacrocycles, createMacrocycle, getUid } from "@db";
-import { PLAN_PRESETS, planFromPreset } from "../lib/planPresets.js";
+import { PLAN_PRESETS, PLAN_GOAL_LABELS, planFromPreset } from "../lib/planPresets.js";
 
-const GOAL_LABELS = {
-  hypertrophy: '🏋️ Hypertrophie & Kraft (Gym)',
-  vitality: '🌿 Vitalität & Prävention',
-  home: '🏠 Home & Minimal Equipment',
-  mobility: '🧘 Mobility & Flow',
-};
 import PlanCard from "../components/PlanCard.jsx";
 
 // Shared plan composition for personal training and the client workspace.
@@ -94,7 +88,7 @@ export default function TrainingPlans({ templates, workouts, onChanged, clientUi
                       return acc;
                     }, {})
                   ).map(([goal, presets]) => (
-                    <optgroup key={goal} label={GOAL_LABELS[goal] ?? goal}>
+                    <optgroup key={goal} label={PLAN_GOAL_LABELS[goal] ?? goal}>
                       {presets.map((preset) => <option key={preset.id} value={preset.id}>{preset.name}</option>)}
                     </optgroup>
                   ))}

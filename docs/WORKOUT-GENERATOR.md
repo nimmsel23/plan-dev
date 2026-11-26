@@ -1,154 +1,159 @@
 # Workout Generator
 
-`bin/plan-generate` erzeugt anhand von **Name, Trainingsziel, Equipment oder Level** einen bearbeitbaren Trainingsplan aus den Basic-Templates. Ohne weitere Optionen geht der Plan auf stdout; es werden weder Kontodaten noch Trainingslogs angelegt.
+`bin/plan-generate` erzeugt aus Name, Level und JSON-Vorlagen einen bearbeitbaren
+Coaching-Entwurf. Er speichert keine Kontodaten, loggt kein Training und weist
+keinen Plan zu. CLI und bestehender App-Picker verwenden dieselbe Datenquelle:
+[`workoutTemplates.json`](../src/views/Plan/data/workoutTemplates.json).
 
 ```sh
-# 1. Breiter Einstieg für Vitaltraining, Home und Klienten
-./bin/plan-generate --name Maria --goal vitality --level beginner
-./bin/plan-generate --name Thomas --equipment dumbbell --level intermediate
-./bin/plan-generate --name Anna --template bodyweight-vital --level beginner
-./bin/plan-generate --name Stefan --goal mobility --level beginner
-
-# 2. Klassische Hypertrophie- & Gym-Splits (Rückwärtskompatibel)
-# Defaults ohne Ziel: Beginner → Ganzkörper, Intermediate → PPL, Advanced → 5er mit 2 Beintagen
-./bin/plan-generate --name Daniel --level beginner
-./bin/plan-generate --name Daniel --level intermediate
-./bin/plan-generate --name Daniel --level advanced
-
-# Split gezielt wählen; Schrägbank ersetzt die Flachbank, Sumo ersetzt RDL
-./bin/plan-generate Daniel --level intermediate --template five-two-legs \
+./bin/plan-generate Daniel --level advanced
+./bin/plan-generate Maria --goal vitality --level beginner --days 2
+./bin/plan-generate Thomas --equipment dumbbell --level intermediate --days 3
+./bin/plan-generate Anna --template bodyweight-vital --level beginner
+./bin/plan-generate Maria --goal balance --equipment balance --level beginner
+./bin/plan-generate Maria --template strength-stability --equipment dumbbell,stable-support --level intermediate
+./bin/plan-generate Daniel --template five-two-legs --level advanced \
   --variant chest-press=incline-bb --variant hinge=sumo
-
-# Maschinenlesbar oder als neue Datei; existierende Dateien werden nicht überschrieben
 ./bin/plan-generate Daniel --level advanced --format json
 ./bin/plan-generate Daniel --level advanced --format yaml
 ./bin/plan-generate Daniel --level advanced --output /tmp/Daniel-5x5.md
-
-# Alle Templates, Schwerpunkte, Level, Core-Module und zulässigen Alternativen
-./bin/plan-generate --list
 ./bin/plan-generate --list --format json
 ```
 
-Auch außerhalb des Repo-Ordners funktioniert der absolute Aufruf:
+Außerhalb des Repos: `/home/alpha/dev/plan-dev/bin/plan-generate …`.
+Neue interaktive Shells nehmen `~/dev/*/bin` über die vorhandene PATH-Konfiguration auf.
+Alternativ im Repo: `npm run plan:generate -- …`.
 
-```sh
-/home/alpha/dev/plan-dev/bin/plan-generate Daniel --level intermediate
-```
+## Auswahlvertrag
 
-Die vorhandene Shell-PATH-Konfiguration nimmt `~/dev/*/bin` beim Shell-Start auf. Nach Öffnen einer neuen Shell ist der kurze Aufruf `plan-generate` verfügbar; kein Wrapper in `~/.local/bin` nötig. Alternativ: `npm run plan:generate -- --name Daniel --level beginner` im Repo.
+Ziel, Geräte und Trainingstage gelten **gemeinsam**, auch bei explizitem Template.
+Ohne Treffer: Exitcode 2, Erklärung und nahe Alternativen mit Abweichungen auf
+stderr; stdout bleibt leer. Vorgaben werden nicht automatisch gelockert.
+Explizite Varianten müssen im gewählten Template vorkommen und zum Geräterahmen
+passen. Nur freigegebene Selector-Alternativen dürfen genau einen Platz ersetzen.
 
-## Abdeckung und Ausrichtung
+`--days 2|3|4|5|6` bedeutet Einheiten pro **Sieben-Tage-Woche**. `ppl-six` ist
+weiter ein Acht-Tage-Zyklus, explizit ohne widersprechendes `--days` wählbar.
 
-[Abdeckungsmatrix und priorisierte Lücken](WORKOUT-TEMPLATE-COVERAGE.md): differenziertes Krafttraining sowie sensomotorisches Training für Balance und Stabilität als Maßstab der weiteren Vorlagenarbeit.
+Unter passenden Vorlagen priorisiert der Generator Ziel-Default, Equipment-Default,
+Level-Default, passendes Standardlevel und schließlich Katalogreihenfolge.
+Ohne Vorgaben bleiben Beginner → Ganzkörper, Intermediate → PPL,
+Advanced → 5er mit zwei Beintagen erhalten.
 
-## Templates per Agent anlegen
+Level ist keine automatische Prüfung der persönlichen Eignung.
 
-Kopierfertige Aufträge und ein gültiges JSON-Beispiel: [Agent-Prompts](WORKOUT-GENERATOR-PROMPTS.md).
+## Geräte: verfügbar, erforderlich und zusätzlich
 
-## Die Daten bearbeiten
-
-**Eine Datenquelle:** [`src/views/Plan/data/workoutTemplates.json`](../src/views/Plan/data/workoutTemplates.json). Der bestehende App-Vorlagenpicker und das Skript nutzen beide diese Datei. Kein zweiter Satz fest einprogrammierter Übungen im CLI.
-
-| JSON-Bereich | Zweck |
+| Profil | Verfügbar |
 | --- | --- |
-| `schemaVersion` | Aktuell `1`; unbekannte Versionen werden abgewiesen |
-| `goals` | Kategorien & Schwerpunkte: `vitality`, `home`, `hypertrophy`, `mobility` |
-| `exercises` | Konkrete Katalog-ID, Yuhonas-ID, Name, Muskel-/Gerätedaten, Art und Trackingtyp |
-| `selectors` | Übungsplätze mit zulässigen Alternativen und Standardwahl |
-| `levels` | Dosierung getrennt nach `main`, `compound` und `isolation` |
-| `coreModules` | Wählbare Core-Bausteine: `posture` (Rumpf & Haltung), `6pack` (Intervalle), `mobility` (Gelenke) |
-| `templates` | Split, Zykluslänge, Trainingstage, Equipment und ausgewählte Übungsplätze |
-| `defaults` | Passendes Standardtemplate pro Level/Goal und Standarddauer |
-| `core` | Rückwärtskompatibler Default-Core-Baustein |
-| `progression` | Gemeinsame Hinweise zur Laststeigerung |
+| `gym` | Studio mit KH/LH/KB, Maschinen, Kabel, Bank, verstellbarer Bank, Rack, Klimmzugstange, fester Haltemöglichkeit |
+| `dumbbell` | Kurzhanteln, Eigengewicht, Matte; **keine Bank** |
+| `bodyweight` | Eigengewicht, Matte; keine Klimmzugstange oder anderen Hilfsmittel |
+| `kettlebell` | Kettlebells, Eigengewicht, Matte |
+| `balance` | Eigengewicht, Matte, feste Haltemöglichkeit |
 
-Beispiel eines Übungsplatzes in einer Einheit:
+Für genaue Inventare sind kommagetrennte Geräte möglich, etwa
+`--equipment dumbbell,bench` oder `dumbbell,stable-support`. Eigengewicht und
+Matte sind bei solchen Inventaren die Basis; zusätzliche Geräte werden nicht
+vermutet. Alle Gerätebegriffe stehen in `--list`.
 
-```json
-{ "selector": "chest-press", "role": "main" }
-```
+- `exercise.equipment`: Hauptgeräte, gemeinsam erforderlich; keine mehrdeutigen ODER-Listen.
+- `exercise.requires`: zusätzliche Bank, Rack, Aufhängung, Partner usw.
+- `template.equipment`: verbindlicher verfügbarer Geräterahmen der Vorlage.
+- Ein CLI-Inventar schränkt diesen Rahmen weiter ein und erweitert ihn nicht.
+- Auch **ohne** `--equipment` werden Defaults und Varianten gegen den Template-Rahmen geprüft.
+- Die Ausgabe `equipment` und die Planbeschreibung zeigen den tatsächlich benötigten Bedarf.
+- `--list --format json` liefert je Template die darin erlaubten Varianten; die globale Selector-Liste beschreibt den Gesamtkatalog.
 
-Dieser Platz löst genau **eine** Übung auf. Zum Beispiel ersetzt `--variant chest-press=incline-bb` das Standard-Bankdrücken; es hängt keine zweite Druckübung an. Ein fester Übungsplatz sieht so aus:
+Goblet Squat mit KB und KH sind getrennte Ausführungsvarianten. Lokale
+Ausführungsvarianten tragen `sourceVariation`; Vendor-Identität und Muskelangaben
+bleiben nachvollziehbar. Bank-/Rackbedarf folgt auch der Anleitung, nicht nur
+dem groben Vendor-Gerätefeld.
 
-```json
-{ "exercise": "extend", "role": "isolation" }
-```
+## Dosierungen
 
-Eine Übung wird mit ihrer tatsächlichen Katalog-/Yuhonas-Identität gespeichert. Namen werden nicht automatisch zusammengeführt. Neue Übungsvarianten zuerst aus dem gepinnten `vendor/free-exercise-db` bzw. vorhandenen Katalog aufnehmen und dann im passenden Selector freigeben. Nicht nach Namen raten oder IDs erfinden.
+Die bisherigen Grundprofile für Kraft-/Muskelaufbauvorlagen bleiben erhalten:
 
-Eigene Kopien des Katalogs können ohne Codeänderung genutzt werden:
-
-```sh
-./bin/plan-generate Daniel --level intermediate --catalog /pfad/meine-templates.json
-```
-
-Der Generator prüft Schemaversion, Referenzen, Rollen, Dosierung und Zyklustage. Ungültige Eingaben brechen mit Exitcode 2 und einer Fehlermeldung auf stderr ab. Sie werden nicht still durch Standardwerte ersetzt.
-
-## Level
-
-| Level | Hauptübung | Weitere Compounds, falls Template sie enthält | Isolationen |
+| Level | Hauptübung | Weitere Compounds | Isolationen |
 | --- | --- | --- | --- |
 | Beginner | 2 × 8–12 | 2 × 8–12 | 2 × 10–15 |
 | Intermediate | 3 × 8–12 | 2 × 8–12 | 3 × 10–15 |
 | Advanced | 5 × 5 | 2 × 8–12 | 3 × 10–15 |
 
-Die Profile sind editierbare Ausgangswerte und keine automatische Einstufung einer Person. Lasten bleiben `null`; das Skript erfindet keine Kraftwerte. Die Level verändern Sätze, Wiederholungen, Pausen und Reserve, nicht heimlich die ausgesuchte Übung.
+Bei `five-two-legs` steht genau ein Compound zuerst; danach nur Isolationen.
+Flachbank/Schrägbank und RDL/Sumo ersetzen sich. Keine zweite schwere Hüftstreckung.
 
-Beim Template `five-two-legs` gilt für alle Level: **genau ein Compound am Anfang, danach nur Isolationen**. Das Advanced-Profil ergibt dort den besprochenen Advanced-5×5-Plan. Ganzkörper/PPL/Push-Pull/Vitality enthalten dagegen bewusst mehrere funktionelle Mehrgelenkbewegungen; nur der als `main` bezeichnete Platz erhält 5×5.
+Differenzierte Kraft-, Mobility- und Sensomotorikvorlagen verwenden eigene Vorgaben:
+**Advanced bedeutet dort nicht automatisch 5×5**. `skill` und `mobility` sind eigene
+Rollen. RIR bleibt bei Zeit-/Koordinationsaufgaben `null`; die Kontrolle bestimmt
+die Satzgrenze.
 
-## Templates, Schwerpunkte und Zyklen
+Dosierungen werden in dieser Reihenfolge zusammengeführt:
 
-| ID | Ziel / Schwerpunkt | Rhythmus & Equipment |
-| --- | --- | --- |
-| `vital-health` | Vitalität & Prävention | 2 Einheiten (Tag 1, 4); Kurzhantel & Eigengewicht (Alltagsfit, 40+) |
-| `vital-back-posture` | Rücken & Haltung Vital | 3 Einheiten (Tag 1, 3, 5); Rumpf, Schultergürtel, Rückenentlastung |
-| `home-dumbbell` | Home & Minimal Equipment | 3 Einheiten (Tag 1, 3, 5); Kurzhanteln + Matte ohne Gym-Geräte |
-| `bodyweight-vital` | Calisthenics & Bodyweight | 3 Einheiten (Tag 1, 3, 5); 100% Eigengewicht ohne Geräte |
-| `mobility-flow` | Mobility & Gelenkgesundheit | 2 Einheiten (Tag 1, 4); Wirbelsäulenentlastung & Hüftmobilität |
-| `full-body` | Hypertrophie (Gym) | Ganzkörper A/B/A an Tag 1, 3, 5; 7-Tage-Woche |
-| `push-pull` | Hypertrophie (Gym) | Push/Pull mit Beinen an Tag 1, 2, 4, 6 |
-| `ppl-basic` | Hypertrophie (Gym) | Push/Pull/Beine an Tag 1, 3, 5 |
-| `daniel-three` | Hypertrophie (Gym) | Brust/Trizeps, Rücken/Bizeps, Beine/Schultern an Tag 1, 3, 5 |
-| `daniel-classic-five` | Hypertrophie (Gym) | Brust, Rücken, Pause, Beine, Schultern, Arme, Pause |
-| `five-two-legs` | Hypertrophie (Gym) | Brust/Trizeps, Rücken/Bizeps, Pause, Beine A, Schultern/Arme, Beine B, Pause |
-| `ppl-six` | Hypertrophie (Gym) | Training an Tag 1, 2, 3, 5, 6, 7; Pausen an Tag 4 und 8 (8-Tage-Zyklus) |
+1. `levels[level][role]`: Grundprofil.
+2. `template.prescriptions[level][role]`: Trainingsabsicht der Vorlage.
+3. `exercise.prescriptions[level]`: Übungsspezifik.
+4. `slot.prescriptions[level]`: konkrete Anpassung in einer Einheit.
 
-`ppl-six` ist ein **rollierender Acht-Tage-Zyklus**, kein Kalender mit sechs Trainingstagen pro Woche.
+```json
+{
+  "beginner": {
+    "sets": 2, "reps": null, "durationSeconds": 15,
+    "restSeconds": 45, "rir": null
+  }
+}
+```
 
-Im JSON stehen `schedule.cycleDays`, `trainingDays`, `restDays` und pro Routine `cycleDay`. Nur 7-Tage-Templates erhalten `weekdays` (Montag = 0). Acht-Tage-Pläne behalten leere `weekdays` und `targetPeriodDays: 8`; Pausen nach den dritten Einheiten werden als `restHoursAfter: 48` ausgegeben.
+Zeitübungen erzeugen `targetDuration` als Zahl in **Sekunden** und `targetReps: null`.
+Wiederholungsübungen erzeugen `targetReps` und `targetDuration: null`.
+Markdown und App-Vorgaben zeigen dieselben Werte. Gewichte bleiben `null`.
+Ungültige oder widersprüchliche Vorgaben werden beim Laden des Katalogs abgewiesen.
 
-## Core-Module und Ausgabe
+## Bestand und Coaching-Ausrichtung
 
-Core ist ein **fester eigener Trainingsbaustein**, kein Restprogramm:
-- `posture`: Gezielte Rumpf- und Wirbelsäulenstabilisation (Plank, Dead Bug, Beckenboden/Glute). Standard bei `--goal vitality`.
-- `6pack`: Intensives Core-Intervalltraining. Session in der 6Pack-App wählbar. Standard bei `--goal hypertrophy` / Gym.
-- `mobility`: Dynamische Dehnung und Gelenkmobilisation. Standard bei `--goal mobility`.
-- `none`: Lässt den Baustein ausdrücklich weg.
+16 Vorlagen: die bestehenden sieben Gym-Splits, differenziertes Ganzkörpertraining,
+Rücken/Rumpf/Schultergürtel, begrenztes Equipment, Eigengewicht, Beweglichkeit,
+Schultergürtel sowie KB/KH. Neu:
 
-Formate:
-- `md`: lesbare Übersicht, Zyklustage und Trainingstabellen.
-- `json`: bestehende Planfelder `name`, `description`, `totalWeeks`, `routines` und `templateSets`; zusätzlich Generatorherkunft, Zyklusübersicht und Core-Baustein.
-- `yaml`: dieselbe Struktur wie JSON.
-- `--output`: schreibt ausschließlich eine neue, ausdrücklich benannte Datei. Ein bestehendes Ziel wird geschützt. Kein Firestore-Import, keine automatische Zuweisung, kein Versand.
+- `balance-stability`: drei Einheiten mit Gewichtsverlagerung, Tandemstand,
+  Einbeinstand, Uhrzeiger-Taps und Tandemschritten.
+- `strength-stability`: dreimal Ganzkörperkraft mit differenzierter Dosierung und
+  ergänzenden Stand-/Stabilitätsaufgaben; KH und feste Haltemöglichkeit.
 
-Der App-Picker (`TrainingPlans.jsx`) konsumiert dieselben 14 Templates über `planPresets.js` und gruppiert sie im Dropdown nach den 4 Trainingszielen (`<optgroup>` für Hypertrophie, Vitalität, Home und Mobility). Zusätzliche CLI-Metadaten sind kein neuer Backendvertrag. Der Zyklus und der Core-Hinweis bleiben auch in der Planbeschreibung enthalten. Bereits gespeicherte Pläne werden durch Änderungen an den Templates nicht rückwirkend angepasst.
+Bestehende IDs und Aliase bleiben erhalten. `vital-shoulder-neck` heißt im Picker
+jetzt „Schultergürtel & Rumpf“; `kettlebell-vital` verspricht kein Conditioning,
+Powertraining oder einen Flow. Trainingsort und Geräte sind kein neuer Produktfokus.
+Der historische Goal-Schlüssel `home` bleibt kompatibel; sein sichtbares Label
+lautet „Krafttraining mit begrenztem Equipment“.
 
-## Prüfen
+Coaching-Rahmen, Quellen, Abstufungen und Grenzen:
+[WORKOUT-GENERATOR-COACHING.md](WORKOUT-GENERATOR-COACHING.md).
+Die Aufgaben sind Vorlagen, keine automatische individuelle Trainingsfreigabe.
+
+## Core und Speicherung
+
+Core bleibt ein bewusst gewählter eigener Bestandteil:
+
+- `6pack`: `mode: external`; konkrete Session separat in der 6Pack-App wählen.
+- `posture`, `mobility`: `mode: guidance`; Coaching-Hinweise, kein verdeckt hinzugefügter Übungsblock. Konkrete Übungen stehen mit Vorgaben in den Routinen.
+- `none`: kein zusätzlicher Core-Hinweis. Die neuen Balance-/Kraft-Stabilitätsvorlagen nutzen dies, weil ihre Aufgaben bereits in den Routinen stehen.
+
+Explizites `--core` hat Vorrang vor `template.defaultCore`, sonst entscheidet das Ziel.
+Die App behält die Vorgaben und Hinweise über Routinen und Planbeschreibung.
+
+`md`, `json` und `yaml` liefern dieselben Vorgaben. `--output` schreibt ausschließlich
+eine neue Datei (kein Überschreiben); `--catalog DATEI` lädt eine eigene JSON-Kopie.
+Bereits gespeicherte Klientenpläne werden nicht rückwirkend geändert.
+
+## Prüfen und erweitern
 
 ```sh
 npm run test:generator
 ```
 
-Die Tests decken alle 14 Templates × Level, sämtliche Selector-Alternativen, Katalogreferenzen, den Acht-Tage-Zyklus, die Ein-Compound-Regel, unabhängige Kopien, geänderte JSON-Dosierungen, CLI-Formate, Ziel-/Equipment-Auflösung, Fehlermeldungen und den Schutz vorhandener Dateien ab.
+Abgedeckt: alle Vorlagen × Level, Quellen und lokale Aufgaben, Defaults und Varianten
+gegen Geräterahmen, Zeitvorgaben, Dosierungs-Overrides, UI-Presets, CLI-Formate,
+gemeinsame Auswahl, Acht-Tage-Zyklus, 5×5-Regel und Dateischutz.
 
-## Ergänzungen 2026-11-26
-
-- `vital-shoulder-neck`: Präventionsentwurf, 2 Einheiten (Tag 1/4), Kurzhanteln und Eigengewicht.
-- `kettlebell-vital`: 3 Einheiten (Tag 1/3/5), Kettlebells **und** Kurzhanteln plus Eigengewicht; Satztraining, kein Timer-Zirkel.
-- Optionales Template-Feld `defaultCore` legt den Core-Standard fest (bei beiden neuen Templates `posture`). Explizites `--core` hat Vorrang. Ohne Feld bleibt die bisherige Ziel-Automatik bestehen.
-- `--goal`, `--equipment` und `--days` gelten gemeinsam, auch bei explizitem `--template`. Ohne Treffer: Exitcode 2 mit nahen Alternativen und deren Abweichungen; keine automatische Lockerung.
-- `--equipment dumbbell` erlaubt Kurzhanteln und Eigengewicht; `bodyweight` nur Eigengewicht; `gym` setzt ein voll ausgestattetes Studio voraus. Geprüft werden die konkreten Übungen. Nur bereits freigegebene Selector-Alternativen dürfen Geräte ersetzen; explizite `--variant`-Wahlen bleiben verbindlich.
-- `--days` bedeutet Trainingstage pro 7-Tage-Woche (2–6). Der Acht-Tage-Zyklus `ppl-six` bleibt per Template ohne widersprechendes `--days` verfügbar.
-- Unter passenden Vorlagen priorisiert der Generator Ziel-Default, Equipment-Default und Level-Default, danach das passende Standardlevel und die Katalogreihenfolge. Ohne Vorgaben bleiben die bisherigen Level-Defaults erhalten. Level steuert weiterhin Dosierung; eine automatische technische Eignungsprüfung ist nicht enthalten.
-
-Beispiel: `--goal vitality --equipment dumbbell --days 3` bricht aktuell ab, weil die Vitalitätsvorlage mit drei Tagen einen Kabelzug braucht. `--goal home --equipment dumbbell --days 3` liefert dagegen eine passende Vorlage.
+[Agent-Prompts](WORKOUT-GENERATOR-PROMPTS.md) und
+[Abdeckungsmatrix](WORKOUT-TEMPLATE-COVERAGE.md) beschreiben die weitere Pflege.

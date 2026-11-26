@@ -2,7 +2,7 @@
 import { parseArgs } from 'node:util';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dump } from 'js-yaml';
-import { WORKOUT_CATALOG, generateWorkoutPlan, validateWorkoutCatalog, workoutPlanMarkdown } from '../src/views/Plan/lib/workoutGenerator.js';
+import { WORKOUT_CATALOG, generateWorkoutPlan, validateWorkoutCatalog, workoutPlanMarkdown, workoutTemplateChoices } from '../src/views/Plan/lib/workoutGenerator.js';
 
 const help = `Trainingsplan aus JSON-Basic-Templates erzeugen (ohne Konto-/Datenbankzugriff).
 
@@ -17,8 +17,8 @@ Breiter Einstieg nach Trainingsziel, Equipment, Wochentagen oder Split:
 Optionen:
   --name NAME            Name für den Plan (alternativ ein Positionsargument)
   --level LEVEL          beginner | intermediate | advanced (erforderlich)
-  --goal GOAL            vitality | home | hypertrophy | mobility (verbindliches Ziel; steuert Core)
-  --equipment EQUIP      gym | dumbbell | bodyweight (verbindlich: verfügbare Geräte)
+  --goal GOAL            vitality | balance | home | hypertrophy | mobility (verbindliches Ziel; steuert Core)
+  --equipment EQUIP      Profil aus --list oder Geräte, z. B. dumbbell,bench
   --days N               2 | 3 | 4 | 5 | 6 (Trainingstage pro 7-Tage-Woche)
   --template ID          Split aus --list; Standard passend zu Goal/Level
   --variant SLOT=ID      Alternative statt Standardübung; mehrfach möglich
@@ -45,10 +45,12 @@ try {
   if (values.list) {
     result = {
       goals: catalog.goals ? Object.fromEntries(Object.entries(catalog.goals).map(([id, g]) => [id, { label: g.label, description: g.description }])) : {},
-      levels: Object.fromEntries(Object.entries(catalog.levels).map(([id, p]) => [id, { label: p.label, main: p.main, compound: p.compound, isolation: p.isolation, defaultTemplate: catalog.defaults[id] }])),
+      levels: Object.fromEntries(Object.entries(catalog.levels).map(([id, p]) => [id, { label: p.label, main: p.main, compound: p.compound, isolation: p.isolation, skill: p.skill, mobility: p.mobility, defaultTemplate: catalog.defaults[id] }])),
+      equipmentProfiles: catalog.equipmentProfiles,
+      equipmentItems: [...new Set([...Object.values(catalog.equipmentProfiles || {}).flatMap((p) => p.items), ...(catalog.equipmentItems || [])])],
       coreModules: catalog.coreModules ? Object.fromEntries(Object.entries(catalog.coreModules).map(([id, m]) => [id, { label: m.label, notes: m.notes }])) : {},
-      templates: catalog.templates.map((t) => ({ id: t.id, name: t.name, goal: t.goal || 'hypertrophy', equipment: t.equipment || [], cycleDays: t.cycleDays, trainingDays: t.routines.map((r) => r.day), selectors: [...new Set(t.routines.flatMap((r) => r.exercises.map((e) => e.selector).filter(Boolean)))], aliases: t.aliases })),
-      variants: Object.fromEntries(Object.entries(catalog.selectors).map(([id, s]) => [id, { label: s.label, default: s.default, choices: s.choices.map((key) => ({ id: key, name: catalog.exercises[key].name })) }])),
+      templates: catalog.templates.map((t) => ({ id: t.id, name: t.name, goal: t.goal || 'hypertrophy', equipment: t.equipment || [], cycleDays: t.cycleDays, trainingDays: t.routines.map((r) => r.day), selectors: [...new Set(t.routines.flatMap((r) => r.exercises.map((e) => e.selector).filter(Boolean)))], aliases: t.aliases, variants: workoutTemplateChoices(t.id, catalog) })),
+      variants: Object.fromEntries(Object.entries(catalog.selectors).map(([id, s]) => [id, { label: s.label, default: s.default, choices: s.choices.map((key) => ({ id: key, name: catalog.exercises[key].name, equipment: catalog.exercises[key].equipment, requires: catalog.exercises[key].requires || [] })) }])),
     };
   } else {
     if (positionals.length > 1 || (values.name && positionals.length)) throw new Error('Genau einen Namen angeben: --name NAME oder NAME.');
@@ -78,7 +80,8 @@ try {
   else if (values.list) {
     const goalsSection = Object.keys(result.goals).length ? 'Trainingsziele (--goal):\n' + Object.entries(result.goals).map(([id, g]) => `  ${id}: ${g.label} — ${g.description}`).join('\n') + '\n\n' : '';
     const coreSection = Object.keys(result.coreModules).length ? 'Core-Module (--core):\n' + Object.entries(result.coreModules).map(([id, m]) => `  ${id}: ${m.label}`).join('\n') + ' | none\n\n' : '';
-    output = goalsSection + 'Level (--level):\n  ' + Object.keys(result.levels).join(', ') + '\n\n' + coreSection + 'Templates:\n' + result.templates.map((t) => `  ${t.id}: ${t.name} [${t.goal}] (${t.trainingDays.length} Einheiten / ${t.cycleDays} Tage)`).join('\n') + '\n\nÜbungsalternativen (--variant SLOT=ID):\n' + Object.entries(result.variants).map(([id, s]) => `  ${id}: ${s.choices.map((c) => `${c.id} (${c.name})`).join(' | ')}; Standard: ${s.default}`).join('\n') + '\n';
+    const equipmentSection = 'Geräteprofile (--equipment):\n' + Object.entries(result.equipmentProfiles || {}).map(([id, p]) => `  ${id}: ${p.label} [${p.items.join(', ')}]`).join('\n') + '\nEinzelgeräte (kommagetrennt): ' + result.equipmentItems.join(', ') + '\n\n';
+    output = goalsSection + equipmentSection + 'Level (--level):\n  ' + Object.keys(result.levels).join(', ') + '\n\n' + coreSection + 'Templates:\n' + result.templates.map((t) => `  ${t.id}: ${t.name} [${t.goal}] (${t.trainingDays.length} Einheiten / ${t.cycleDays} Tage)`).join('\n') + '\n\nÜbungsalternativen (--variant SLOT=ID):\n' + Object.entries(result.variants).map(([id, s]) => `  ${id}: ${s.choices.map((c) => `${c.id} (${c.name})`).join(' | ')}; Standard: ${s.default}`).join('\n') + '\n';
   } else output = workoutPlanMarkdown(result);
   if (values.output) {
     writeFileSync(values.output, output, { flag: 'wx' });

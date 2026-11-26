@@ -1,6 +1,7 @@
 # Abdeckung der Workout-Templates
 
-Stand: 2026-11-26, geprüft am Quellstand `b37a073c` auf `dev`.
+Historische Bestandsaufnahme: 2026-11-26, Quellstand `b37a073c` auf `dev`.
+Die folgende Matrix hält den damaligen Befund fest. **Aktueller Revisionsstand am Ende dieser Datei.**
 
 ## Maßstab des Owners
 
@@ -121,3 +122,22 @@ Templates, keine passende Zeitdosierung und keine fachliche Vollständigkeit.
 
 Diese Session liefert die Bestandsaufnahme und Arbeitsreihenfolge. Sie verändert
 keine Trainingsvorlage, verschickt keinen Klientenplan und gibt keinen Plan frei.
+
+
+## Revision 2026-11-26 — Grundlagen korrigiert, gezielt ergänzt
+
+- Gemeinsame Auswahl aus Ziel, Equipment und Tagen durch `87309f80` korrigiert.
+- Gerätevertrag gilt jetzt auch ohne CLI-Filter und im App-Picker. Templates haben verbindliche Inventare; `requires` erfasst Bank, Rack, Aufhängung, Partner und Haltemöglichkeit. Template-unverträgliche Varianten werden nicht angeboten beziehungsweise abgewiesen.
+- Kurzhantel-Floor-Press, stehendes KH-Drücken und vorgebeugtes KH-Rudern vermeiden stillen Bankbedarf. Eigengewichts-Templates enthalten keine Goblet-Last mehr. KB-/KH-Goblet-Ausführungen sind getrennt.
+- Plank und Cat Stretch liefern echte Sekunden statt Wiederholungen; Ausgabe, JSON/YAML und UI-Presets stimmen überein.
+- Rollen `skill` und `mobility` sowie Template-/Übungs-/Platz-Overrides erlauben differenzierte Dosierungen. Advanced setzt die neuen allgemeinen Kraft-/Sensomotorikvorlagen nicht automatisch auf 5×5.
+- `balance-stability` und `strength-stability` ergänzen den Bestand auf **16 Vorlagen**. Die Sensomotorikvorlage enthält konkrete Stand-/Schritt-/Verlagerungsaufgaben, Unterstützung und nachvollziehbare Abstufungen; kein automatischer Eingangstest oder klinischer Wirksamkeitsnachweis.
+- Mobility-Inhalte sind jetzt Wirbelsäulenrotation, Sprunggelenkarbeit und Hüftmobilisation plus quellgetreuer Cat Stretch. Schulter-/Nacken- und Conditioning-/Power-/Flow-Versprechen wurden aus unpassenden Labels entfernt; IDs bleiben kompatibel.
+- Core-Vertrag explizit: 6Pack ist extern, posture/mobility sind Hinweise; kein unsichtbar erzeugtes Zusatztraining. Konkrete Aufgaben stehen in den Routinen.
+
+Verbleibende Grenzen: individuelle Einstufung, mehrwöchige automatische Anpassung,
+Zeitbudget, Ausdauer-/Zirkelmodell und eine spätere saubere Trennung historischer
+Goal-Schlüssel (insbesondere `home`) von Trainingsabsicht und Equipment.
+
+Details: [Generator-Vertrag](WORKOUT-GENERATOR.md) und
+[Coaching-Rahmen](WORKOUT-GENERATOR-COACHING.md).

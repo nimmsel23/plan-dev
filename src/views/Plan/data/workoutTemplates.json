@@ -25,6 +25,11 @@
         "beginner": "mobility-flow",
         "intermediate": "mobility-flow",
         "advanced": "mobility-flow"
+      },
+      "balance": {
+        "beginner": "balance-stability",
+        "intermediate": "balance-stability",
+        "advanced": "balance-stability"
       }
     }
   },
@@ -54,7 +59,20 @@
         "restSeconds": 90,
         "rir": 3
       },
-      "notes": "Technik und gleichmäßige Wiederholungen aufbauen; keine erzwungenen Wiederholungen. Trainingslevel beschreibt hier die Dosierung, nicht eine automatisch geprüfte Eignung."
+      "notes": "Technik und gleichmäßige Wiederholungen aufbauen; keine erzwungenen Wiederholungen. Trainingslevel beschreibt hier die Dosierung, nicht eine automatisch geprüfte Eignung.",
+      "skill": {
+        "sets": 2,
+        "reps": null,
+        "durationSeconds": 20,
+        "restSeconds": 30,
+        "rir": null
+      },
+      "mobility": {
+        "sets": 2,
+        "reps": "6-8",
+        "restSeconds": 20,
+        "rir": null
+      }
     },
     "intermediate": {
       "label": "Intermediate",
@@ -76,7 +94,20 @@
         "restSeconds": 90,
         "rir": 2
       },
-      "notes": "Doppelte Progression: erst Wiederholungen, dann Last erhöhen. Keine automatische Steigerung unabhängig von Technik und Reserve."
+      "notes": "Doppelte Progression: erst Wiederholungen, dann Last erhöhen. Keine automatische Steigerung unabhängig von Technik und Reserve.",
+      "skill": {
+        "sets": 2,
+        "reps": null,
+        "durationSeconds": 30,
+        "restSeconds": 30,
+        "rir": null
+      },
+      "mobility": {
+        "sets": 2,
+        "reps": "6-8",
+        "restSeconds": 20,
+        "rir": null
+      }
     },
     "advanced": {
       "label": "Advanced 5×5",
@@ -98,7 +129,20 @@
         "restSeconds": 90,
         "rir": 2
       },
-      "notes": "5×5 betrifft die Hauptübung. Last für fünf saubere Sätze mit Reserve wählen, nicht die persönliche 5-RM-Last. Weitere Compounds nur, wenn das Basic-Template sie enthält; five-two-legs hat strikt nur einen Compound pro Einheit."
+      "notes": "Bei Kraft-/Muskelaufbauvorlagen erhält die Hauptübung standardmäßig 5×5 mit Reserve. Andere Trainingsabsichten nutzen ihre eigenen Vorgaben. five-two-legs bleibt bei genau einem Compound je Einheit.",
+      "skill": {
+        "sets": 2,
+        "reps": null,
+        "durationSeconds": 30,
+        "restSeconds": 30,
+        "rir": null
+      },
+      "mobility": {
+        "sets": 2,
+        "reps": "6-8",
+        "restSeconds": 20,
+        "rir": null
+      }
     }
   },
   "exercises": {
@@ -117,7 +161,11 @@
         "barbell"
       ],
       "kind": "compound",
-      "trackingType": "weight_reps"
+      "trackingType": "weight_reps",
+      "requires": [
+        "bench",
+        "rack"
+      ]
     },
     "incline": {
       "exercise_id": "041",
@@ -134,7 +182,10 @@
         "dumbbell"
       ],
       "kind": "compound",
-      "trackingType": "weight_reps"
+      "trackingType": "weight_reps",
+      "requires": [
+        "adjustable-bench"
+      ]
     },
     "fly": {
       "exercise_id": "yuhonas_cable_crossover",
@@ -203,7 +254,10 @@
         "body only"
       ],
       "kind": "compound",
-      "trackingType": "bodyweight_reps"
+      "trackingType": "bodyweight_reps",
+      "requires": [
+        "pullup-bar"
+      ]
     },
     "squat": {
       "exercise_id": "back_squat",
@@ -222,7 +276,10 @@
         "barbell"
       ],
       "kind": "compound",
-      "trackingType": "weight_reps"
+      "trackingType": "weight_reps",
+      "requires": [
+        "rack"
+      ]
     },
     "lunge": {
       "exercise_id": "yuhonas_dumbbell_lunges",
@@ -316,7 +373,10 @@
         "dumbbell"
       ],
       "kind": "compound",
-      "trackingType": "weight_reps"
+      "trackingType": "weight_reps",
+      "requires": [
+        "bench"
+      ]
     },
     "lateral": {
       "exercise_id": "dumbbell_lateral_raise",
@@ -409,7 +469,10 @@
         "dumbbell"
       ],
       "kind": "compound",
-      "trackingType": "weight_reps"
+      "trackingType": "weight_reps",
+      "requires": [
+        "bench"
+      ]
     },
     "incline-bb": {
       "exercise_id": "yuhonas_barbell_incline_bench_press_-_medium_grip",
@@ -426,7 +489,11 @@
         "barbell"
       ],
       "kind": "compound",
-      "trackingType": "weight_reps"
+      "trackingType": "weight_reps",
+      "requires": [
+        "adjustable-bench",
+        "rack"
+      ]
     },
     "barbell-row": {
       "exercise_id": "wger_1489",
@@ -458,10 +525,14 @@
         "shoulders"
       ],
       "equipment": [
-        "barbell"
+        "dumbbell"
       ],
       "kind": "compound",
-      "trackingType": "weight_reps"
+      "trackingType": "weight_reps",
+      "requires": [
+        "adjustable-bench"
+      ],
+      "sourceVariation": "Vendor-Gerätefeld nennt barbell; die Ausführungsanleitung beschreibt ausdrücklich zwei Kurzhanteln auf einer Schrägbank. Gerätebedarf folgt der Anleitung."
     },
     "front-squat": {
       "exercise_id": "061",
@@ -479,7 +550,10 @@
         "barbell"
       ],
       "kind": "compound",
-      "trackingType": "weight_reps"
+      "trackingType": "weight_reps",
+      "requires": [
+        "rack"
+      ]
     },
     "sumo": {
       "exercise_id": "yuhonas_sumo_deadlift",
@@ -552,7 +626,10 @@
         "barbell"
       ],
       "kind": "compound",
-      "trackingType": "weight_reps"
+      "trackingType": "weight_reps",
+      "requires": [
+        "rack"
+      ]
     },
     "straight-arm": {
       "exercise_id": "yuhonas_straight-arm_pulldown",
@@ -580,7 +657,10 @@
         "dumbbell"
       ],
       "kind": "isolation",
-      "trackingType": "weight_reps"
+      "trackingType": "weight_reps",
+      "requires": [
+        "adjustable-bench"
+      ]
     },
     "pushdown": {
       "exercise_id": "triceps_pushdown",
@@ -685,7 +765,6 @@
         "shoulders"
       ],
       "equipment": [
-        "dumbbell",
         "kettlebells"
       ],
       "kind": "compound",
@@ -724,7 +803,10 @@
         "dumbbell"
       ],
       "kind": "compound",
-      "trackingType": "weight_reps"
+      "trackingType": "weight_reps",
+      "requires": [
+        "bench"
+      ]
     },
     "glute-bridge": {
       "exercise_id": "butt_lift_bridge",
@@ -754,7 +836,30 @@
         "body only"
       ],
       "kind": "isolation",
-      "trackingType": "duration"
+      "trackingType": "duration",
+      "prescriptions": {
+        "beginner": {
+          "sets": 2,
+          "reps": null,
+          "durationSeconds": 15,
+          "restSeconds": 45,
+          "rir": null
+        },
+        "intermediate": {
+          "sets": 3,
+          "reps": null,
+          "durationSeconds": 25,
+          "restSeconds": 45,
+          "rir": null
+        },
+        "advanced": {
+          "sets": 3,
+          "reps": null,
+          "durationSeconds": 35,
+          "restSeconds": 45,
+          "rir": null
+        }
+      }
     },
     "dead-bug": {
       "exercise_id": "dead_bug",
@@ -768,7 +873,25 @@
         "body only"
       ],
       "kind": "isolation",
-      "trackingType": "bodyweight_reps"
+      "trackingType": "bodyweight_reps",
+      "prescriptions": {
+        "beginner": {
+          "reps": "6-8",
+          "restSeconds": 45,
+          "rir": 2
+        },
+        "intermediate": {
+          "reps": "8-12",
+          "restSeconds": 45,
+          "rir": 2
+        },
+        "advanced": {
+          "reps": "8-12",
+          "restSeconds": 45,
+          "rir": 2
+        }
+      },
+      "notes": "Wiederholungen je Seite; Rumpfposition kontrollieren."
     },
     "superman": {
       "exercise_id": "superman",
@@ -785,12 +908,29 @@
         "body only"
       ],
       "kind": "isolation",
-      "trackingType": "bodyweight_reps"
+      "trackingType": "bodyweight_reps",
+      "prescriptions": {
+        "beginner": {
+          "reps": "6-8",
+          "restSeconds": 45,
+          "rir": 2
+        },
+        "intermediate": {
+          "reps": "8-12",
+          "restSeconds": 45,
+          "rir": 2
+        },
+        "advanced": {
+          "reps": "8-12",
+          "restSeconds": 45,
+          "rir": 2
+        }
+      }
     },
     "cat-stretch": {
       "exercise_id": "cat_stretch",
       "yuhonas_id": "Cat_Stretch",
-      "name": "Cat-Cow Mobilisation",
+      "name": "Cat Stretch im Vierfüßlerstand",
       "primaryMuscles": [
         "lower back"
       ],
@@ -802,12 +942,36 @@
         "body only"
       ],
       "kind": "isolation",
-      "trackingType": "duration"
+      "trackingType": "duration",
+      "prescriptions": {
+        "beginner": {
+          "sets": 2,
+          "reps": null,
+          "durationSeconds": 15,
+          "restSeconds": 20,
+          "rir": null
+        },
+        "intermediate": {
+          "sets": 2,
+          "reps": null,
+          "durationSeconds": 15,
+          "restSeconds": 20,
+          "rir": null
+        },
+        "advanced": {
+          "sets": 2,
+          "reps": null,
+          "durationSeconds": 15,
+          "restSeconds": 20,
+          "rir": null
+        }
+      },
+      "notes": "Wirbelsäule im Vierfüßlerstand sanft runden und 15 Sekunden halten; Vendor beschreibt einen statischen Cat Stretch, keinen dynamischen Cat-Cow-Zyklus."
     },
     "floor-hyperextension": {
       "exercise_id": "hyperextensions_with_no_hyperextension_bench",
       "yuhonas_id": "Hyperextensions_With_No_Hyperextension_Bench",
-      "name": "Rückenstrecken am Boden",
+      "name": "Rückenstrecken über Bankkante mit Partner",
       "primaryMuscles": [
         "lower back"
       ],
@@ -819,7 +983,29 @@
         "body only"
       ],
       "kind": "isolation",
-      "trackingType": "bodyweight_reps"
+      "trackingType": "bodyweight_reps",
+      "prescriptions": {
+        "beginner": {
+          "reps": "6-8",
+          "restSeconds": 45,
+          "rir": 2
+        },
+        "intermediate": {
+          "reps": "8-12",
+          "restSeconds": 45,
+          "rir": 2
+        },
+        "advanced": {
+          "reps": "8-12",
+          "restSeconds": 45,
+          "rir": 2
+        }
+      },
+      "requires": [
+        "bench",
+        "partner"
+      ],
+      "notes": "Die Vendor-Übung benötigt eine flache Bank und eine Person zum Fixieren der Beine; keine Bodenübung."
     },
     "renegade-row": {
       "exercise_id": "alternating_renegade_row",
@@ -875,6 +1061,442 @@
       ],
       "kind": "compound",
       "trackingType": "weight_reps"
+    },
+    "floor-press": {
+      "exercise_id": "yuhonas_dumbbell_floor_press",
+      "yuhonas_id": "Dumbbell_Floor_Press",
+      "name": "Kurzhantel-Floor-Press",
+      "primaryMuscles": [
+        "triceps"
+      ],
+      "secondaryMuscles": [
+        "chest",
+        "shoulders"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "requires": [],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "standing-press": {
+      "exercise_id": "yuhonas_standing_dumbbell_press",
+      "yuhonas_id": "Standing_Dumbbell_Press",
+      "name": "Kurzhantel-Schulterdrücken im Stand",
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "triceps"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "requires": [],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "standing-db-row": {
+      "exercise_id": "yuhonas_bent_over_two-dumbbell_row",
+      "yuhonas_id": "Bent_Over_Two-Dumbbell_Row",
+      "name": "Vorgebeugtes Rudern mit Kurzhanteln",
+      "primaryMuscles": [
+        "middle back"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "lats",
+        "shoulders"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "requires": [],
+      "kind": "compound",
+      "trackingType": "weight_reps"
+    },
+    "goblet-squat-db": {
+      "exercise_id": "coach_variant_goblet_squat_db",
+      "name": "Goblet Squat mit Kurzhantel",
+      "primaryMuscles": [
+        "quadriceps"
+      ],
+      "secondaryMuscles": [
+        "calves",
+        "glutes",
+        "hamstrings",
+        "shoulders"
+      ],
+      "equipment": [
+        "dumbbell"
+      ],
+      "kind": "compound",
+      "trackingType": "weight_reps",
+      "sourceVariation": "Kurzhantel-Ausführung der Goblet-Squat-Bewegung; Vendor zeigt Kettlebell.",
+      "notes": "Eine Kurzhantel vor der Brust halten; Last und Bewegungstiefe individuell wählen.",
+      "instructions": [
+        "Eine Kurzhantel sicher vor der Brust halten und stabil stehen.",
+        "Knie und Hüfte kontrolliert beugen; Bewegungstiefe individuell wählen.",
+        "Ohne Schwung in den Stand zurückkehren; Rumpfposition kontrollieren."
+      ],
+      "source": {
+        "type": "coach-template",
+        "reference": "docs/WORKOUT-GENERATOR-COACHING.md",
+        "related_yuhonas_id": "Goblet_Squat"
+      }
+    },
+    "tandem-stance": {
+      "exercise_id": "coach_tandem_stance",
+      "source": {
+        "type": "coach-template",
+        "reference": "docs/WORKOUT-GENERATOR-COACHING.md"
+      },
+      "name": "Tandemstand an Haltemöglichkeit",
+      "primaryMuscles": [],
+      "secondaryMuscles": [],
+      "equipment": [
+        "body only"
+      ],
+      "requires": [
+        "stable-support"
+      ],
+      "kind": "skill",
+      "trackingType": "duration",
+      "instructions": [
+        "Neben einer festen Haltemöglichkeit stehen; einen Fuß vor den anderen setzen.",
+        "Blick nach vorn, ruhig atmen und Position kontrolliert halten.",
+        "Fußstellung wechseln; bei Bedarf Halbtandem statt voller Tandemstellung."
+      ],
+      "notes": "Vorgabe je Seite. Satz bei deutlichem Kontrollverlust beenden und Unterstützung erhöhen.",
+      "coaching": {
+        "beginner": "Stabiler Boden, Augen offen, feste Haltemöglichkeit nutzen.",
+        "intermediate": "Stabiler Boden, Augen offen; Handkontakt nur soweit nötig reduzieren.",
+        "advanced": "Stabiler Boden, Augen offen; bei sicherem Stand Reichweite langsam vergrößern. Unterstützung erreichbar lassen."
+      },
+      "regression": "Breiterer Stand oder mehr Handkontakt; Bewegungsweg verkleinern.",
+      "progression": "Erst sichere Kontrolle, dann genau eine Anforderung ändern: Handkontakt, Standbreite oder Reichweite. Keine automatische instabile Unterlage oder geschlossenen Augen."
+    },
+    "single-leg-stance": {
+      "exercise_id": "coach_single_leg_stance",
+      "source": {
+        "type": "coach-template",
+        "reference": "docs/WORKOUT-GENERATOR-COACHING.md"
+      },
+      "name": "Einbeinstand an Haltemöglichkeit",
+      "primaryMuscles": [],
+      "secondaryMuscles": [],
+      "equipment": [
+        "body only"
+      ],
+      "requires": [
+        "stable-support"
+      ],
+      "kind": "skill",
+      "trackingType": "duration",
+      "instructions": [
+        "Neben einer festen Haltemöglichkeit stehen und eine Hand auflegen.",
+        "Einen Fuß leicht vom Boden lösen; Becken und Rumpf ruhig halten.",
+        "Bein wechseln; bei Unsicherheit Zehenspitze am Boden lassen."
+      ],
+      "notes": "Vorgabe je Seite. Satz bei deutlichem Kontrollverlust beenden und Unterstützung erhöhen.",
+      "coaching": {
+        "beginner": "Stabiler Boden, Augen offen, feste Haltemöglichkeit nutzen.",
+        "intermediate": "Stabiler Boden, Augen offen; Handkontakt nur soweit nötig reduzieren.",
+        "advanced": "Stabiler Boden, Augen offen; bei sicherem Stand Reichweite langsam vergrößern. Unterstützung erreichbar lassen."
+      },
+      "regression": "Breiterer Stand oder mehr Handkontakt; Bewegungsweg verkleinern.",
+      "progression": "Erst sichere Kontrolle, dann genau eine Anforderung ändern: Handkontakt, Standbreite oder Reichweite. Keine automatische instabile Unterlage oder geschlossenen Augen.",
+      "prescriptions": {
+        "beginner": {
+          "durationSeconds": 10,
+          "reps": null
+        },
+        "intermediate": {
+          "durationSeconds": 15,
+          "reps": null
+        },
+        "advanced": {
+          "durationSeconds": 20,
+          "reps": null
+        }
+      }
+    },
+    "weight-shift": {
+      "exercise_id": "coach_weight_shift",
+      "source": {
+        "type": "coach-template",
+        "reference": "docs/WORKOUT-GENERATOR-COACHING.md"
+      },
+      "name": "Kontrollierte Gewichtsverlagerung",
+      "primaryMuscles": [],
+      "secondaryMuscles": [],
+      "equipment": [
+        "body only"
+      ],
+      "requires": [
+        "stable-support"
+      ],
+      "kind": "skill",
+      "trackingType": "bodyweight_reps",
+      "instructions": [
+        "Hüftbreit neben einer festen Haltemöglichkeit stehen.",
+        "Gewicht langsam von einem Bein zum anderen verlagern, ohne auszuweichen.",
+        "Beide Füße behalten Bodenkontakt; kontrolliert zur Mitte zurückkehren."
+      ],
+      "notes": "Eine Wiederholung = Verlagerung nach links und rechts; beide Füße am Boden.",
+      "coaching": {
+        "beginner": "Stabiler Boden, Augen offen, feste Haltemöglichkeit nutzen.",
+        "intermediate": "Stabiler Boden, Augen offen; Handkontakt nur soweit nötig reduzieren.",
+        "advanced": "Stabiler Boden, Augen offen; bei sicherem Stand Reichweite langsam vergrößern. Unterstützung erreichbar lassen."
+      },
+      "regression": "Breiterer Stand oder mehr Handkontakt; Bewegungsweg verkleinern.",
+      "progression": "Erst sichere Kontrolle, dann genau eine Anforderung ändern: Handkontakt, Standbreite oder Reichweite. Keine automatische instabile Unterlage oder geschlossenen Augen.",
+      "prescriptions": {
+        "beginner": {
+          "sets": 2,
+          "reps": "4-6",
+          "durationSeconds": null,
+          "restSeconds": 30,
+          "rir": null
+        },
+        "intermediate": {
+          "sets": 2,
+          "reps": "6-8",
+          "durationSeconds": null,
+          "restSeconds": 30,
+          "rir": null
+        },
+        "advanced": {
+          "sets": 2,
+          "reps": "6-8",
+          "durationSeconds": null,
+          "restSeconds": 30,
+          "rir": null
+        }
+      }
+    },
+    "clock-taps": {
+      "exercise_id": "coach_clock_taps",
+      "source": {
+        "type": "coach-template",
+        "reference": "docs/WORKOUT-GENERATOR-COACHING.md"
+      },
+      "name": "Uhrzeiger-Taps mit Haltemöglichkeit",
+      "primaryMuscles": [],
+      "secondaryMuscles": [],
+      "equipment": [
+        "body only"
+      ],
+      "requires": [
+        "stable-support"
+      ],
+      "kind": "skill",
+      "trackingType": "bodyweight_reps",
+      "instructions": [
+        "Auf einem Bein neben fester Haltemöglichkeit stehen; bei Bedarf Handkontakt.",
+        "Mit dem freien Fuß kurze Bodenkontakte nach vorn, seitlich und hinten setzen.",
+        "Nach jedem Kontakt zur Mitte zurück; dann Standbein wechseln."
+      ],
+      "notes": "Eine Wiederholung = ein Bodenkontakt; Vorgabe je Standbein. Nach jedem Tap neu stabilisieren.",
+      "coaching": {
+        "beginner": "Stabiler Boden, Augen offen, feste Haltemöglichkeit nutzen.",
+        "intermediate": "Stabiler Boden, Augen offen; Handkontakt nur soweit nötig reduzieren.",
+        "advanced": "Stabiler Boden, Augen offen; bei sicherem Stand Reichweite langsam vergrößern. Unterstützung erreichbar lassen."
+      },
+      "regression": "Breiterer Stand oder mehr Handkontakt; Bewegungsweg verkleinern.",
+      "progression": "Erst sichere Kontrolle, dann genau eine Anforderung ändern: Handkontakt, Standbreite oder Reichweite. Keine automatische instabile Unterlage oder geschlossenen Augen.",
+      "prescriptions": {
+        "beginner": {
+          "sets": 2,
+          "reps": "4-6",
+          "durationSeconds": null,
+          "restSeconds": 30,
+          "rir": null
+        },
+        "intermediate": {
+          "sets": 2,
+          "reps": "6-8",
+          "durationSeconds": null,
+          "restSeconds": 30,
+          "rir": null
+        },
+        "advanced": {
+          "sets": 2,
+          "reps": "6-8",
+          "durationSeconds": null,
+          "restSeconds": 30,
+          "rir": null
+        }
+      }
+    },
+    "tandem-walk": {
+      "exercise_id": "coach_tandem_walk",
+      "source": {
+        "type": "coach-template",
+        "reference": "docs/WORKOUT-GENERATOR-COACHING.md"
+      },
+      "name": "Tandemschritte entlang Haltemöglichkeit",
+      "primaryMuscles": [],
+      "secondaryMuscles": [],
+      "equipment": [
+        "body only"
+      ],
+      "requires": [
+        "stable-support"
+      ],
+      "kind": "skill",
+      "trackingType": "bodyweight_reps",
+      "instructions": [
+        "Entlang einer festen Haltemöglichkeit langsam vorwärts gehen.",
+        "Einen Fuß kontrolliert vor den anderen setzen; Blick nach vorn.",
+        "Bei Unsicherheit breitere Schrittspur und Handkontakt wählen."
+      ],
+      "notes": "Eine Wiederholung = ein kontrollierter Schritt; sichere Strecke entlang fester Haltemöglichkeit.",
+      "coaching": {
+        "beginner": "Stabiler Boden, Augen offen, feste Haltemöglichkeit nutzen.",
+        "intermediate": "Stabiler Boden, Augen offen; Handkontakt nur soweit nötig reduzieren.",
+        "advanced": "Stabiler Boden, Augen offen; bei sicherem Stand Reichweite langsam vergrößern. Unterstützung erreichbar lassen."
+      },
+      "regression": "Breiterer Stand oder mehr Handkontakt; Bewegungsweg verkleinern.",
+      "progression": "Erst sichere Kontrolle, dann genau eine Anforderung ändern: Handkontakt, Standbreite oder Reichweite. Keine automatische instabile Unterlage oder geschlossenen Augen.",
+      "prescriptions": {
+        "beginner": {
+          "sets": 2,
+          "reps": "4-6",
+          "durationSeconds": null,
+          "restSeconds": 30,
+          "rir": null
+        },
+        "intermediate": {
+          "sets": 2,
+          "reps": "6-8",
+          "durationSeconds": null,
+          "restSeconds": 30,
+          "rir": null
+        },
+        "advanced": {
+          "sets": 2,
+          "reps": "6-8",
+          "durationSeconds": null,
+          "restSeconds": 30,
+          "rir": null
+        }
+      }
+    },
+    "thoracic-rotation": {
+      "exercise_id": "coach_thoracic_rotation",
+      "source": {
+        "type": "coach-template",
+        "reference": "docs/WORKOUT-GENERATOR-COACHING.md"
+      },
+      "name": "Brustwirbelsäulenrotation in Seitenlage",
+      "primaryMuscles": [],
+      "secondaryMuscles": [],
+      "equipment": [
+        "body only"
+      ],
+      "requires": [],
+      "kind": "mobility",
+      "trackingType": "bodyweight_reps",
+      "instructions": [
+        "In Seitenlage Hüfte und Knie angenehm beugen; Arme nach vorn ausstrecken.",
+        "Oberen Arm langsam öffnen, Blick folgt der Hand; Becken möglichst ruhig halten.",
+        "Kontrolliert zurückführen und auf beiden Seiten wiederholen."
+      ],
+      "notes": "Langsam im individuell kontrollierbaren Bewegungsumfang ausführen."
+    },
+    "ankle-rocks": {
+      "exercise_id": "coach_ankle_rocks",
+      "source": {
+        "type": "coach-template",
+        "reference": "docs/WORKOUT-GENERATOR-COACHING.md"
+      },
+      "name": "Sprunggelenk-Mobilisation im Halbkniestand",
+      "primaryMuscles": [],
+      "secondaryMuscles": [],
+      "equipment": [
+        "body only"
+      ],
+      "requires": [],
+      "kind": "mobility",
+      "trackingType": "bodyweight_reps",
+      "instructions": [
+        "Im Halbkniestand vorderen Fuß vollständig aufsetzen.",
+        "Vorderes Knie langsam über den Fuß nach vorn führen; Ferse bleibt am Boden.",
+        "Zurückführen; Bewegungsweg nur soweit gut kontrollierbar, beide Seiten."
+      ],
+      "notes": "Langsam im individuell kontrollierbaren Bewegungsumfang ausführen."
+    },
+    "hip-flexor-mobility": {
+      "exercise_id": "coach_hip_flexor_mobility",
+      "source": {
+        "type": "coach-template",
+        "reference": "docs/WORKOUT-GENERATOR-COACHING.md"
+      },
+      "name": "Hüftmobilisation im Halbkniestand",
+      "primaryMuscles": [],
+      "secondaryMuscles": [],
+      "equipment": [
+        "body only"
+      ],
+      "requires": [],
+      "kind": "mobility",
+      "trackingType": "duration",
+      "instructions": [
+        "Im Halbkniestand Becken ruhig halten und Gesäß der hinteren Seite leicht anspannen.",
+        "Gewicht klein nach vorn verlagern, ohne ins Hohlkreuz auszuweichen.",
+        "Ruhig atmen und anschließend Seite wechseln."
+      ],
+      "notes": "Langsam im individuell kontrollierbaren Bewegungsumfang ausführen.",
+      "prescriptions": {
+        "beginner": {
+          "sets": 2,
+          "reps": null,
+          "durationSeconds": 20,
+          "restSeconds": 20,
+          "rir": null
+        },
+        "intermediate": {
+          "sets": 2,
+          "reps": null,
+          "durationSeconds": 20,
+          "restSeconds": 20,
+          "rir": null
+        },
+        "advanced": {
+          "sets": 2,
+          "reps": null,
+          "durationSeconds": 20,
+          "restSeconds": 20,
+          "rir": null
+        }
+      }
+    },
+    "standing-reverse-fly": {
+      "exercise_id": "coach_variant_standing_reverse_fly",
+      "name": "Reverse Flys im vorgebeugten Stand",
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [],
+      "equipment": [
+        "dumbbell"
+      ],
+      "kind": "isolation",
+      "trackingType": "weight_reps",
+      "requires": [],
+      "sourceVariation": "Stehende Variante des Reverse-Fly-Bewegungsmusters ohne Schrägbank; lokale Coaching-Variation.",
+      "instructions": [
+        "Mit leicht gebeugten Knien aus der Hüfte nach vorn neigen und Rumpf stabil halten.",
+        "Leichte Kurzhanteln kontrolliert seitlich führen; Schultergürtel ohne Schwung bewegen.",
+        "Langsam zurückführen und die Rumpfposition beibehalten."
+      ],
+      "source": {
+        "type": "coach-template",
+        "reference": "docs/WORKOUT-GENERATOR-COACHING.md",
+        "related_yuhonas_id": "Reverse_Flyes"
+      }
     }
   },
   "selectors": {
@@ -886,7 +1508,8 @@
         "bench-db",
         "incline-bb",
         "incline",
-        "pushup"
+        "pushup",
+        "floor-press"
       ]
     },
     "row": {
@@ -896,7 +1519,8 @@
         "barbell-row",
         "chest-row",
         "row",
-        "db-row"
+        "db-row",
+        "standing-db-row"
       ]
     },
     "squat": {
@@ -905,7 +1529,8 @@
       "choices": [
         "front-squat",
         "squat",
-        "goblet-squat"
+        "goblet-squat",
+        "goblet-squat-db"
       ]
     },
     "hinge": {
@@ -922,7 +1547,8 @@
       "default": "press",
       "choices": [
         "press",
-        "press-bb"
+        "press-bb",
+        "standing-press"
       ]
     },
     "vertical-pull": {
@@ -963,7 +1589,8 @@
       "choices": [
         "goblet-squat",
         "bodyweight-squat",
-        "lunge"
+        "lunge",
+        "goblet-squat-db"
       ]
     },
     "home-row": {
@@ -1002,18 +1629,70 @@
       ]
     },
     "shoulder-health": {
-      "label": "Schulter- und Nackengesundheit",
-      "default": "reverse-fly",
+      "label": "Schultergürtel-Ergänzung",
+      "default": "standing-reverse-fly",
       "choices": [
-        "reverse-fly",
+        "standing-reverse-fly",
         "superman"
       ]
     },
     "conditioning-press": {
-      "label": "Conditioning Überkopfdrücken",
+      "label": "Kettlebell-Schulterdrücken",
       "default": "kettlebell-press",
       "choices": [
         "kettlebell-press"
+      ]
+    },
+    "db-floor-push": {
+      "label": "Druck ohne Bank",
+      "default": "floor-press",
+      "choices": [
+        "floor-press",
+        "pushup"
+      ]
+    },
+    "db-floor-row": {
+      "label": "Rudern ohne Bank",
+      "default": "standing-db-row",
+      "choices": [
+        "standing-db-row"
+      ]
+    },
+    "db-floor-squat": {
+      "label": "Kniebeuge oder Ausfallschritt mit KH/Eigengewicht",
+      "default": "goblet-squat-db",
+      "choices": [
+        "goblet-squat-db",
+        "bodyweight-squat",
+        "lunge"
+      ]
+    },
+    "db-floor-press": {
+      "label": "Schulterdrücken ohne Bank",
+      "default": "standing-press",
+      "choices": [
+        "standing-press"
+      ]
+    },
+    "bodyweight-only-push": {
+      "label": "Druck mit Eigengewicht",
+      "default": "pushup",
+      "choices": [
+        "pushup"
+      ]
+    },
+    "bodyweight-only-squat": {
+      "label": "Kniebeuge mit Eigengewicht",
+      "default": "bodyweight-squat",
+      "choices": [
+        "bodyweight-squat"
+      ]
+    },
+    "bodyweight-only-hip": {
+      "label": "Hüftstreckung mit Eigengewicht",
+      "default": "glute-bridge",
+      "choices": [
+        "glute-bridge"
       ]
     }
   },
@@ -1108,9 +1787,18 @@
       ],
       "goal": "hypertrophy",
       "equipment": [
-        "barbell",
+        "bodyweight",
+        "mat",
         "dumbbell",
-        "cable"
+        "barbell",
+        "kettlebells",
+        "cable",
+        "machine",
+        "bench",
+        "adjustable-bench",
+        "rack",
+        "pullup-bar",
+        "stable-support"
       ]
     },
     {
@@ -1213,9 +1901,18 @@
       ],
       "goal": "hypertrophy",
       "equipment": [
-        "barbell",
+        "bodyweight",
+        "mat",
         "dumbbell",
-        "cable"
+        "barbell",
+        "kettlebells",
+        "cable",
+        "machine",
+        "bench",
+        "adjustable-bench",
+        "rack",
+        "pullup-bar",
+        "stable-support"
       ]
     },
     {
@@ -1298,9 +1995,18 @@
       ],
       "goal": "hypertrophy",
       "equipment": [
-        "barbell",
+        "bodyweight",
+        "mat",
         "dumbbell",
-        "cable"
+        "barbell",
+        "kettlebells",
+        "cable",
+        "machine",
+        "bench",
+        "adjustable-bench",
+        "rack",
+        "pullup-bar",
+        "stable-support"
       ]
     },
     {
@@ -1389,9 +2095,18 @@
       ],
       "goal": "hypertrophy",
       "equipment": [
-        "barbell",
+        "bodyweight",
+        "mat",
         "dumbbell",
-        "cable"
+        "barbell",
+        "kettlebells",
+        "cable",
+        "machine",
+        "bench",
+        "adjustable-bench",
+        "rack",
+        "pullup-bar",
+        "stable-support"
       ]
     },
     {
@@ -1506,9 +2221,18 @@
       ],
       "goal": "hypertrophy",
       "equipment": [
-        "barbell",
+        "bodyweight",
+        "mat",
         "dumbbell",
-        "cable"
+        "barbell",
+        "kettlebells",
+        "cable",
+        "machine",
+        "bench",
+        "adjustable-bench",
+        "rack",
+        "pullup-bar",
+        "stable-support"
       ]
     },
     {
@@ -1623,9 +2347,18 @@
       ],
       "goal": "hypertrophy",
       "equipment": [
-        "barbell",
+        "bodyweight",
+        "mat",
         "dumbbell",
-        "cable"
+        "barbell",
+        "kettlebells",
+        "cable",
+        "machine",
+        "bench",
+        "adjustable-bench",
+        "rack",
+        "pullup-bar",
+        "stable-support"
       ]
     },
     {
@@ -1766,9 +2499,18 @@
       ],
       "goal": "hypertrophy",
       "equipment": [
-        "barbell",
+        "bodyweight",
+        "mat",
         "dumbbell",
-        "cable"
+        "barbell",
+        "kettlebells",
+        "cable",
+        "machine",
+        "bench",
+        "adjustable-bench",
+        "rack",
+        "pullup-bar",
+        "stable-support"
       ]
     },
     {
@@ -1776,8 +2518,9 @@
       "name": "Vital-Ganzkörper Prävention · 2 Tage",
       "goal": "vitality",
       "equipment": [
-        "dumbbell",
-        "bodyweight"
+        "bodyweight",
+        "mat",
+        "dumbbell"
       ],
       "defaultLevel": "beginner",
       "aliases": [
@@ -1793,19 +2536,19 @@
           "label": "Vital-Ganzkörper A",
           "exercises": [
             {
-              "selector": "bodyweight-squat-slot",
+              "selector": "db-floor-squat",
               "role": "main"
             },
             {
-              "selector": "bodyweight-push",
+              "selector": "db-floor-push",
               "role": "compound"
             },
             {
-              "selector": "home-row",
+              "selector": "db-floor-row",
               "role": "compound"
             },
             {
-              "selector": "posterior-chain",
+              "selector": "bodyweight-only-hip",
               "role": "compound"
             },
             {
@@ -1819,15 +2562,15 @@
           "label": "Vital-Ganzkörper B",
           "exercises": [
             {
-              "selector": "hinge",
+              "selector": "bodyweight-only-hip",
               "role": "main"
             },
             {
-              "selector": "shoulder-press",
+              "selector": "db-floor-press",
               "role": "compound"
             },
             {
-              "selector": "vertical-pull",
+              "selector": "db-floor-row",
               "role": "compound"
             },
             {
@@ -1840,16 +2583,69 @@
             }
           ]
         }
-      ]
+      ],
+      "prescriptions": {
+        "beginner": {
+          "main": {
+            "sets": 2,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 3
+          },
+          "compound": {
+            "sets": 2,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 3
+          }
+        },
+        "intermediate": {
+          "main": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 2
+          },
+          "compound": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 2
+          }
+        },
+        "advanced": {
+          "main": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 2
+          },
+          "compound": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 2
+          }
+        }
+      }
     },
     {
       "id": "vital-back-posture",
-      "name": "Rücken & Haltung Vital · 3 Tage",
+      "name": "Ganzkörper · Wirbelsäule, Rumpf & Schultergürtel · 3 Tage",
       "goal": "vitality",
       "equipment": [
+        "bodyweight",
+        "mat",
         "dumbbell",
+        "barbell",
+        "kettlebells",
         "cable",
-        "bodyweight"
+        "machine",
+        "bench",
+        "adjustable-bench",
+        "rack",
+        "pullup-bar",
+        "stable-support"
       ],
       "defaultLevel": "intermediate",
       "aliases": [
@@ -1858,7 +2654,7 @@
       ],
       "cycleDays": 7,
       "compoundPolicy": "mixed",
-      "notes": "Präventives Training mit Schwerpunkt auf aufrechte Haltung, gesunden Rücken, Schultergürtel und Rumpfentlastung. Perfekt gegen typische Bürobeschwerden.",
+      "notes": "Differenziertes Ganzkörper-Krafttraining mit Hüftstreckung, Kniebeuge, Druck, Zug sowie Rumpfkontrolle. Übungsauswahl und Lasten werden im Coaching angepasst.",
       "routines": [
         {
           "day": 1,
@@ -1938,15 +2734,60 @@
             }
           ]
         }
-      ]
+      ],
+      "prescriptions": {
+        "beginner": {
+          "main": {
+            "sets": 2,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 3
+          },
+          "compound": {
+            "sets": 2,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 3
+          }
+        },
+        "intermediate": {
+          "main": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 2
+          },
+          "compound": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 2
+          }
+        },
+        "advanced": {
+          "main": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 2
+          },
+          "compound": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 2
+          }
+        }
+      }
     },
     {
       "id": "home-dumbbell",
       "name": "Home-Workout mit Kurzhanteln · 3 Tage",
       "goal": "home",
       "equipment": [
-        "dumbbell",
-        "bodyweight"
+        "bodyweight",
+        "mat",
+        "dumbbell"
       ],
       "defaultLevel": "intermediate",
       "aliases": [
@@ -1962,15 +2803,15 @@
           "label": "Home Ganzkörper · Fokus Druck",
           "exercises": [
             {
-              "selector": "chest-press",
+              "selector": "db-floor-push",
               "role": "main"
             },
             {
-              "selector": "bodyweight-squat-slot",
+              "selector": "db-floor-squat",
               "role": "compound"
             },
             {
-              "selector": "home-row",
+              "selector": "db-floor-row",
               "role": "compound"
             },
             {
@@ -1988,7 +2829,7 @@
           "label": "Home Ganzkörper · Fokus Zug & Beine",
           "exercises": [
             {
-              "selector": "home-row",
+              "selector": "db-floor-row",
               "role": "main"
             },
             {
@@ -1996,11 +2837,11 @@
               "role": "compound"
             },
             {
-              "selector": "shoulder-press",
+              "selector": "db-floor-press",
               "role": "compound"
             },
             {
-              "selector": "posterior-chain",
+              "selector": "bodyweight-only-hip",
               "role": "compound"
             },
             {
@@ -2014,15 +2855,15 @@
           "label": "Home Ganzkörper · Balance & Rumpf",
           "exercises": [
             {
-              "selector": "shoulder-press",
+              "selector": "db-floor-press",
               "role": "main"
             },
             {
-              "selector": "bodyweight-push",
+              "selector": "db-floor-push",
               "role": "compound"
             },
             {
-              "selector": "bodyweight-squat-slot",
+              "selector": "db-floor-squat",
               "role": "compound"
             },
             {
@@ -2035,14 +2876,59 @@
             }
           ]
         }
-      ]
+      ],
+      "prescriptions": {
+        "beginner": {
+          "main": {
+            "sets": 2,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 3
+          },
+          "compound": {
+            "sets": 2,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 3
+          }
+        },
+        "intermediate": {
+          "main": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 2
+          },
+          "compound": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 2
+          }
+        },
+        "advanced": {
+          "main": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 2
+          },
+          "compound": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 2
+          }
+        }
+      }
     },
     {
       "id": "bodyweight-vital",
       "name": "Calisthenics & Bodyweight · 3 Tage",
       "goal": "home",
       "equipment": [
-        "bodyweight"
+        "bodyweight",
+        "mat"
       ],
       "defaultLevel": "beginner",
       "aliases": [
@@ -2058,15 +2944,15 @@
           "label": "Bodyweight Push & Core",
           "exercises": [
             {
-              "selector": "bodyweight-push",
+              "selector": "bodyweight-only-push",
               "role": "main"
             },
             {
-              "selector": "bodyweight-squat-slot",
+              "selector": "bodyweight-only-squat",
               "role": "compound"
             },
             {
-              "selector": "posterior-chain",
+              "selector": "bodyweight-only-hip",
               "role": "compound"
             },
             {
@@ -2080,11 +2966,11 @@
           "label": "Bodyweight Beine & Rücken",
           "exercises": [
             {
-              "selector": "bodyweight-squat-slot",
+              "selector": "bodyweight-only-squat",
               "role": "main"
             },
             {
-              "selector": "bodyweight-push",
+              "selector": "bodyweight-only-push",
               "role": "compound"
             },
             {
@@ -2102,15 +2988,15 @@
           "label": "Bodyweight Ganzkörper",
           "exercises": [
             {
-              "selector": "posterior-chain",
+              "selector": "bodyweight-only-hip",
               "role": "main"
             },
             {
-              "selector": "bodyweight-push",
+              "selector": "bodyweight-only-push",
               "role": "compound"
             },
             {
-              "selector": "bodyweight-squat-slot",
+              "selector": "bodyweight-only-squat",
               "role": "compound"
             },
             {
@@ -2119,14 +3005,59 @@
             }
           ]
         }
-      ]
+      ],
+      "prescriptions": {
+        "beginner": {
+          "main": {
+            "sets": 2,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 3
+          },
+          "compound": {
+            "sets": 2,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 3
+          }
+        },
+        "intermediate": {
+          "main": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 2
+          },
+          "compound": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 2
+          }
+        },
+        "advanced": {
+          "main": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 2
+          },
+          "compound": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 2
+          }
+        }
+      }
     },
     {
       "id": "mobility-flow",
-      "name": "Mobility, Rumpf & Gelenkgesundheit · 2 Tage",
+      "name": "Beweglichkeit · Wirbelsäule, Hüfte & Sprunggelenk · 2 Tage",
       "goal": "mobility",
       "equipment": [
-        "bodyweight"
+        "bodyweight",
+        "mat"
       ],
       "defaultLevel": "beginner",
       "aliases": [
@@ -2135,69 +3066,107 @@
       ],
       "cycleDays": 7,
       "compoundPolicy": "mixed",
-      "notes": "Präventives Beweglichkeits- und Entlastungsprogramm für Gelenke, Brustwirbelsäule und Hüfte kombiniert mit sanfter Rumpfkräftigung.",
+      "notes": "Kontrollierte Mobilisation von Wirbelsäule, Hüfte und Sprunggelenk; Bewegungsumfang individuell wählen. Kein Versprechen von Schmerzbehandlung.",
       "routines": [
         {
           "day": 1,
-          "label": "Mobility & Wirbelsäulenentlastung",
+          "label": "Kontrollierte Gelenkbeweglichkeit",
           "exercises": [
-            {
-              "selector": "posterior-chain",
-              "role": "compound"
-            },
             {
               "exercise": "cat-stretch",
               "role": "isolation"
             },
             {
-              "exercise": "superman",
-              "role": "isolation"
+              "exercise": "thoracic-rotation",
+              "role": "mobility"
             },
             {
-              "exercise": "dead-bug",
-              "role": "isolation"
+              "exercise": "ankle-rocks",
+              "role": "mobility"
             },
             {
-              "selector": "core-posture",
-              "role": "isolation"
+              "exercise": "hip-flexor-mobility",
+              "role": "mobility"
             }
           ]
         },
         {
           "day": 4,
-          "label": "Hüftöffnung & Haltungsmobilität",
+          "label": "Kontrollierte Gelenkbeweglichkeit",
           "exercises": [
-            {
-              "selector": "bodyweight-squat-slot",
-              "role": "compound"
-            },
             {
               "exercise": "cat-stretch",
               "role": "isolation"
             },
             {
-              "selector": "posterior-chain",
-              "role": "compound"
+              "exercise": "thoracic-rotation",
+              "role": "mobility"
             },
             {
-              "exercise": "superman",
-              "role": "isolation"
+              "exercise": "ankle-rocks",
+              "role": "mobility"
             },
             {
-              "selector": "core-posture",
-              "role": "isolation"
+              "exercise": "hip-flexor-mobility",
+              "role": "mobility"
             }
           ]
         }
-      ]
+      ],
+      "prescriptions": {
+        "beginner": {
+          "main": {
+            "sets": 2,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 3
+          },
+          "compound": {
+            "sets": 2,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 3
+          }
+        },
+        "intermediate": {
+          "main": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 2
+          },
+          "compound": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 2
+          }
+        },
+        "advanced": {
+          "main": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 2
+          },
+          "compound": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 2
+          }
+        }
+      },
+      "progression": "Bewegungsumfang nur innerhalb gut kontrollierbarer Grenzen erweitern. Kein erzwungenes Endgefühl; Dauer und Bewegungsqualität vor größerer Reichweite."
     },
     {
       "id": "vital-shoulder-neck",
-      "name": "Schulter & Nacken Vital · 2 Tage",
+      "name": "Schultergürtel & Rumpf · 2 Tage",
       "goal": "vitality",
       "equipment": [
-        "dumbbell",
-        "bodyweight"
+        "bodyweight",
+        "mat",
+        "dumbbell"
       ],
       "defaultLevel": "beginner",
       "aliases": [
@@ -2214,11 +3183,11 @@
           "exercises": [
             {
               "role": "main",
-              "exercise": "press"
+              "exercise": "standing-press"
             },
             {
               "role": "compound",
-              "exercise": "db-row"
+              "exercise": "standing-db-row"
             },
             {
               "selector": "shoulder-health",
@@ -2236,11 +3205,11 @@
         },
         {
           "day": 4,
-          "label": "Nackenentlastung & Scapula-Kontrolle",
+          "label": "Schultergürtel-Kontrolle & Rumpf",
           "exercises": [
             {
               "role": "main",
-              "exercise": "db-row"
+              "exercise": "standing-db-row"
             },
             {
               "role": "compound",
@@ -2261,16 +3230,61 @@
           ]
         }
       ],
-      "defaultCore": "posture"
+      "defaultCore": "posture",
+      "prescriptions": {
+        "beginner": {
+          "main": {
+            "sets": 2,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 3
+          },
+          "compound": {
+            "sets": 2,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 3
+          }
+        },
+        "intermediate": {
+          "main": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 2
+          },
+          "compound": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 2
+          }
+        },
+        "advanced": {
+          "main": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 2
+          },
+          "compound": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 2
+          }
+        }
+      }
     },
     {
       "id": "kettlebell-vital",
-      "name": "Kettlebell & Conditioning Vital · 3 Tage",
+      "name": "Ganzkörper mit Kettlebells & Kurzhanteln · 3 Tage",
       "goal": "home",
       "equipment": [
-        "kettlebells",
+        "bodyweight",
+        "mat",
         "dumbbell",
-        "bodyweight"
+        "kettlebells"
       ],
       "defaultLevel": "intermediate",
       "aliases": [
@@ -2284,7 +3298,7 @@
       "routines": [
         {
           "day": 1,
-          "label": "KB Ganzkörper · Power & Hinge",
+          "label": "Hüftstreckung, Druck & Zug",
           "exercises": [
             {
               "role": "main",
@@ -2299,7 +3313,7 @@
               "role": "compound"
             },
             {
-              "selector": "bodyweight-squat-slot",
+              "exercise": "goblet-squat",
               "role": "compound"
             },
             {
@@ -2310,10 +3324,10 @@
         },
         {
           "day": 3,
-          "label": "KB Ganzkörper · Squat & Rotator",
+          "label": "Kniebeuge & Schulterbewegung",
           "exercises": [
             {
-              "selector": "bodyweight-squat-slot",
+              "exercise": "goblet-squat",
               "role": "main"
             },
             {
@@ -2322,7 +3336,7 @@
             },
             {
               "role": "compound",
-              "exercise": "db-row"
+              "exercise": "standing-db-row"
             },
             {
               "role": "compound",
@@ -2336,7 +3350,7 @@
         },
         {
           "day": 5,
-          "label": "KB Ganzkörper · Flow & Core",
+          "label": "Druck, Zug & Rumpf",
           "exercises": [
             {
               "selector": "conditioning-press",
@@ -2361,39 +3375,393 @@
           ]
         }
       ],
-      "defaultCore": "posture"
+      "defaultCore": "posture",
+      "prescriptions": {
+        "beginner": {
+          "main": {
+            "sets": 2,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 3
+          },
+          "compound": {
+            "sets": 2,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 3
+          }
+        },
+        "intermediate": {
+          "main": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 2
+          },
+          "compound": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 2
+          }
+        },
+        "advanced": {
+          "main": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 2
+          },
+          "compound": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "balance-stability",
+      "name": "Balance & Stabilität · 3 Tage",
+      "goal": "balance",
+      "equipment": [
+        "bodyweight",
+        "mat",
+        "stable-support"
+      ],
+      "defaultLevel": "beginner",
+      "aliases": [
+        "sensomotorik"
+      ],
+      "cycleDays": 7,
+      "compoundPolicy": "mixed",
+      "defaultCore": "none",
+      "notes": "Sensomotorischer Baustein mit stabilem Boden und erreichbarer fester Haltemöglichkeit. Qualität und Kontrolle bestimmen die Schwierigkeit; keine automatische Erschwerung durch instabile Unterlagen. Vorgaben je Seite beachten.",
+      "focus": [
+        "balance",
+        "stability"
+      ],
+      "routines": [
+        {
+          "day": 1,
+          "label": "Standkontrolle & Gewichtsverlagerung",
+          "exercises": [
+            {
+              "exercise": "weight-shift",
+              "role": "skill"
+            },
+            {
+              "exercise": "tandem-stance",
+              "role": "skill"
+            },
+            {
+              "exercise": "single-leg-stance",
+              "role": "skill"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "label": "Standkontrolle & Gewichtsverlagerung",
+          "exercises": [
+            {
+              "exercise": "weight-shift",
+              "role": "skill"
+            },
+            {
+              "exercise": "clock-taps",
+              "role": "skill"
+            },
+            {
+              "exercise": "tandem-stance",
+              "role": "skill"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "label": "Standkontrolle & Gewichtsverlagerung",
+          "exercises": [
+            {
+              "exercise": "single-leg-stance",
+              "role": "skill"
+            },
+            {
+              "exercise": "tandem-walk",
+              "role": "skill"
+            },
+            {
+              "exercise": "clock-taps",
+              "role": "skill"
+            }
+          ]
+        }
+      ],
+      "progression": "Erst bei reproduzierbar kontrollierter Ausführung eine Anforderung ändern: weniger Handkontakt, engere Standfläche oder größere Reichweite. Bei Kontrollverlust vereinfachen; keine automatische Laststeigerung."
+    },
+    {
+      "id": "strength-stability",
+      "name": "Ganzkörperkraft & Stabilität · 3 Tage",
+      "goal": "vitality",
+      "equipment": [
+        "bodyweight",
+        "mat",
+        "dumbbell",
+        "stable-support"
+      ],
+      "defaultLevel": "beginner",
+      "aliases": [
+        "kraft-stabilitaet"
+      ],
+      "cycleDays": 7,
+      "compoundPolicy": "mixed",
+      "notes": "Differenziertes Ganzkörpertraining mit Kniebeuge, Hüftstreckung, Druck, Zug und Rumpfarbeit. Kurze Standaufgaben mit erreichbarer Haltemöglichkeit ergänzen die Kraftarbeit; Vorgaben sind bearbeitbare Coaching-Entwürfe.",
+      "routines": [
+        {
+          "day": 1,
+          "label": "Ganzkörper A · Kniebeuge, Zug & Rumpf",
+          "exercises": [
+            {
+              "selector": "db-floor-squat",
+              "role": "main"
+            },
+            {
+              "selector": "db-floor-push",
+              "role": "compound"
+            },
+            {
+              "selector": "db-floor-row",
+              "role": "compound"
+            },
+            {
+              "exercise": "glute-bridge",
+              "role": "compound"
+            },
+            {
+              "exercise": "dead-bug",
+              "role": "isolation"
+            },
+            {
+              "exercise": "tandem-stance",
+              "role": "skill"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "label": "Ganzkörper B · Hüfte, Druck & Stand",
+          "exercises": [
+            {
+              "exercise": "glute-bridge",
+              "role": "main"
+            },
+            {
+              "selector": "db-floor-press",
+              "role": "compound"
+            },
+            {
+              "selector": "db-floor-row",
+              "role": "compound"
+            },
+            {
+              "exercise": "bodyweight-squat",
+              "role": "compound"
+            },
+            {
+              "exercise": "plank",
+              "role": "isolation"
+            },
+            {
+              "exercise": "weight-shift",
+              "role": "skill"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "label": "Ganzkörper C · Kraft & Bewegungskontrolle",
+          "exercises": [
+            {
+              "selector": "db-floor-squat",
+              "role": "main"
+            },
+            {
+              "selector": "db-floor-push",
+              "role": "compound"
+            },
+            {
+              "selector": "db-floor-row",
+              "role": "compound"
+            },
+            {
+              "exercise": "dead-bug",
+              "role": "isolation"
+            },
+            {
+              "exercise": "single-leg-stance",
+              "role": "skill"
+            }
+          ]
+        }
+      ],
+      "prescriptions": {
+        "beginner": {
+          "main": {
+            "sets": 2,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 3
+          },
+          "compound": {
+            "sets": 2,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 3
+          }
+        },
+        "intermediate": {
+          "main": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 2
+          },
+          "compound": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 2
+          }
+        },
+        "advanced": {
+          "main": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "rir": 2
+          },
+          "compound": {
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "rir": 2
+          }
+        }
+      },
+      "focus": [
+        "whole-body-strength",
+        "trunk",
+        "balance"
+      ],
+      "defaultCore": "none"
     }
   ],
   "goals": {
     "vitality": {
-      "label": "Vitalität & Prävention",
-      "description": "Präventives Training zur Stärkung von Rumpf, Haltung, Gelenkgesundheit und Alltagsenergie (Schwerpunkt Vitaltrainer, 40+)."
+      "label": "Differenziertes Krafttraining",
+      "description": "Ganzkörper-Krafttraining mit anpassbarer Dosierung und gezielter Arbeit an Wirbelsäule/Rumpf und Schultergürtel."
     },
     "home": {
-      "label": "Home & Minimal Equipment",
-      "description": "Effektives Training für zuhause mit Kurzhanteln oder reinem Körpergewicht, ganz ohne Studio."
+      "label": "Krafttraining mit begrenztem Equipment",
+      "description": "Vorhandene Vorlagen für die im Coaching verfügbaren Mittel; Trainingsort ist kein Trainingsziel und keine Zielgruppenfestlegung."
     },
     "hypertrophy": {
-      "label": "Hypertrophie & Kraft (Gym)",
+      "label": "Kraft & Muskelaufbau",
       "description": "Gezielter Muskelaufbau und Grundkraftsteigerung mit Langhanteln, Maschinen und Kabelzügen im Fitnessstudio."
     },
     "mobility": {
-      "label": "Mobility & Flow",
-      "description": "Gelenkmobilisation, Faszien- und Dehnungsroutinen zur Schmerzentlastung und Wiederherstellung voller Bewegungsradien."
+      "label": "Beweglichkeit",
+      "description": "Kontrollierte Gelenkbeweglichkeit für Wirbelsäule, Hüfte und Sprunggelenk."
+    },
+    "balance": {
+      "label": "Balance & Stabilität",
+      "description": "Sensomotorische Aufgaben mit Unterstützung, kontrollierter Gewichtsverlagerung und nachvollziehbarer Abstufung."
     }
   },
   "coreModules": {
     "6pack": {
       "label": "6Pack Core-Intervalltraining",
-      "notes": "Fester eigenständiger Trainingsbaustein an jedem Trainingstag, kein Restprogramm. Session in der 6Pack-App wählen; keine konkrete App-Session vorausgewählt. Nicht unmittelbar vor dem schweren Hauptlift ermüden."
+      "notes": "Fester eigenständiger Trainingsbaustein an jedem Trainingstag, kein Restprogramm. Session in der 6Pack-App wählen; keine konkrete App-Session vorausgewählt. Nicht unmittelbar vor dem schweren Hauptlift ermüden.",
+      "mode": "external"
     },
     "posture": {
-      "label": "Präventive Rumpf- & Haltungsstabilisation",
-      "notes": "Gezielte Rumpf- und Wirbelsäulenstabilisation (Plank-Variationen, Bird Dog, Dead Bug, Beckenboden-/Glute-Aktivierung). Fokus auf saubere Rumpfspannung und Entlastung der Lendenwirbelsäule vor oder nach der Einheit."
+      "label": "Rumpfkontrolle · Coaching-Hinweis",
+      "notes": "Coaching-Hinweis für Rumpfarbeit. Konkrete Planks/Dead Bugs stehen mit eigenen Vorgaben in den Routinen; dieser Hinweis fügt keine zweite Übungseinheit hinzu.",
+      "mode": "guidance"
     },
     "mobility": {
-      "label": "Mobility & Gelenkgesundheit",
-      "notes": "Präventive Gelenkmobilisation (Brustwirbelsäule, Hüftöffner, Schultergürtel) und dynamisches Dehnen zur Verbesserung von Bewegungsradius und Regeneration."
+      "label": "Beweglichkeit · Coaching-Hinweis",
+      "notes": "Coaching-Hinweis für kontrollierte Gelenkbeweglichkeit. Konkrete Aufgaben und Vorgaben stehen in der Mobility-Vorlage; dieser Hinweis ist kein automatisch erzeugter Zusatzblock.",
+      "mode": "guidance"
     }
+  },
+  "equipmentProfiles": {
+    "gym": {
+      "label": "Studio mit Bank, Rack, Klimmzugstange und festen Haltemöglichkeiten",
+      "items": [
+        "bodyweight",
+        "mat",
+        "dumbbell",
+        "barbell",
+        "kettlebells",
+        "cable",
+        "machine",
+        "bench",
+        "adjustable-bench",
+        "rack",
+        "pullup-bar",
+        "stable-support"
+      ]
+    },
+    "dumbbell": {
+      "label": "Kurzhanteln und Matte, ohne Bank",
+      "items": [
+        "bodyweight",
+        "mat",
+        "dumbbell"
+      ]
+    },
+    "bodyweight": {
+      "label": "Eigengewicht und Matte, ohne weitere Hilfsmittel",
+      "items": [
+        "bodyweight",
+        "mat"
+      ]
+    },
+    "kettlebell": {
+      "label": "Kettlebells und Matte",
+      "items": [
+        "bodyweight",
+        "mat",
+        "kettlebells"
+      ]
+    },
+    "balance": {
+      "label": "Eigengewicht, Matte und feste Haltemöglichkeit",
+      "items": [
+        "bodyweight",
+        "mat",
+        "stable-support"
+      ]
+    }
+  },
+  "equipmentItems": [
+    "partner"
+  ],
+  "equipmentLabels": {
+    "bodyweight": "Eigengewicht",
+    "mat": "Matte",
+    "dumbbell": "Kurzhanteln",
+    "barbell": "Langhantel",
+    "kettlebells": "Kettlebells",
+    "cable": "Kabelzug",
+    "machine": "Kraftmaschinen",
+    "bench": "Flachbank",
+    "adjustable-bench": "verstellbare Bank",
+    "rack": "Rack",
+    "pullup-bar": "Klimmzugstange",
+    "stable-support": "feste Haltemöglichkeit",
+    "partner": "Partner zur Unterstützung"
   }
 }
