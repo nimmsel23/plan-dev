@@ -40,7 +40,7 @@ export default function ExerciseRow({ ex, onPatch, onDelete, onInspect }) {
           {templateSets.some((set) => set.setType === "failure") && <span className="text-xs px-1.5 py-0.5 rounded bg-red-500/15 text-red-400 font-medium">Failure</span>}
           {templateSets.some((set) => set.setType === "drop") ? <span className="text-xs px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-400 font-medium">Drop</span> : null}
           <span className="font-mono text-xs text-fit-muted">
-            {ex.prescriptionIncomplete ? 'Vorgaben offen' : <>{templateSets.length}×{["duration", "distance_time"].includes(ex.trackingType) ? (leadSet.targetDuration ?? "10s") : (leadSet.targetReps ?? "8-12")}</>}
+            {ex.prescriptionIncomplete ? 'Vorgaben offen' : <>{templateSets.length}×{["duration", "distance_time"].includes(ex.trackingType) ? (leadSet.targetDuration == null ? "offen" : `${leadSet.targetDuration} s`) : (leadSet.targetReps ?? "8-12")}</>}
           </span>
           <button aria-label={`${ex.name}: Satzvorgaben bearbeiten`} aria-expanded={open} onClick={() => setOpen((v) => !v)} className="min-h-[44px] min-w-[44px] rounded-lg text-fit-muted hover:text-fit-ink transition-colors">
             {open ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
